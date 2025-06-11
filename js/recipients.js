@@ -312,27 +312,31 @@ window.Recipients = (function() {
         
         if (!emailInput) {
             console.error('Manual email input not found');
+            Utils.showStatus('recipientStatus', 'E-Mail-Eingabefeld nicht gefunden', 'error');
             return;
         }
 
         const email = emailInput.value.trim();
         const name = nameInput ? nameInput.value.trim() : '';
         
-        // Validierung
+        // Debug-Log für Troubleshooting
+        console.log('Adding manual recipient:', { email, name, emailLength: email.length });
+        
+        // Validierung mit besseren Fehlermeldungen
         if (!email) {
-            alert('Bitte E-Mail-Adresse eingeben');
+            Utils.showStatus('recipientStatus', 'Bitte E-Mail-Adresse eingeben', 'error');
             Utils.focusElement('manualEmail');
             return;
         }
         
         if (!Utils.isValidEmail(email)) {
-            alert('Bitte gültige E-Mail-Adresse eingeben');
+            Utils.showStatus('recipientStatus', `"${email}" ist keine gültige E-Mail-Adresse`, 'error');
             Utils.focusElement('manualEmail');
             return;
         }
         
         if (isEmailExists(email)) {
-            alert('E-Mail-Adresse bereits vorhanden');
+            Utils.showStatus('recipientStatus', `E-Mail-Adresse "${email}" bereits vorhanden`, 'error');
             Utils.focusElement('manualEmail');
             return;
         }
@@ -354,6 +358,8 @@ window.Recipients = (function() {
         updateDisplay();
         persistRecipients();
         
+        // Erfolgs-Nachricht
+        Utils.showStatus('recipientStatus', `✅ "${email}" hinzugefügt`, 'success');
         console.log(`Manual recipient added: ${email}`);
     }
 
