@@ -35,7 +35,9 @@
                             <li>Erstelle einen kostenlosen Account</li>
                             <li>Verbinde deinen E-Mail-Provider (Gmail, Outlook, etc.)</li>
                             <li>Erstelle ein Email Template mit diesen Variablen:<br>
-                                <code>{{to_name}}, {{from_name}}, {{subject}}, {{message}}</code></li>
+                                <code>{{to_name}}, {{from_name}}, {{subject}}, {{message}}</code><br>
+                                <strong>Wichtig:</strong> Für Attachments füge auch hinzu:<br>
+                                <code>{{attachment1_name}}, {{attachment1_content}}, {{attachment_count}}</code></li>
                             <li>Kopiere die IDs hierher</li>
                         </ol>
                     </div>
@@ -114,7 +116,7 @@
     <div class="container">
         <div class="header">
             <h1>📧 E-Mail Marketing Tool</h1>
-            <p>Einfaches Tool für personalisierte E-Mail-Kampagnen</p>
+            <p>Einfaches Tool für personalisierte E-Mail-Kampagnen mit Attachments</p>
             <div class="wizard-trigger">
                 <button class="btn secondary" onclick="Wizard.show()">⚙️ Setup Wizard</button>
             </div>
@@ -148,7 +150,7 @@
                         </select>
                         <input type="text" id="templateName" placeholder="Template Name">
                         <button class="btn" onclick="Templates.save()">💾 Speichern</button>
-                        <button class="btn danger" onclick="Templates.delete()">🗑️ Löschen</button>
+                        <button class="btn danger" onclick="Templates.deleteTemplate()">🗑️ Löschen</button>
                     </div>
                 </div>
                 
@@ -189,6 +191,46 @@
                     </div>
                 </div>
                 <button class="btn" onclick="Templates.updatePreview()">Vorschau aktualisieren</button>
+            </div>
+
+            <!-- Attachments Section -->
+            <div class="section">
+                <h3>📎 Attachments</h3>
+                
+                <div class="form-group">
+                    <label>Dateien hinzufügen:</label>
+                    <div class="attachment-upload">
+                        <!-- File Input -->
+                        <input type="file" id="attachmentFiles" multiple 
+                               accept=".pdf,.jpg,.jpeg,.png,.gif,.doc,.docx,.xls,.xlsx,.txt,.csv"
+                               style="display: none;">
+                        
+                        <!-- Drag & Drop Zone -->
+                        <div id="attachmentDropZone" class="attachment-drop-zone" 
+                             onclick="document.getElementById('attachmentFiles').click()">
+                            <div class="drop-zone-content">
+                                <span class="drop-zone-icon">📎</span>
+                                <div class="drop-zone-text">
+                                    <strong>Dateien hier ablegen oder klicken</strong><br>
+                                    <small>PDF, Bilder, Word, Excel, Text (max. 2MB pro Datei, 5MB gesamt)</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="attachmentStatus"></div>
+                </div>
+                
+                <!-- Attachment List -->
+                <div class="form-group">
+                    <div id="attachmentList" class="attachment-list">
+                        <p class="placeholder">Keine Attachments hinzugefügt</p>
+                    </div>
+                    <div id="attachmentStats" class="attachment-stats"></div>
+                </div>
+                
+                <div class="form-group">
+                    <button class="btn danger" onclick="Attachments.clearAll()">🗑️ Alle Attachments entfernen</button>
+                </div>
             </div>
         </div>
 
@@ -236,7 +278,14 @@
                 <div class="form-group">
                     <label>Empfänger Übersicht:</label>
                     <div id="sendRecipientsList" class="recipient-list small">
-                        <p class="placeholder">Keine Empfänger geladen</p>
+                        <p class="placeholder">Keine Empfänger geladen - gehe zu "Empfänger" Tab</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Attachments:</label>
+                    <div id="sendAttachmentInfo" class="send-attachment-info">
+                        <p style="color: #7f8c8d; font-size: 14px;">Keine Attachments</p>
                     </div>
                 </div>
                 
@@ -247,6 +296,7 @@
                         <option value="1000" selected>Normal (1 E-Mail pro Sekunde)</option>
                         <option value="500">Schnell (2 E-Mails pro Sekunde)</option>
                     </select>
+                    <small>⚠️ Mit Attachments wird empfohlen, langsamer zu senden</small>
                 </div>
                 
                 <div class="progress" id="progressContainer" style="display: none;">
@@ -264,7 +314,9 @@
             <div class="section">
                 <h3>EmailJS Konfiguration</h3>
                 <div class="info-box">
-                    <strong>💡 Tipp:</strong> Nutze den Setup Wizard für eine geführte Einrichtung!
+                    <strong>💡 Tipp:</strong> Nutze den Setup Wizard für eine geführte Einrichtung!<br>
+                    <strong>📎 Attachments:</strong> Für Anhänge muss dein EmailJS Template die Variablen 
+                    <code>{{attachment1_name}}, {{attachment1_content}}, {{attachment_count}}</code> enthalten.
                 </div>
                 
                 <div class="form-group">
@@ -322,6 +374,7 @@
     <script src="js/wizard.js"></script>
     <script src="js/templates.js"></script>
     <script src="js/recipients.js"></script>
+    <script src="js/attachments.js"></script>
     <script src="js/sender.js"></script>
     <script src="js/app.js"></script>
 </body>
