@@ -227,42 +227,52 @@ window.Sender = (function() {
         throw lastError;
     }
 
-    /**
-     * Sendet einzelne E-Mail
-     * @param {Object} recipient - Empfänger-Objekt
-     */
-    async function sendSingleEmail(recipient) {
-        const config = currentCampaign.config;
-        const template = currentCampaign.template;
+    // Ersetze die sendSingleEmail Funktion in js/sender.js:
+
+/**
+ * Sendet einzelne E-Mail
+ * @param {Object} recipient - Empfänger-Objekt
+ */
+async function sendSingleEmail(recipient) {
+    const config = currentCampaign.config;
+    const template = currentCampaign.template;
+    
+    // Template personalisieren
+    let personalizedSubject = Templates.personalizeContent(template.subject, recipient);
+    let personalizedContent = Templates.personalizeContent(template.content, recipient);
+
+    // Attachment-Links hinzufügen falls vorhanden
+    if (window.Attachments && Attachments.hasAttachments()) {
+        const attachmentLinks = Attachments.generateEmailAttachmentLinks();
+        personalizedContent += attachmentLinks;
         
-        // Template personalisieren
-        const personalizedSubject = Templates.personalizeContent(template.subject, recipient);
-        const personalizedContent = Templates.personalizeContent(template.content, recipient);
-
-        // EmailJS Template-Parameter
-        const templateParams = {
-            to_name: recipient.name,
-            to_email: recipient.email,
-            from_name: config.fromName,
-            subject: personalizedSubject,
-            message: personalizedContent
-        };
-
+        console.log(`Sending email to: ${recipient.email} with ${Attachments.getAttachmentCount()} attachment link(s)`);
+    } else {
         console.log(`Sending email to: ${recipient.email}`);
-
-        // E-Mail senden
-        const response = await emailjs.send(
-            config.serviceId,
-            config.templateId,
-            templateParams
-        );
-        
-        if (response.status !== 200) {
-            throw new Error(`EmailJS Error: ${response.status} - ${response.text}`);
-        }
-        
-        return response;
     }
+
+    // EmailJS Template-Parameter
+    const templateParams = {
+        to_name: recipient.name,
+        to_email: recipient.email,
+        from_name: config.fromName,
+        subject: personalizedSubject,
+        message: personalizedContent
+    };
+
+    // E-Mail senden
+    const response = await emailjs.send(
+        config.serviceId,
+        config.templateId,
+        templateParams
+    );
+    
+    if (response.status !== 200) {
+        throw new Error(`EmailJS Error: ${response.status} - ${response.text}`);
+    }
+    
+    return response;
+}
 
     /**
      * Stoppt aktuelle Kampagne

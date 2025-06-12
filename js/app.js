@@ -90,8 +90,8 @@ window.App = (function() {
         }
 
         // Weitere Module werden hier initialisiert wenn verfügbar
-        const moduleList = ['Wizard', 'Templates', 'Recipients', 'Sender'];
-        
+        const moduleList = ['Wizard', 'Templates', 'Recipients', 'Sender', 'Attachments'];
+                
         moduleList.forEach(moduleName => {
             if (window[moduleName]) {
                 if (typeof window[moduleName].init === 'function') {

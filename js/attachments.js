@@ -1,15 +1,23 @@
 /**
- * E-Mail Marketing Tool - Attachments Management
- * Verwaltet Datei-Uploads und Attachment-Handling für E-Mail-Versand
+ * E-Mail Marketing Tool - Attachments Management mit PHP Upload
+ * Uploaded Dateien zu PHP Server statt Base64 Konvertierung
  */
 
 window.Attachments = (function() {
     'use strict';
 
+    // ===== UPLOAD KONFIGURATION =====
+    const UPLOAD_CONFIG = {
+        // URL zu deinem Upload-Script (KORRIGIERT)
+        uploadUrl: 'https://www.einfachstarten.jetzt/uploads/upload.php',
+        // API-Key (muss mit PHP Script übereinstimmen)
+        apiKey: 'anna-email-tool-2024-secret-key-xyz789'
+    };
+
     // ===== ATTACHMENTS STATE =====
     let attachments = [];
-    let maxFileSize = 2 * 1024 * 1024; // 2MB limit für EmailJS
-    let maxFiles = 3; // Max 3 Attachments pro E-Mail
+    let maxFileSize = 20 * 1024 * 1024; // 2MB limit
+    let maxFiles = 3;
     
     // Erlaubte Dateitypen
     const allowedTypes = [
@@ -28,20 +36,18 @@ window.Attachments = (function() {
     function init() {
         setupEventListeners();
         updateDisplay();
-        console.log('✓ Attachments module initialized');
+        console.log('✓ Attachments module initialized with upload');
     }
 
     /**
      * Setup Event-Listeners
      */
     function setupEventListeners() {
-        // File Input Change
         const fileInput = document.getElementById('attachmentFiles');
         if (fileInput) {
             fileInput.addEventListener('change', handleFileSelect);
         }
 
-        // Drag & Drop Support
         const dropZone = document.getElementById('attachmentDropZone');
         if (dropZone) {
             dropZone.addEventListener('dragover', handleDragOver);
@@ -53,18 +59,16 @@ window.Attachments = (function() {
     // ===== FILE HANDLING =====
 
     /**
-     * Behandelt Datei-Auswahl via File Input
+     * Behandelt Datei-Auswahl
      */
     function handleFileSelect(event) {
         const files = Array.from(event.target.files);
         processFiles(files);
-        
-        // Input zurücksetzen für erneute Auswahl derselben Datei
         event.target.value = '';
     }
 
     /**
-     * Behandelt Drag & Drop Events
+     * Drag & Drop Event-Handler
      */
     function handleDragOver(event) {
         event.preventDefault();
@@ -84,12 +88,10 @@ window.Attachments = (function() {
     }
 
     /**
-     * Verarbeitet ausgewählte Dateien
+     * Verarbeitet und uploaded Dateien
      * @param {Array} files - File-Array
      */
     async function processFiles(files) {
-        const statusContainer = document.getElementById('attachmentStatus');
-        
         for (const file of files) {
             try {
                 // Validierung
@@ -108,25 +110,29 @@ window.Attachments = (function() {
                 // Loading-Status anzeigen
                 showFileLoading(file.name);
 
-                // Datei zu Base64 konvertieren
-                const base64Data = await fileToBase64(file);
+                // Datei zum Server uploaden
+                const uploadResult = await uploadFileToServer(file);
                 
-                // Attachment hinzufügen
+                // Attachment zu Liste hinzufügen
                 const attachment = {
                     id: generateAttachmentId(),
-                    name: file.name,
+                    name: file.name, // Original-Name für Anzeige
                     type: file.type,
                     size: file.size,
-                    base64: base64Data,
+                    url: uploadResult.url, // Server-URL mit korrektem Dateinamen
+                    serverFilename: uploadResult.filename,
                     addedAt: new Date()
                 };
 
                 attachments.push(attachment);
-                console.log(`Attachment added: ${file.name} (${Utils.formatFileSize(file.size)})`);
+                console.log(`Attachment uploaded: ${file.name} -> ${uploadResult.url}`);
+                
+                Utils.showStatus('attachmentStatus', 
+                    `✅ "${file.name}" erfolgreich hochgeladen`, 'success');
 
             } catch (error) {
-                console.error(`Error processing file ${file.name}:`, error);
-                showFileError(file.name, 'Fehler beim Verarbeiten der Datei');
+                console.error(`Error uploading file ${file.name}:`, error);
+                showFileError(file.name, error.message || 'Upload fehlgeschlagen');
             }
         }
 
@@ -135,12 +141,38 @@ window.Attachments = (function() {
     }
 
     /**
+     * Uploaded Datei zum PHP Server
+     * @param {File} file - Datei zum Upload
+     * @returns {Promise<Object>} Upload-Ergebnis
+     */
+    async function uploadFileToServer(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('api_key', UPLOAD_CONFIG.apiKey);
+
+        const response = await fetch(UPLOAD_CONFIG.uploadUrl, {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Upload failed: ${response.status} - ${errorText}`);
+        }
+
+        const result = await response.json();
+        
+        if (!result.success) {
+            throw new Error(result.error || 'Upload failed');
+        }
+
+        return result.data;
+    }
+
+    /**
      * Validiert Datei
-     * @param {File} file - Zu validierende Datei
-     * @returns {Object} Validierungsergebnis
      */
     function validateFile(file) {
-        // Größe prüfen
         if (file.size > maxFileSize) {
             return {
                 valid: false,
@@ -148,7 +180,6 @@ window.Attachments = (function() {
             };
         }
 
-        // Dateityp prüfen
         if (!allowedTypes.includes(file.type)) {
             return {
                 valid: false,
@@ -156,7 +187,6 @@ window.Attachments = (function() {
             };
         }
 
-        // Dateiname prüfen
         if (file.name.length > 100) {
             return {
                 valid: false,
@@ -167,42 +197,20 @@ window.Attachments = (function() {
         return { valid: true, message: 'Valid' };
     }
 
-    /**
-     * Konvertiert Datei zu Base64
-     * @param {File} file - Datei zum Konvertieren
-     * @returns {Promise<string>} Base64-String
-     */
-    function fileToBase64(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            
-            reader.onload = () => {
-                // Data URL Format: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
-                // Wir brauchen nur den Base64-Teil nach dem Komma
-                const base64 = reader.result.split(',')[1];
-                resolve(base64);
-            };
-            
-            reader.onerror = () => {
-                reject(new Error('Fehler beim Lesen der Datei'));
-            };
-            
-            reader.readAsDataURL(file);
-        });
-    }
-
     // ===== ATTACHMENT MANAGEMENT =====
 
     /**
-     * Entfernt Attachment
-     * @param {string} attachmentId - ID des zu entfernenden Attachments
+     * Entfernt Attachment (löscht auch vom Server)
      */
-    function removeAttachment(attachmentId) {
+    async function removeAttachment(attachmentId) {
         const index = attachments.findIndex(att => att.id === attachmentId);
         if (index !== -1) {
             const attachment = attachments[index];
-            attachments.splice(index, 1);
             
+            // Optional: Vom Server löschen (braucht zusätzliches PHP Script)
+            // await deleteFileFromServer(attachment.serverFilename);
+            
+            attachments.splice(index, 1);
             updateDisplay();
             persistAttachments();
             
@@ -233,28 +241,18 @@ window.Attachments = (function() {
         Utils.showStatus('attachmentStatus', `${count} Attachments entfernt`, 'success');
     }
 
-    /**
-     * Generiert eindeutige Attachment-ID
-     * @returns {string} Attachment-ID
-     */
     function generateAttachmentId() {
         return `att_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
     }
 
     // ===== DISPLAY FUNCTIONS =====
 
-    /**
-     * Aktualisiert Attachment-Anzeige
-     */
     function updateDisplay() {
         displayAttachmentList();
         updateAttachmentStats();
         updateSendTabDisplay();
     }
 
-    /**
-     * Zeigt Attachment-Liste an
-     */
     function displayAttachmentList() {
         const container = document.getElementById('attachmentList');
         if (!container) return;
@@ -270,7 +268,8 @@ window.Attachments = (function() {
                     <div class="attachment-icon">${getFileIcon(attachment.type)}</div>
                     <div class="attachment-details">
                         <strong>${Utils.escapeHtml(attachment.name)}</strong><br>
-                        <small>${Utils.formatFileSize(attachment.size)} • ${getFileTypeLabel(attachment.type)}</small>
+                        <small>${Utils.formatFileSize(attachment.size)} • ${getFileTypeLabel(attachment.type)}</small><br>
+                        <small style="color: #4a90e2;">📁 Hochgeladen</small>
                     </div>
                 </div>
                 <button onclick="Attachments.removeAttachment('${attachment.id}')" 
@@ -279,9 +278,6 @@ window.Attachments = (function() {
         `).join('');
     }
 
-    /**
-     * Aktualisiert Attachment-Statistiken
-     */
     function updateAttachmentStats() {
         const statsContainer = document.getElementById('attachmentStats');
         if (!statsContainer) return;
@@ -292,7 +288,7 @@ window.Attachments = (function() {
         statsContainer.innerHTML = `
             <div class="attachment-stats">
                 <span>${attachments.length}/${maxFiles} Dateien</span>
-                <span>${Utils.formatFileSize(totalSize)} gesamt</span>
+                <span>${Utils.formatFileSize(totalSize)} hochgeladen</span>
                 ${remaining > 0 ? 
                     `<span style="color: #27ae60;">Noch ${remaining} möglich</span>` : 
                     `<span style="color: #e74c3c;">Limit erreicht</span>`
@@ -301,9 +297,6 @@ window.Attachments = (function() {
         `;
     }
 
-    /**
-     * Aktualisiert Attachment-Anzeige im Send-Tab
-     */
     function updateSendTabDisplay() {
         const container = document.getElementById('sendAttachmentInfo');
         if (!container) return;
@@ -315,38 +308,24 @@ window.Attachments = (function() {
 
         container.innerHTML = `
             <div class="send-attachment-summary">
-                <strong>${attachments.length} Attachment(s):</strong><br>
+                <strong>${attachments.length} Attachment(s) hochgeladen:</strong><br>
                 ${attachments.map(att => 
-                    `<small>${Utils.escapeHtml(att.name)} (${Utils.formatFileSize(att.size)})</small>`
+                    `<small>📎 <a href="${att.url}" target="_blank">${Utils.escapeHtml(att.name)}</a> (${Utils.formatFileSize(att.size)})</small>`
                 ).join('<br>')}
             </div>
         `;
     }
 
-    /**
-     * Zeigt Datei-Fehler an
-     * @param {string} filename - Dateiname
-     * @param {string} message - Fehlermeldung
-     */
     function showFileError(filename, message) {
         Utils.showStatus('attachmentStatus', `❌ ${filename}: ${message}`, 'error');
     }
 
-    /**
-     * Zeigt Datei-Loading an
-     * @param {string} filename - Dateiname
-     */
     function showFileLoading(filename) {
-        Utils.showStatus('attachmentStatus', `⏳ Verarbeite: ${filename}...`, 'info');
+        Utils.showStatus('attachmentStatus', `⏳ Uploading: ${filename}...`, 'info');
     }
 
     // ===== UTILITY FUNCTIONS =====
 
-    /**
-     * Gibt Datei-Icon zurück
-     * @param {string} mimeType - MIME-Type
-     * @returns {string} Icon-Emoji
-     */
     function getFileIcon(mimeType) {
         const iconMap = {
             'application/pdf': '📄',
@@ -361,11 +340,6 @@ window.Attachments = (function() {
         return iconMap[mimeType] || '📎';
     }
 
-    /**
-     * Gibt Dateityp-Label zurück
-     * @param {string} mimeType - MIME-Type
-     * @returns {string} Typ-Label
-     */
     function getFileTypeLabel(mimeType) {
         const typeMap = {
             'application/pdf': 'PDF',
@@ -380,91 +354,48 @@ window.Attachments = (function() {
         return typeMap[mimeType] || 'Datei';
     }
 
-    /**
-     * Persistiert Attachments in LocalStorage
-     */
     function persistAttachments() {
-        // Nur Metadaten speichern, nicht Base64 (zu groß für localStorage)
-        const metadata = attachments.map(att => ({
-            id: att.id,
-            name: att.name,
-            type: att.type,
-            size: att.size,
-            addedAt: att.addedAt
-        }));
+        // Nur Metadaten speichern (URLs bleiben)
+        Utils.saveToStorage('attachmentMetadata', attachments);
+    }
+
+    // ===== E-MAIL INTEGRATION =====
+
+    /**
+     * Generiert Attachment-Links für E-Mail
+     * @returns {string} HTML mit Attachment-Links
+     */
+    function generateEmailAttachmentLinks() {
+        if (attachments.length === 0) return '';
         
-        Utils.saveToStorage('attachmentMetadata', metadata);
+        const linksList = attachments.map(att => 
+            `📎 <a href="${att.url}">${Utils.escapeHtml(att.name)}</a> (${Utils.formatFileSize(att.size)})`
+        ).join('<br>');
+        
+        return `<br><br><strong>📎 Anhänge:</strong><br>${linksList}`;
     }
 
     /**
-     * Lädt persistierte Attachment-Metadaten
-     */
-    function loadPersistedMetadata() {
-        const metadata = Utils.loadFromStorage('attachmentMetadata', []);
-        // Note: Base64-Daten können nicht aus localStorage geladen werden
-        // Benutzer muss Dateien nach Seitenneuladung erneut hinzufügen
-        if (metadata.length > 0) {
-            console.log(`Found ${metadata.length} attachment metadata entries (files need to be re-added)`);
-        }
-    }
-
-    // ===== EMAILJS INTEGRATION =====
-
-    /**
-     * Bereitet Attachments für EmailJS vor
-     * @returns {Array} EmailJS-Attachment-Array
-     */
-    function prepareForEmailJS() {
-        return attachments.map(attachment => ({
-            name: attachment.name,
-            content: attachment.base64,
-            contentType: attachment.type
-        }));
-    }
-
-    /**
-     * Gibt Attachment-Daten für E-Mail-Versand zurück
-     * @returns {Object} Template-Parameter für Attachments
+     * Bereitet Attachment-Parameter für E-Mail vor
+     * @returns {Object} Template-Parameter
      */
     function getEmailTemplateParams() {
-        const emailJSAttachments = prepareForEmailJS();
-        
-        // EmailJS erwartet Attachments als Template-Parameter
-        const attachmentParams = {};
-        emailJSAttachments.forEach((att, index) => {
-            attachmentParams[`attachment${index + 1}_name`] = att.name;
-            attachmentParams[`attachment${index + 1}_content`] = att.content;
-            attachmentParams[`attachment${index + 1}_contentType`] = att.contentType;
-        });
-        
-        // Zusätzlich Attachment-Count
-        attachmentParams.attachment_count = emailJSAttachments.length;
-        
-        return attachmentParams;
+        return {
+            attachment_links: generateEmailAttachmentLinks(),
+            attachment_count: attachments.length
+        };
     }
 
     // ===== GETTERS =====
 
-    /**
-     * Gibt aktuelle Attachments zurück
-     * @returns {Array} Attachment-Array
-     */
     function getAttachments() {
         return [...attachments];
     }
 
-    /**
-     * Gibt Attachment-Anzahl zurück
-     * @returns {number} Anzahl Attachments
-     */
     function getAttachmentCount() {
         return attachments.length;
     }
 
-    /**
-     * Gibt Attachment-Statistiken zurück
-     * @returns {Object} Statistik-Objekt
-     */
     function getStats() {
         const totalSize = attachments.reduce((sum, att) => sum + att.size, 0);
         
@@ -477,30 +408,15 @@ window.Attachments = (function() {
         };
     }
 
-    /**
-     * Prüft ob Attachments vorhanden sind
-     * @returns {boolean} true wenn Attachments vorhanden
-     */
     function hasAttachments() {
         return attachments.length > 0;
     }
 
     // ===== CONFIGURATION =====
 
-    /**
-     * Aktualisiert Attachment-Limits
-     * @param {Object} limits - Neue Limits
-     */
-    function updateLimits(limits) {
-        if (limits.maxFileSize) {
-            maxFileSize = limits.maxFileSize;
-        }
-        if (limits.maxFiles) {
-            maxFiles = limits.maxFiles;
-        }
-        
-        updateDisplay();
-        console.log('Attachment limits updated:', { maxFileSize, maxFiles });
+    function updateUploadConfig(config) {
+        Object.assign(UPLOAD_CONFIG, config);
+        console.log('Upload config updated:', UPLOAD_CONFIG);
     }
 
     // ===== PUBLIC API =====
@@ -517,8 +433,8 @@ window.Attachments = (function() {
         updateDisplay,
         displayAttachmentList,
         
-        // EmailJS integration
-        prepareForEmailJS,
+        // Email integration
+        generateEmailAttachmentLinks,
         getEmailTemplateParams,
         
         // Getters
@@ -528,10 +444,9 @@ window.Attachments = (function() {
         hasAttachments,
         
         // Configuration
-        updateLimits,
+        updateUploadConfig,
         
         // Utilities
-        validateFile,
-        fileToBase64
+        validateFile
     };
 })();
