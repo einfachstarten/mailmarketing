@@ -9,9 +9,9 @@ window.Attachments = (function() {
     // ===== UPLOAD KONFIGURATION =====
     const UPLOAD_CONFIG = {
         // URL zu deinem Upload-Script (KORRIGIERT)
-        uploadUrl: 'https://www.einfachstarten.jetzt/uploads/upload.php',
+        uploadUrl: 'https://www.einfachstarten.jetzt/upload.php',
         // API-Key (muss mit PHP Script übereinstimmen)
-        apiKey: 'anna-email-tool-2024-secret-key-xyz789'
+        apiKey: 'benjaminundviggoheißenmeinesöhne'
     };
 
     // ===== ATTACHMENTS STATE =====
