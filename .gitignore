@@ -1,0 +1,8 @@
+# Node modules
+backend/node_modules/
+
+# SQLite database
+backend/db.sqlite
+backend/uploads/
+# MacOS DS_Store
+.DS_Store

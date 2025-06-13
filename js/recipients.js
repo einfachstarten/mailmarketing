@@ -29,6 +29,7 @@ window.Recipients = (function() {
     function init() {
         setupEventListeners();
         loadPersistedRecipients();
+        fetchRecipientsFromServer();
         updateDisplay();
         
         console.log('✓ Recipients module initialized');
@@ -87,6 +88,54 @@ window.Recipients = (function() {
      */
     function persistRecipients() {
         Utils.saveToStorage('recipientsList', recipients);
+    }
+
+    async function fetchRecipientsFromServer() {
+        try {
+            const response = await fetch(ServerConfig.get().baseUrl + '/recipients');
+            if (!response.ok) throw new Error('Failed to load recipients');
+            const data = await response.json();
+            if (Array.isArray(data)) {
+                recipients = data.map(r => ({ ...r }));
+                updateDisplay();
+            }
+        } catch (err) {
+            console.warn('Could not fetch recipients from server:', err);
+        }
+    }
+
+    async function createRecipientOnServer(recipient) {
+        try {
+            const response = await fetch(ServerConfig.get().baseUrl + '/recipients', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${ServerConfig.get().authToken}`
+                },
+                body: JSON.stringify(recipient)
+            });
+            if (!response.ok) throw new Error('Failed to save recipient');
+            const data = await response.json();
+            return data;
+        } catch (err) {
+            console.error('createRecipientOnServer error:', err);
+            return null;
+        }
+    }
+
+    async function deleteRecipientFromServer(id) {
+        try {
+            const response = await fetch(ServerConfig.get().baseUrl + '/recipients/' + id, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${ServerConfig.get().authToken}`
+                }
+            });
+            if (!response.ok) throw new Error('Failed to delete recipient');
+            await response.json();
+        } catch (err) {
+            console.error('deleteRecipientFromServer error:', err);
+        }
     }
 
     // ===== CSV IMPORT =====
@@ -291,6 +340,11 @@ window.Recipients = (function() {
                     status: 'pending',
                     source: newRecipient.source || 'unknown'
                 });
+                createRecipientOnServer({
+                    name: newRecipient.name,
+                    email: newRecipient.email,
+                    status: 'pending'
+                });
                 addedCount++;
             }
         });
@@ -375,6 +429,7 @@ window.Recipients = (function() {
 
         const recipient = recipients[index];
         recipients.splice(index, 1);
+        deleteRecipientFromServer(recipient.id);
         
         reindexRecipients();
         updateDisplay();
@@ -418,6 +473,7 @@ window.Recipients = (function() {
         }
         
         const count = recipients.length;
+        recipients.forEach(r => deleteRecipientFromServer(r.id));
         recipients = [];
         
         updateDisplay();
@@ -680,9 +736,10 @@ window.Recipients = (function() {
         getRecipientCount,
         getStats,
         getRecipientByEmail,
-        
+
         // Utilities
         isEmailExists,
-        persistRecipients
+        persistRecipients,
+        fetchRecipientsFromServer
     };
 })();
