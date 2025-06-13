@@ -589,6 +589,12 @@ small {
     padding: 0;
 }
 
+.wizard-breadcrumb {
+    margin-top: 10px;
+    font-weight: bold;
+    color: white;
+}
+
 .progress-step {
     display: flex;
     align-items: center;
@@ -604,6 +610,14 @@ small {
     min-height: 400px;
     max-height: 50vh;
     overflow-y: auto;
+}
+
+.wizard-back-link {
+    display: block;
+    margin-bottom: 15px;
+    color: #357abd;
+    cursor: pointer;
+    text-decoration: none;
 }
 
 .wizard-step {
