@@ -86,6 +86,6 @@ app.post('/upload', authMiddleware, upload.single('file'), (req, res) => {
     res.json({ success: true, data: { filename: req.file.filename, url } });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server listening on port ${PORT}`);
 });
