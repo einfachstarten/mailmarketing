@@ -89,6 +89,13 @@ window.App = (function() {
             console.log('✓ Config module loaded');
         }
 
+        // Mail Wizard Modul initialisieren
+        if (window.MailWizard) {
+            MailWizard.init();
+            modules.mailwizard = MailWizard;
+            console.log('✓ MailWizard module loaded');
+        }
+
         // Weitere Module werden hier initialisiert wenn verfügbar
         const moduleList = ['Wizard', 'Templates', 'Recipients', 'Sender', 'Attachments'];
                 
@@ -370,13 +377,30 @@ window.App = (function() {
                 }
             }
 
-            // ESC = Setup-Wizard schließen
-            if (e.key === 'Escape' && modules.wizard) {
-                const wizardOverlay = document.getElementById('setupWizard');
-                if (wizardOverlay && !wizardOverlay.classList.contains('hidden')) {
-                    if (typeof modules.wizard.hide === 'function') {
+            // ESC = Setup-Wizard oder Mail-Wizard schließen
+            if (e.key === 'Escape') {
+                // Setup Wizard schließen
+                const setupWizard = document.getElementById('setupWizard');
+                if (setupWizard && !setupWizard.classList.contains('hidden')) {
+                    if (modules.wizard && typeof modules.wizard.hide === 'function') {
                         modules.wizard.hide();
                     }
+                }
+                
+                // Mail Wizard schließen
+                const mailWizard = document.getElementById('mailWizardModal');
+                if (mailWizard && !mailWizard.classList.contains('hidden')) {
+                    if (modules.mailwizard && typeof modules.mailwizard.hideWizardModal === 'function') {
+                        modules.mailwizard.hideWizardModal();
+                    }
+                }
+            }
+
+            // Ctrl/Cmd + M = Mail Wizard öffnen
+            if ((e.ctrlKey || e.metaKey) && e.key === 'm') {
+                e.preventDefault();
+                if (modules.mailwizard && typeof modules.mailwizard.startWizard === 'function') {
+                    modules.mailwizard.startWizard();
                 }
             }
         });
@@ -527,7 +551,7 @@ ${error.stack}
         }
 
         // Prüfe Module
-        const requiredModules = ['config', 'templates', 'recipients', 'sender'];
+        const requiredModules = ['config', 'templates', 'recipients', 'sender', 'mailwizard'];
         requiredModules.forEach(module => {
             if (!modules[module]) {
                 diagnosis.issues.push(`Modul ${module} nicht geladen`);

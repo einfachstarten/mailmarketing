@@ -112,6 +112,320 @@
         </div>
     </div>
 
+    <!-- Mail Wizard Modal -->
+    <div id="mailWizardModal" class="wizard-overlay hidden">
+        <div class="mail-wizard-container">
+            <div class="wizard-header">
+                <h1>🧙‍♂️ Mail Wizard</h1>
+                <p>Erstelle professionelle E-Mail-Kampagnen in 6 einfachen Schritten</p>
+                
+                <div class="wizard-progress">
+                    <div class="progress-step">
+                        <div class="wizard-step-circle active">1</div>
+                        <div class="step-line"></div>
+                    </div>
+                    <div class="progress-step">
+                        <div class="wizard-step-circle">2</div>
+                        <div class="step-line"></div>
+                    </div>
+                    <div class="progress-step">
+                        <div class="wizard-step-circle">3</div>
+                        <div class="step-line"></div>
+                    </div>
+                    <div class="progress-step">
+                        <div class="wizard-step-circle">4</div>
+                        <div class="step-line"></div>
+                    </div>
+                    <div class="progress-step">
+                        <div class="wizard-step-circle">5</div>
+                        <div class="step-line"></div>
+                    </div>
+                    <div class="progress-step">
+                        <div class="wizard-step-circle">6</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="wizard-content">
+                <!-- Step 1: Mail-Typ -->
+                <div class="wizard-step-content active" id="mail-wizard-step-1">
+                    <h2 class="step-title">📮 Welche Art von E-Mail möchtest du senden?</h2>
+                    <p class="step-subtitle">Wähle den passenden Typ für deine Kampagne</p>
+                    
+                    <div class="wizard-mail-types">
+                        <div class="wizard-mail-type-card" onclick="MailWizard.selectMailType('newsletter')">
+                            <div class="mail-type-icon">📰</div>
+                            <h3>Newsletter</h3>
+                            <p>Regelmäßige Updates und News</p>
+                            <ul>
+                                <li>Mehrere Artikel/Themen</li>
+                                <li>Strukturierte Sections</li>
+                                <li>Call-to-Actions</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="wizard-mail-type-card" onclick="MailWizard.selectMailType('update')">
+                            <div class="mail-type-icon">📢</div>
+                            <h3>Persönliches Update</h3>
+                            <p>Individuelle Nachrichten für Lernende</p>
+                            <ul>
+                                <li>Persönliche Ansprache</li>
+                                <li>Fortschritts-Updates</li>
+                                <li>Motivierende Inhalte</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="wizard-mail-type-card" onclick="MailWizard.selectMailType('announcement')">
+                            <div class="mail-type-icon">🎉</div>
+                            <h3>Ankündigung</h3>
+                            <p>Neue Kurse, Events oder Mitteilungen</p>
+                            <ul>
+                                <li>Klare Hauptbotschaft</li>
+                                <li>Starker Call-to-Action</li>
+                                <li>Event-Details</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="wizard-mail-type-card" onclick="MailWizard.selectMailType('custom')">
+                            <div class="mail-type-icon">🎨</div>
+                            <h3>Individuell</h3>
+                            <p>Freie Gestaltung von Grund auf</p>
+                            <ul>
+                                <li>Blanko Template</li>
+                                <li>Vollständige Kontrolle</li>
+                                <li>Eigenes Design</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Template -->
+                <div class="wizard-step-content" id="mail-wizard-step-2">
+                    <h2 class="step-title">🎨 Template auswählen</h2>
+                    <p class="step-subtitle">Basierend auf deiner Auswahl: <strong id="selected-mail-type">Newsletter</strong></p>
+                    
+                    <div class="wizard-template-library" id="wizardTemplateLibrary">
+                        <!-- Templates werden dynamisch geladen -->
+                    </div>
+                </div>
+                
+                <!-- Step 3: Editor -->
+                <div class="wizard-step-content" id="mail-wizard-step-3">
+                    <h2 class="step-title">✏️ Inhalt bearbeiten</h2>
+                    <p class="step-subtitle">Erstelle deine E-Mail mit dem visuellen Editor</p>
+                    
+                    <div class="form-group">
+                        <label for="wizardSubject">Betreff:</label>
+                        <input type="text" id="wizardSubject" placeholder="Hallo {{name}}, dein Update!">
+                    </div>
+                    
+                    <!-- Variable & Attachment Toolbar -->
+                    <div class="wizard-toolbar">
+                        <div class="toolbar-section">
+                            <strong>🏷️ Personalisierung:</strong>
+                            <span class="variable-tag" onclick="MailWizard.insertVariable('{{name}}')">{{name}}</span>
+                            <span class="variable-tag" onclick="MailWizard.insertVariable('{{email}}')">{{email}}</span>
+                        </div>
+                        
+                        <div class="toolbar-section">
+                            <strong>📎 Attachments:</strong>
+                            <button class="btn btn-small" onclick="App.showTab('template'); MailWizard.hideWizardModal();">
+                                + Dateien hochladen
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="wizard-editor-container">
+                        <!-- Visual Editor -->
+                        <div class="wizard-editor-panel">
+                            <div class="wizard-editor-toolbar">
+                                <button class="toolbar-btn" onclick="MailWizard.formatText('bold')"><strong>B</strong></button>
+                                <button class="toolbar-btn" onclick="MailWizard.formatText('italic')"><em>I</em></button>
+                                <button class="toolbar-btn" onclick="MailWizard.formatText('underline')"><u>U</u></button>
+                                <button class="toolbar-btn" onclick="document.execCommand('formatBlock', false, 'h2')">H2</button>
+                                <button class="toolbar-btn" onclick="document.execCommand('formatBlock', false, 'h3')">H3</button>
+                            </div>
+                            <div class="wizard-editor-content">
+                                <div class="wizard-visual-editor" contenteditable="true" id="wizardVisualEditor">
+                                    <!-- Content wird hier geladen -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Live Preview -->
+                        <div class="wizard-editor-panel">
+                            <div class="wizard-editor-toolbar">
+                                <span><strong>Live Vorschau</strong></span>
+                                <button class="toolbar-btn" onclick="MailWizard.updateWizardPreview()">🔄</button>
+                            </div>
+                            <div class="wizard-editor-content">
+                                <div class="wizard-preview" id="wizardPreview">
+                                    <!-- Preview wird hier angezeigt -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 4: Empfänger auswählen -->
+                <div class="wizard-step-content" id="mail-wizard-step-4">
+                    <h2 class="step-title">👥 Empfänger auswählen</h2>
+                    <p class="step-subtitle">Wähle aus, wer diese E-Mail erhalten soll</p>
+                    
+                    <div class="wizard-recipient-selector">
+                        <div class="wizard-recipient-section">
+                            <div class="wizard-recipient-stats">
+                                <div class="recipient-stat-card">
+                                    <div class="stat-number" id="wizardTotalRecipients">0</div>
+                                    <div class="stat-label">Verfügbar</div>
+                                </div>
+                                <div class="recipient-stat-card selected">
+                                    <div class="stat-number" id="wizardSelectedRecipients">0</div>
+                                    <div class="stat-label">Ausgewählt</div>
+                                </div>
+                            </div>
+                            
+                            <div class="wizard-recipient-controls">
+                                <button class="btn btn-outline" onclick="MailWizard.selectAllRecipients()">
+                                    ✅ Alle auswählen
+                                </button>
+                                <button class="btn btn-outline" onclick="MailWizard.deselectAllRecipients()">
+                                    ❌ Alle abwählen
+                                </button>
+                                <button class="btn btn-small" onclick="App.showTab('recipients'); MailWizard.hideWizardModal();">
+                                    ➕ Empfänger hinzufügen
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="wizard-recipient-list-container">
+                            <div class="wizard-recipient-search">
+                                <input type="text" placeholder="🔍 Empfänger suchen..." id="wizardRecipientSearch" onkeyup="MailWizard.filterRecipients()">
+                            </div>
+                            
+                            <div class="wizard-recipient-list" id="wizardRecipientList">
+                                <p class="placeholder">Keine Empfänger verfügbar</p>
+                            </div>
+                            
+                            <div class="wizard-recipient-pagination" id="wizardRecipientPagination" style="display: none;">
+                                <button class="btn btn-small" onclick="MailWizard.previousRecipientPage()">← Zurück</button>
+                                <span id="wizardRecipientPageInfo">Seite 1 von 1</span>
+                                <button class="btn btn-small" onclick="MailWizard.nextRecipientPage()">Weiter →</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="wizard-recipient-summary">
+                        <div class="info-box">
+                            <strong>💡 Tipp:</strong> Du kannst jederzeit im "Empfänger" Tab neue Personen hinzufügen und dann hier auswählen.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 5: Attachments -->
+                <div class="wizard-step-content" id="mail-wizard-step-5">
+                    <h2 class="step-title">📎 Anhänge verwalten</h2>
+                    <p class="step-subtitle">Verlinke deine hochgeladenen Dateien im Text</p>
+                    
+                    <div class="wizard-attachment-manager">
+                        <div class="wizard-attachment-section">
+                            <h3>Verfügbare Attachments</h3>
+                            <div id="wizardAttachmentList" class="wizard-attachment-list">
+                                <p class="placeholder">Keine Attachments vorhanden</p>
+                            </div>
+                            
+                            <button class="btn btn-outline" onclick="App.showTab('template'); MailWizard.hideWizardModal();">
+                                📎 Dateien im Template-Tab hochladen
+                            </button>
+                        </div>
+                        
+                        <div class="wizard-attachment-section">
+                            <h3>💡 Tipps für Attachments</h3>
+                            <div class="info-box">
+                                <ul style="margin: 0; padding-left: 20px;">
+                                    <li>Klicke auf "In Text einfügen" um Links zu erstellen</li>
+                                    <li>PDF-Dateien eignen sich besonders gut</li>
+                                    <li>Halte Dateien unter 20MB für bessere Zustellung</li>
+                                    <li>Mit vielen Attachments langsamer versenden</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 6: Review -->
+                <div class="wizard-step-content" id="mail-wizard-step-6">
+                    <h2 class="step-title">🚀 Bereit zum Versenden</h2>
+                    <p class="step-subtitle">Letzte Überprüfung vor dem Start</p>
+                    
+                    <div class="wizard-review-container">
+                        <div class="wizard-review-main">
+                            <h3>📧 E-Mail Zusammenfassung</h3>
+                            <div id="wizardSummary" class="wizard-summary">
+                                <!-- Summary wird hier geladen -->
+                            </div>
+                            
+                            <h3>📱 Mobile Vorschau</h3>
+                            <div class="wizard-mobile-preview-container">
+                                <div class="wizard-mobile-frame">
+                                    <div id="wizardMobilePreview" class="wizard-mobile-content">
+                                        <!-- Mobile preview hier -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="wizard-review-sidebar">
+                            <h3>👥 Ausgewählte Empfänger</h3>
+                            <div class="wizard-selected-recipients">
+                                <div id="wizardSelectedList" class="wizard-selected-list">
+                                    <!-- Ausgewählte Empfänger -->
+                                </div>
+                            </div>
+                            
+                            <h3>⚙️ Versand-Einstellungen</h3>
+                            <div class="wizard-send-settings">
+                                <div class="form-group">
+                                    <label>Geschwindigkeit:</label>
+                                    <select id="wizardSendSpeed">
+                                        <option value="2000">Langsam (1 alle 2 Sek)</option>
+                                        <option value="1000" selected>Normal (1/Sekunde)</option>
+                                        <option value="500">Schnell (2/Sekunde)</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label style="display: flex; align-items: center; gap: 8px;">
+                                        <input type="checkbox" id="wizardTestEmail" checked>
+                                        Test-E-Mail an mich senden
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="wizard-tip">
+                                <p>💡 <strong>Tipp:</strong> Mit Attachments empfehlen wir langsamere Geschwindigkeit für bessere Zustellraten.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="wizard-navigation">
+                <button class="btn btn-secondary" id="wizardPrevBtn" onclick="MailWizard.previousStep()" disabled>
+                    ← Zurück
+                </button>
+                <div class="wizard-nav-right">
+                    <button class="btn btn-outline" onclick="MailWizard.hideWizardModal()">
+                        Abbrechen
+                    </button>
+                    <button class="btn btn-primary" id="wizardNextBtn" onclick="MailWizard.nextStep()">
+                        Weiter →
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Application -->
     <div class="container">
         <div class="header">
@@ -131,6 +445,7 @@
 
         <!-- Navigation -->
         <div class="tabs">
+            <button class="tab" onclick="MailWizard.startWizard()">🧙‍♂️ Mail Wizard</button>
             <button class="tab active" onclick="App.showTab('template')">📝 Template</button>
             <button class="tab" onclick="App.showTab('recipients')">👥 Empfänger</button>
             <button class="tab" onclick="App.showTab('send')">🚀 Versenden</button>
@@ -376,6 +691,7 @@
     <script src="js/recipients.js"></script>
     <script src="js/attachments.js"></script>
     <script src="js/sender.js"></script>
+    <script src="js/mail-wizard.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

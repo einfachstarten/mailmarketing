@@ -229,6 +229,31 @@ small {
     background: #c0392b;
 }
 
+.btn.btn-outline {
+    background: transparent;
+    border: 2px solid #4a90e2;
+    color: #4a90e2;
+}
+
+.btn.btn-outline:hover {
+    background: #4a90e2;
+    color: white;
+}
+
+.btn.btn-small {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.btn.btn-primary {
+    background: #667eea;
+    color: white;
+}
+
+.btn.btn-primary:hover {
+    background: #5a6fd8;
+}
+
 /* === TEMPLATE CONTROLS === */
 .template-controls {
     display: grid;
@@ -559,31 +584,19 @@ small {
 .wizard-progress {
     display: flex;
     justify-content: center;
+    align-items: center;
     margin-top: 20px;
+    padding: 0;
 }
 
 .progress-step {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.3);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 10px;
-    font-weight: bold;
-    transition: all 0.3s;
 }
 
-.progress-step.active {
-    background: white;
-    color: #4a90e2;
-    transform: scale(1.1);
-}
-
-.progress-step.completed {
-    background: #27ae60;
-    color: white;
+.progress-step:last-child .step-line {
+    display: none;
 }
 
 .wizard-content {
@@ -812,6 +825,564 @@ small {
     font-size: 12px;
 }
 
+/* === MAIL WIZARD STYLES === */
+
+/* Mail Wizard Modal */
+.mail-wizard-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    width: 95%;
+    max-width: 1200px;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.wizard-header h1 {
+    margin: 0 0 8px 0;
+    font-size: 24px;
+}
+
+/* === WIZARD PROGRESS FIX === */
+.wizard-step-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    transition: all 0.3s;
+    font-size: 16px;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.wizard-step-circle.active {
+    background: white;
+    color: #667eea;
+    transform: scale(1.1);
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+}
+
+.wizard-step-circle.completed {
+    background: #27ae60;
+    color: white;
+}
+
+.step-line {
+    width: 60px;
+    height: 3px;
+    background: rgba(255,255,255,0.3);
+    flex-shrink: 0;
+    margin: 0 5px;
+}
+
+.wizard-step-content {
+    display: none;
+}
+
+.wizard-step-content.active {
+    display: block;
+}
+
+.step-title {
+    font-size: 24px;
+    margin-bottom: 8px;
+    color: #2c3e50;
+}
+
+.step-subtitle {
+    color: #7f8c8d;
+    margin-bottom: 32px;
+}
+
+/* Step 1: Mail Types */
+.wizard-mail-types {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.wizard-mail-type-card {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.wizard-mail-type-card:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.wizard-mail-type-card.selected {
+    border-color: #667eea;
+    background: #f8f9ff;
+}
+
+.mail-type-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.wizard-mail-type-card h3 {
+    margin: 0 0 8px 0;
+    color: #2c3e50;
+}
+
+.wizard-mail-type-card p {
+    color: #6c757d;
+    margin-bottom: 16px;
+}
+
+.wizard-mail-type-card ul {
+    text-align: left;
+    font-size: 14px;
+    color: #6c757d;
+    margin: 0;
+    padding-left: 20px;
+}
+
+.wizard-mail-type-card li {
+    margin-bottom: 4px;
+}
+
+/* Step 2: Templates */
+.wizard-template-library {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.wizard-template-card {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.wizard-template-card:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+}
+
+.wizard-template-card.selected {
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+}
+
+.wizard-template-preview {
+    height: 150px;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    color: #dee2e6;
+}
+
+.wizard-template-info {
+    padding: 16px;
+}
+
+.wizard-template-name {
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: #2c3e50;
+}
+
+.wizard-template-description {
+    font-size: 14px;
+    color: #6c757d;
+}
+
+/* Step 3: Editor */
+.wizard-toolbar {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.toolbar-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.variable-tag {
+    display: inline-block;
+    background: #e3f2fd;
+    border: 1px solid #90caf9;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
+    color: #1565c0;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.variable-tag:hover {
+    background: #bbdefb;
+}
+
+.wizard-editor-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    height: 400px;
+}
+
+.wizard-editor-panel {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.wizard-editor-toolbar {
+    background: #f8f9fa;
+    padding: 8px 12px;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.toolbar-btn {
+    padding: 4px 8px;
+    border: 1px solid #dee2e6;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.toolbar-btn:hover {
+    background: #e9ecef;
+}
+
+.wizard-editor-content {
+    flex: 1;
+    overflow: hidden;
+}
+
+.wizard-visual-editor {
+    width: 100%;
+    height: 100%;
+    padding: 16px;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    line-height: 1.6;
+    overflow-y: auto;
+}
+
+.wizard-preview {
+    height: 100%;
+    overflow-y: auto;
+    padding: 16px;
+    background: #f8f9fa;
+}
+
+/* === WIZARD EMPFÄNGER-AUSWAHL === */
+.wizard-recipient-selector {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.wizard-recipient-stats {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.recipient-stat-card {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+    flex: 1;
+    transition: all 0.3s;
+}
+
+.recipient-stat-card.selected {
+    border-color: #667eea;
+    background: #f8f9ff;
+}
+
+.stat-number {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.wizard-recipient-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.wizard-recipient-list-container {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.wizard-recipient-search {
+    padding: 12px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.wizard-recipient-search input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.wizard-recipient-list {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+.wizard-recipient-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 4px;
+}
+
+.wizard-recipient-item:hover {
+    background: #f8f9fa;
+}
+
+.wizard-recipient-item.selected {
+    background: #e3f2fd;
+    border: 1px solid #90caf9;
+}
+
+.wizard-recipient-checkbox {
+    margin-right: 12px;
+    width: 16px;
+    height: 16px;
+}
+
+.wizard-recipient-info {
+    flex: 1;
+}
+
+.wizard-recipient-name {
+    font-weight: 500;
+    color: #2c3e50;
+    margin-bottom: 2px;
+}
+
+.wizard-recipient-email {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.wizard-recipient-pagination {
+    background: #f8f9fa;
+    padding: 8px 12px;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.wizard-selected-recipients {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 16px;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.wizard-selected-list {
+    font-size: 14px;
+}
+
+.wizard-selected-item {
+    padding: 4px 0;
+    color: #495057;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.wizard-selected-item:last-child {
+    border-bottom: none;
+}
+
+.wizard-recipient-summary {
+    margin-top: 24px;
+}
+
+/* Step 4: Attachments */
+.wizard-attachment-manager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.wizard-attachment-section h3 {
+    margin-bottom: 16px;
+    color: #2c3e50;
+}
+
+.wizard-attachment-list {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 16px;
+    min-height: 200px;
+    margin-bottom: 16px;
+}
+
+.wizard-attachment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+
+.wizard-attachment-item:last-child {
+    margin-bottom: 0;
+}
+
+.wizard-btn-small {
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.wizard-btn-small:hover {
+    background: #5a6fd8;
+}
+
+/* Step 5: Review */
+.wizard-review-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+}
+
+.wizard-summary {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.wizard-summary-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.wizard-summary-item:last-child {
+    border-bottom: none;
+}
+
+.wizard-mobile-preview-container {
+    display: flex;
+    justify-content: center;
+}
+
+.wizard-mobile-frame {
+    max-width: 300px;
+    border: 8px solid #333;
+    border-radius: 20px;
+    background: #333;
+    padding: 8px;
+}
+
+.wizard-mobile-content {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 14px;
+    line-height: 1.4;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.wizard-send-settings {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.wizard-tip {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.wizard-tip p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* Navigation */
+.wizard-navigation {
+    background: #f8f9fa;
+    padding: 20px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #e9ecef;
+}
+
+.wizard-nav-right {
+    display: flex;
+    gap: 12px;
+}
+
 /* === RESPONSIVE ATTACHMENT STYLES === */
 @media (max-width: 768px) {
     .attachment-drop-zone {
@@ -870,7 +1441,7 @@ small {
         gap: 15px !important;
     }
 
-    .wizard-container {
+    .wizard-container, .mail-wizard-container {
         width: 95%;
         max-height: 90vh;
     }
@@ -878,6 +1449,19 @@ small {
     .wizard-trigger {
         position: static;
         margin-top: 15px;
+    }
+    
+    .wizard-recipient-selector {
+        grid-template-columns: 1fr;
+    }
+    
+    .wizard-recipient-stats {
+        justify-content: center;
+    }
+    
+    .wizard-recipient-controls {
+        flex-direction: row;
+        flex-wrap: wrap;
     }
 }
 
@@ -903,14 +1487,32 @@ small {
         padding: 20px;
     }
 
-    .wizard-buttons {
+    .wizard-buttons, .wizard-navigation {
         padding: 15px 20px;
         flex-direction: column;
         gap: 10px;
     }
 
-    .wizard-buttons .btn {
+    .wizard-buttons .btn, .wizard-nav-right {
         width: 100%;
+    }
+    
+    .wizard-nav-right {
+        justify-content: space-between;
+    }
+    
+    .wizard-editor-container,
+    .wizard-attachment-manager,
+    .wizard-review-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .wizard-mail-types {
+        grid-template-columns: 1fr;
+    }
+    
+    .wizard-template-library {
+        grid-template-columns: 1fr;
     }
 }
 
