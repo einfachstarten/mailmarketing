@@ -1,13 +1,19 @@
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
+const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'db.sqlite');
 const AUTH_TOKEN = process.env.AUTH_TOKEN || 'secret-token';
+const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(__dirname, 'uploads');
+fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 app.use(express.json());
+app.use('/uploads', express.static(UPLOAD_DIR));
+app.use(express.static(path.join(__dirname, '..')));
 
 function authMiddleware(req, res, next) {
     const auth = req.headers['authorization'];
@@ -27,6 +33,17 @@ db.serialize(() => {
         status TEXT
     )`);
 });
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, UPLOAD_DIR);
+    },
+    filename: (req, file, cb) => {
+        const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        cb(null, unique + path.extname(file.originalname));
+    }
+});
+const upload = multer({ storage });
 
 app.get('/recipients', (req, res) => {
     db.all('SELECT id, name, email, status FROM recipients', (err, rows) => {
@@ -59,6 +76,14 @@ app.delete('/recipients/:id', authMiddleware, (req, res) => {
         res.json({ deleted: this.changes });
     });
     stmt.finalize();
+});
+
+app.post('/upload', authMiddleware, upload.single('file'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ success: false, error: 'No file uploaded' });
+    }
+    const url = `/uploads/${req.file.filename}`;
+    res.json({ success: true, data: { filename: req.file.filename, url } });
 });
 
 app.listen(PORT, () => {
