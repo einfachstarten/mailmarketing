@@ -8,10 +8,10 @@ window.Attachments = (function() {
 
     // ===== UPLOAD KONFIGURATION =====
     const UPLOAD_CONFIG = {
-        // URL zu deinem Upload-Script (KORRIGIERT)
-        uploadUrl: 'https://www.einfachstarten.jetzt/upload.php',
-        // API-Key (muss mit PHP Script übereinstimmen)
-        apiKey: 'benjaminundviggoheißenmeinesöhne'
+        uploadUrl: ServerConfig.get().baseUrl + '/upload',
+        get authHeader() {
+            return { 'Authorization': `Bearer ${ServerConfig.get().authToken}` };
+        }
     };
 
     // ===== ATTACHMENTS STATE =====
@@ -148,10 +148,10 @@ window.Attachments = (function() {
     async function uploadFileToServer(file) {
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('api_key', UPLOAD_CONFIG.apiKey);
 
         const response = await fetch(UPLOAD_CONFIG.uploadUrl, {
             method: 'POST',
+            headers: UPLOAD_CONFIG.authHeader,
             body: formData
         });
 
