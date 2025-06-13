@@ -31,8 +31,18 @@ Der Server liest folgende Umgebungsvariablen:
 
 ## Deployment auf Fly.io
 
-1. `flyctl launch` ausführen oder die bereitgestellte `fly.toml` verwenden.
-2. Beim ersten Start wird ein Volume für die SQLite-Datenbank angelegt (optional).
-3. Mit `fly deploy` wird das Docker-Image gebaut und auf Fly.io gestartet.
-4. Die URL der App (z. B. `https://mailmarketing-app.fly.dev`) kann anschließend im Frontend via `ServerConfig.set({ baseUrl: '<URL>' })` gesetzt werden.
+1. Installiere `flyctl` und melde dich an.
+2. Erstelle (falls noch nicht geschehen) eine App und ein Volume, z. B. mit
+   ```
+   flyctl apps create mailmarketing-app --machines
+   flyctl volumes create data --size 1 --region ams
+   ```
+3. Prüfe die Datei `fly.toml`. Darin sind Port und Umgebungsvariablen für das
+   Backend definiert. Bei Bedarf passe den `AUTH_TOKEN` an.
+4. Starte das Deployment mit
+   ```
+   flyctl deploy
+   ```
+5. Die URL der App (z.B. `https://mailmarketing-app.fly.dev`) kann anschließend
+   im Frontend via `ServerConfig.set({ baseUrl: '<URL>' })` gesetzt werden.
 

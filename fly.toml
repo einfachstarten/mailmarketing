@@ -1,7 +1,18 @@
 app = "mailmarketing-app"
+primary_region = "ams"
 
 [build]
   dockerfile = "Dockerfile"
+
+[env]
+  PORT = "3000"
+  AUTH_TOKEN = "changeme"
+  DB_PATH = "/data/db.sqlite"
+  UPLOAD_DIR = "/data/uploads"
+
+[[mounts]]
+  source = "data"
+  destination = "/data"
 
 [[services]]
   internal_port = 3000
