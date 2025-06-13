@@ -27,6 +27,15 @@ window.MailWizard = (function() {
     let recipientPage = 1;
     let recipientsPerPage = 10;
 
+    const STEP_NAMES = [
+        'Mail-Typ',
+        'Template',
+        'Editor',
+        'Empfänger',
+        'Attachments',
+        'Review'
+    ];
+
     // ===== TEMPLATE LIBRARY =====
     const TEMPLATE_LIBRARY = {
         newsletter: {
@@ -366,9 +375,24 @@ window.MailWizard = (function() {
         // Button Update
         const prevBtn = document.getElementById('wizardPrevBtn');
         const nextBtn = document.getElementById('wizardNextBtn');
-        
+
         if (prevBtn) prevBtn.disabled = currentStep === 1;
         if (nextBtn) nextBtn.textContent = currentStep === 6 ? '🚀 Mail erstellen' : 'Weiter →';
+
+        const breadcrumb = document.getElementById('wizardBreadcrumb');
+        if (breadcrumb) {
+            breadcrumb.textContent = `Schritt ${currentStep} von 6: ${STEP_NAMES[currentStep - 1]}`;
+        }
+
+        const backLink = document.getElementById('wizardBackLink');
+        if (backLink) {
+            if (currentStep > 1) {
+                backLink.classList.remove('hidden');
+                backLink.textContent = `← Zurück zu Schritt ${currentStep - 1}`;
+            } else {
+                backLink.classList.add('hidden');
+            }
+        }
     }
 
     /**
