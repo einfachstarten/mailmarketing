@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="login-container">
+        <h1>Login</h1>
+        <form id="loginForm">
+            <input type="email" id="loginEmail" placeholder="E-Mail" autocomplete="username" required>
+            <input type="password" id="loginPassword" placeholder="Passwort" autocomplete="current-password" required>
+            <button type="submit">Login</button>
+        </form>
+        <div id="loginError" class="error"></div>
+    </div>
+    <script src="js/server-config.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>

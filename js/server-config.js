@@ -1,6 +1,9 @@
 window.ServerConfig = (function() {
     const DEFAULT_CONFIG = {
-        baseUrl: 'http://localhost:3000',
+        // Falls im Frontend keine URL gesetzt wird, nutzen wir die aktuelle
+        // Herkunft des Browsers. Das funktioniert direkt nach dem Deployment
+        // auf Fly.io ohne weitere Anpassungen.
+        baseUrl: '',
         authToken: 'secret-token'
     };
 
