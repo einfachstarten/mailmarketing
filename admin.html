@@ -15,6 +15,17 @@
             </thead>
             <tbody></tbody>
         </table>
+        <h2>Neuen Benutzer anlegen</h2>
+        <form id="createUserForm">
+            <input type="email" id="newUserEmail" placeholder="E-Mail" required>
+            <input type="password" id="newUserPassword" placeholder="Passwort" required>
+            <select id="newUserRole">
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+            </select>
+            <button type="submit">Anlegen</button>
+        </form>
+        <div id="userMessage" class="success"></div>
         <div id="userError" class="error"></div>
     </div>
     <script src="js/server-config.js"></script>

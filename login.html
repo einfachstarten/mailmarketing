@@ -14,9 +14,16 @@
             <input type="password" id="loginPassword" placeholder="Passwort" required>
             <button type="submit">Login</button>
         </form>
+        <div id="loginSuccess" class="success"></div>
         <div id="loginError" class="error"></div>
     </div>
     <script src="js/server-config.js"></script>
     <script src="js/auth.js"></script>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('registered') === '1') {
+            document.getElementById('loginSuccess').textContent = 'Registrierung erfolgreich. Bitte einloggen.';
+        }
+    </script>
 </body>
 </html>

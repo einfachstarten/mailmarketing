@@ -170,6 +170,26 @@ app.get('/users', authMiddleware, adminOnly, (req, res) => {
     });
 });
 
+app.post('/users', authMiddleware, adminOnly, async (req, res) => {
+    const { email, password, role } = req.body;
+    if (!email || !password) {
+        return res.status(400).json({ error: 'Email and password required' });
+    }
+    try {
+        const hash = await bcrypt.hash(password, 10);
+        const stmt = db.prepare('INSERT INTO users (email, password_hash, role) VALUES (?, ?, ?)');
+        stmt.run(email, hash, role || 'user', function(err) {
+            if (err) {
+                return res.status(400).json({ error: 'User exists' });
+            }
+            res.json({ id: this.lastID, email, role: role || 'user' });
+        });
+        stmt.finalize();
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 app.delete('/users/:id', authMiddleware, adminOnly, (req, res) => {
     const { id } = req.params;
     const stmt = db.prepare('DELETE FROM users WHERE id = ?');
