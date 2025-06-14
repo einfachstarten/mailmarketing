@@ -30,8 +30,9 @@ Der Server liest folgende Umgebungsvariablen:
 - `POST /recipients` – Empfänger anlegen (Header `Authorization: Bearer <TOKEN>`)
 - `DELETE /recipients/:id` – Empfänger löschen (Header `Authorization: Bearer <TOKEN>`)
 - `POST /upload` – Datei hochladen (Header `Authorization: Bearer <TOKEN>`, Feldname `file`)
-- `POST /register` – neuen Benutzer anlegen
-- `POST /login` – Login, gibt ein JWT zurück
+- `POST /register` – neuen Benutzer anlegen (Felder: `username`, `password`)
+- `POST /login` – Login, gibt ein JWT zurück und startet eine Session
+- `POST /logout` – Session beenden
 - `GET /users` – Benutzerliste (erfordert Admin-Token)
 - `DELETE /users/:id` – Benutzer löschen (erfordert Admin-Token)
 
