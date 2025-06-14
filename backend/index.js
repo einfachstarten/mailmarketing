@@ -5,8 +5,13 @@ const path = require('path');
 const fs = require('fs');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const pino = require('pino');
+const pinoHttp = require('pino-http');
+
+const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
 const app = express();
+app.use(pinoHttp({ logger }));
 const PORT = process.env.PORT;
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'db.sqlite');
 const AUTH_TOKEN = process.env.AUTH_TOKEN || 'secret-token';
@@ -37,6 +42,13 @@ function authMiddleware(req, res, next) {
         }
     }
     return res.status(401).json({ error: 'Unauthorized' });
+}
+
+function adminOnly(req, res, next) {
+    if (req.user && req.user.role === 'admin') {
+        return next();
+    }
+    return res.status(403).json({ error: 'Forbidden' });
 }
 
 const db = new sqlite3.Database(DB_PATH);
@@ -149,6 +161,27 @@ app.post('/login', async (req, res) => {
     });
 });
 
+app.get('/users', authMiddleware, adminOnly, (req, res) => {
+    db.all('SELECT id, email, role FROM users', (err, rows) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json(rows);
+    });
+});
+
+app.delete('/users/:id', authMiddleware, adminOnly, (req, res) => {
+    const { id } = req.params;
+    const stmt = db.prepare('DELETE FROM users WHERE id = ?');
+    stmt.run(id, function(err) {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json({ deleted: this.changes });
+    });
+    stmt.finalize();
+});
+
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server listening on port ${PORT}`);
+    logger.info(`Server listening on port ${PORT}`);
 });
