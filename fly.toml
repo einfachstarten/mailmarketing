@@ -1,5 +1,29 @@
-app = "mailmarketing-app"
+app = "mailmarketing"
+primary_region = "iad"
 
 
 [build]
   dockerfile = "Dockerfile"
+
+[http_service]
+  internal_port       = 8080
+  auto_start_machines = true
+  auto_stop_machines  = true
+  min_machines_running = 0
+  processes = ["app"]
+
+  force_https = true
+  [[http_service.ports]]
+    handlers = ["http"]
+    port = 80
+
+  [[http_service.ports]]
+    handlers = ["tls", "http"]
+    port = 443
+
+  [[http_service.checks]]
+    method   = "get"
+    interval = "30s"
+    timeout  = "5s"
+    path     = "/recipients"
+    protocol = "http"
