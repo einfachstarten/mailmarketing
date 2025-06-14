@@ -7,6 +7,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const pino = require('pino');
 const pinoHttp = require('pino-http');
+const session = require('express-session');
 
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
@@ -20,8 +21,12 @@ const JWT_SECRET = process.env.JWT_SECRET || 'change-me';
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 app.use(express.json());
+app.use(session({
+    secret: JWT_SECRET,
+    resave: false,
+    saveUninitialized: false
+}));
 app.use('/uploads', express.static(UPLOAD_DIR));
-app.use(express.static(path.join(__dirname, '..')));
 
 function authMiddleware(req, res, next) {
     const auth = req.headers['authorization'];
@@ -49,6 +54,13 @@ function adminOnly(req, res, next) {
         return next();
     }
     return res.status(403).json({ error: 'Forbidden' });
+}
+
+function ensureLoggedIn(req, res, next) {
+    if (req.session && req.session.user) {
+        return next();
+    }
+    return res.redirect('/login.html');
 }
 
 const db = new sqlite3.Database(DB_PATH);
@@ -157,6 +169,7 @@ app.post('/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
         const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
+        req.session.user = { id: user.id, email: user.email, role: user.role };
         res.json({ token });
     });
 });
@@ -201,6 +214,16 @@ app.delete('/users/:id', authMiddleware, adminOnly, (req, res) => {
     });
     stmt.finalize();
 });
+
+app.get('/', ensureLoggedIn, (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'index.html'));
+});
+
+app.get('/index.html', ensureLoggedIn, (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'index.html'));
+});
+
+app.use(express.static(path.join(__dirname, '..')));
 
 app.listen(PORT, '0.0.0.0', () => {
     logger.info(`Server listening on port ${PORT}`);
