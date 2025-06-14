@@ -5,7 +5,7 @@ const path = require('path');
 const fs = require('fs');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'db.sqlite');
 const AUTH_TOKEN = process.env.AUTH_TOKEN || 'secret-token';
 const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(__dirname, 'uploads');

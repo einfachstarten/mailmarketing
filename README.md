@@ -17,7 +17,7 @@ Ein einfacher Express-Server speichert Empfänger und hochgeladene Dateien in ei
    ```
 
 Der Server liest folgende Umgebungsvariablen:
-- `PORT` – Port, auf dem der Server lauscht (Standard 3000)
+ - `PORT` – Port, auf dem der Server lauscht (wird durch die Umgebung vorgegeben, z. B. 8080 bei Fly.io)
 - `DB_PATH` – Pfad zur SQLite-Datei (Standard `backend/db.sqlite`)
 - `AUTH_TOKEN` – Bearer Token für geschützte Endpunkte
 - `UPLOAD_DIR` – Ablageort für hochgeladene Dateien (Standard `backend/uploads`)

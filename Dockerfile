@@ -5,5 +5,5 @@ COPY backend/package*.json ./backend/
 RUN cd backend && npm install --production
 COPY . .
 WORKDIR /app/backend
-ENV PORT=3000
+ENV PORT=8080
 CMD ["node", "index.js"]
