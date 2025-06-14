@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrierung</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="login-container">
+        <h1>Registrieren</h1>
+        <form id="registerForm">
+            <input type="email" id="regEmail" placeholder="E-Mail" required>
+            <input type="password" id="regPassword" placeholder="Passwort" required>
+            <button type="submit">Registrieren</button>
+        </form>
+        <div id="registerError" class="error"></div>
+    </div>
+    <script src="js/server-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        document.getElementById('registerForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            try {
+                const resp = await fetch(ServerConfig.get().baseUrl + '/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                if (!resp.ok) throw new Error('Failed');
+                window.location.href = 'login.html';
+            } catch (err) {
+                document.getElementById('registerError').textContent = 'Registrierung fehlgeschlagen';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -3,12 +3,15 @@ const sqlite3 = require('sqlite3').verbose();
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 const PORT = process.env.PORT;
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'db.sqlite');
 const AUTH_TOKEN = process.env.AUTH_TOKEN || 'secret-token';
 const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(__dirname, 'uploads');
+const JWT_SECRET = process.env.JWT_SECRET || 'change-me';
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 app.use(express.json());
@@ -17,10 +20,23 @@ app.use(express.static(path.join(__dirname, '..')));
 
 function authMiddleware(req, res, next) {
     const auth = req.headers['authorization'];
-    if (!auth || auth !== `Bearer ${AUTH_TOKEN}`) {
+    if (!auth) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
-    next();
+    if (auth === `Bearer ${AUTH_TOKEN}`) {
+        return next();
+    }
+    if (auth.startsWith('Bearer ')) {
+        const token = auth.slice(7);
+        try {
+            const payload = jwt.verify(token, JWT_SECRET);
+            req.user = payload;
+            return next();
+        } catch (err) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+    }
+    return res.status(401).json({ error: 'Unauthorized' });
 }
 
 const db = new sqlite3.Database(DB_PATH);
@@ -31,6 +47,12 @@ db.serialize(() => {
         name TEXT,
         email TEXT UNIQUE,
         status TEXT
+    )`);
+    db.run(`CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        email TEXT UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        role TEXT DEFAULT 'user'
     )`);
 });
 
@@ -84,6 +106,47 @@ app.post('/upload', authMiddleware, upload.single('file'), (req, res) => {
     }
     const url = `/uploads/${req.file.filename}`;
     res.json({ success: true, data: { filename: req.file.filename, url } });
+});
+
+app.post('/register', async (req, res) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+        return res.status(400).json({ error: 'Email and password required' });
+    }
+    try {
+        const hash = await bcrypt.hash(password, 10);
+        const stmt = db.prepare('INSERT INTO users (email, password_hash) VALUES (?, ?)');
+        stmt.run(email, hash, function(err) {
+            if (err) {
+                return res.status(400).json({ error: 'User exists' });
+            }
+            res.json({ id: this.lastID, email });
+        });
+        stmt.finalize();
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+        return res.status(400).json({ error: 'Email and password required' });
+    }
+    db.get('SELECT * FROM users WHERE email = ?', [email], async (err, user) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        if (!user) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+        const match = await bcrypt.compare(password, user.password_hash);
+        if (!match) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+        const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
+        res.json({ token });
+    });
 });
 
 app.listen(PORT, '0.0.0.0', () => {
