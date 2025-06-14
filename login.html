@@ -10,10 +10,11 @@
     <div class="login-container">
         <h1>Login</h1>
         <form id="loginForm">
-            <input type="text" id="loginUsername" placeholder="Benutzername" required>
-            <input type="password" id="loginPassword" placeholder="Passwort" required>
+            <input type="text" id="loginUsername" placeholder="Benutzername" autocomplete="username" required>
+            <input type="password" id="loginPassword" placeholder="Passwort" autocomplete="current-password" required>
             <button type="submit">Login</button>
         </form>
+        <p id="registerHint" class="info-box"><a href="register.html">Noch keinen Account? Jetzt registrieren</a></p>
         <div id="loginSuccess" class="success"></div>
         <div id="loginError" class="error"></div>
     </div>
