@@ -33,19 +33,54 @@ window.Admin = (function() {
                 headers: { 'Authorization': `Bearer ${ServerConfig.get().authToken}` }
             });
             if (resp.ok) {
+                document.getElementById('userMessage').textContent = 'Benutzer gelöscht';
                 loadUsers();
             } else {
                 throw new Error('Failed');
             }
         } catch (err) {
-            alert('Löschen fehlgeschlagen');
+            document.getElementById('userError').textContent = 'Löschen fehlgeschlagen';
             console.error('deleteUser', err);
         }
     }
 
-    return { loadUsers };
+    async function createUser(email, password, role) {
+        const msgEl = document.getElementById('userMessage');
+        const errEl = document.getElementById('userError');
+        msgEl.textContent = '';
+        errEl.textContent = '';
+        try {
+            const resp = await fetch(ServerConfig.get().baseUrl + '/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${ServerConfig.get().authToken}`
+                },
+                body: JSON.stringify({ email, password, role })
+            });
+            if (!resp.ok) {
+                const data = await resp.json().catch(() => ({}));
+                throw new Error(data.error || 'Failed');
+            }
+            msgEl.textContent = 'Benutzer angelegt';
+            document.getElementById('createUserForm').reset();
+            loadUsers();
+        } catch (err) {
+            errEl.textContent = err.message || 'Anlegen fehlgeschlagen';
+            console.error('createUser', err);
+        }
+    }
+
+    return { loadUsers, createUser };
 })();
 
 document.addEventListener('DOMContentLoaded', () => {
     Admin.loadUsers();
+    document.getElementById('createUserForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('newUserEmail').value;
+        const password = document.getElementById('newUserPassword').value;
+        const role = document.getElementById('newUserRole').value;
+        Admin.createUser ? Admin.createUser(email, password, role) : createUser(email, password, role);
+    });
 });

@@ -35,6 +35,39 @@ body {
     display: none !important;
 }
 
+/* === AUTH PAGES === */
+.login-container {
+    max-width: 360px;
+    margin: 80px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.login-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.login-container h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.error {
+    color: #e74c3c;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.success {
+    color: #27ae60;
+    margin-top: 10px;
+    text-align: center;
+}
+
 /* === HEADER === */
 .header {
     background: white;

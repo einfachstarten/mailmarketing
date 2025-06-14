@@ -14,6 +14,7 @@
             <input type="password" id="regPassword" placeholder="Passwort" required>
             <button type="submit">Registrieren</button>
         </form>
+        <div id="registerSuccess" class="success"></div>
         <div id="registerError" class="error"></div>
     </div>
     <script src="js/server-config.js"></script>
@@ -29,10 +30,16 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
-                if (!resp.ok) throw new Error('Failed');
-                window.location.href = 'login.html';
+                if (!resp.ok) {
+                    const data = await resp.json().catch(() => ({}));
+                    throw new Error(data.error || 'Failed');
+                }
+                document.getElementById('registerSuccess').textContent = 'Registrierung erfolgreich! Weiterleitung ...';
+                setTimeout(() => {
+                    window.location.href = 'login.html?registered=1';
+                }, 800);
             } catch (err) {
-                document.getElementById('registerError').textContent = 'Registrierung fehlgeschlagen';
+                document.getElementById('registerError').textContent = err.message || 'Registrierung fehlgeschlagen';
             }
         });
     </script>
