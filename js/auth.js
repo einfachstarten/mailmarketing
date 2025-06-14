@@ -6,16 +6,19 @@ window.Auth = (function() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })
             });
-            if (!resp.ok) throw new Error('Login failed');
-            const data = await resp.json();
+            const data = await resp.json().catch(() => ({}));
+            if (!resp.ok) {
+                throw new Error(data.error || 'Login fehlgeschlagen');
+            }
             if (data.token) {
                 ServerConfig.set({ authToken: data.token });
                 return true;
             }
+            throw new Error('Login fehlgeschlagen');
         } catch (err) {
             console.error('Login error:', err);
+            throw err;
         }
-        return false;
     }
 
     return { login };
@@ -25,10 +28,23 @@ document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const username = document.getElementById('loginUsername').value;
     const password = document.getElementById('loginPassword').value;
-    const ok = await Auth.login(username, password);
-    if (ok) {
-        window.location.href = 'index.html';
-    } else {
-        document.getElementById('loginError').textContent = 'Login fehlgeschlagen';
+
+    const successEl = document.getElementById('loginSuccess');
+    const errorEl = document.getElementById('loginError');
+    successEl.textContent = '';
+    errorEl.textContent = '';
+
+    try {
+        await Auth.login(username, password);
+        successEl.textContent = 'Login erfolgreich, Weiterleitung ...';
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 500);
+    } catch (err) {
+        let msg = err.message || 'Login fehlgeschlagen';
+        if (msg === 'Invalid credentials') {
+            msg = 'Benutzername oder Passwort falsch. <a href="register.html">Registrieren?</a>';
+        }
+        errorEl.innerHTML = msg;
     }
 });
