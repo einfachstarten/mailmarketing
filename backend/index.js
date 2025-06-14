@@ -62,12 +62,6 @@ function adminOnly(req, res, next) {
     return res.status(403).json({ error: 'Forbidden' });
 }
 
-function ensureLoggedIn(req, res, next) {
-    if (req.session && req.session.user) {
-        return next();
-    }
-    return res.redirect('/login.html');
-}
 
 const db = new sqlite3.Database(DB_PATH);
 
@@ -231,21 +225,12 @@ app.delete('/users/:id', authMiddleware, adminOnly, (req, res) => {
     stmt.finalize();
 });
 
-app.get('/', ensureLoggedIn, (req, res) => {
+app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'index.html'));
 });
 
-app.get('/index.html', ensureLoggedIn, (req, res) => {
+app.get('/index.html', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'index.html'));
-});
-
-app.use((req, res, next) => {
-    if (req.path.endsWith('.html') && !['/login.html', '/register.html'].includes(req.path)) {
-        if (!req.session || !req.session.user) {
-            return res.redirect('/login.html');
-        }
-    }
-    next();
 });
 
 app.use(express.static(path.join(__dirname, '..')));
