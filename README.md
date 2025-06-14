@@ -46,6 +46,8 @@ Der Server liest folgende Umgebungsvariablen:
    ```
    flyctl deploy
    ```
-5. Die URL der App (z.B. `https://mailmarketing.fly.dev`) kann anschließend
-   im Frontend via `ServerConfig.set({ baseUrl: '<URL>' })` gesetzt werden.
+5. Standardmäßig nutzen die Frontend-Skripte die aktuelle Herkunft (Origin)
+   des Browsers als Basis-URL. Falls du den Server von einer anderen Domain
+   aufrufst, kannst du die URL manuell mit
+   `ServerConfig.set({ baseUrl: '<URL>' })` anpassen.
 
