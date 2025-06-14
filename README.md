@@ -3,6 +3,7 @@
 ## Backend
 
 Ein einfacher Express-Server speichert Empfänger und hochgeladene Dateien in einer SQLite-Datenbank bzw. im Dateisystem. Das Frontend wird ebenfalls vom Server ausgeliefert.
+Die Anwendung nutzt [Pino](https://getpino.io) für strukturiertes JSON-Logging. Diese Logs lassen sich in der Grafana-Oberfläche von Fly.io komfortabel analysieren.
 
 ### Starten
 
@@ -31,6 +32,21 @@ Der Server liest folgende Umgebungsvariablen:
 - `POST /upload` – Datei hochladen (Header `Authorization: Bearer <TOKEN>`, Feldname `file`)
 - `POST /register` – neuen Benutzer anlegen
 - `POST /login` – Login, gibt ein JWT zurück
+- `GET /users` – Benutzerliste (erfordert Admin-Token)
+- `DELETE /users/:id` – Benutzer löschen (erfordert Admin-Token)
+
+Eine einfache Benutzerverwaltung befindet sich in `admin.html`.
+
+### Tests
+
+Im Ordner `backend` befindet sich ein einfaches Skript `test-auth.js`, das Registrierungs-
+und Login-Vorgänge gegen einen laufenden Server testet:
+
+```
+PORT=8080 node index.js &
+node test-auth.js
+```
+Das Skript legt einen Testnutzer an und prüft den Login.
 
 ## Deployment auf Fly.io
 
