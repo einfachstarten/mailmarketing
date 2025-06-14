@@ -21,6 +21,7 @@ Der Server liest folgende Umgebungsvariablen:
 - `DB_PATH` – Pfad zur SQLite-Datei (Standard `backend/db.sqlite`)
 - `AUTH_TOKEN` – Bearer Token für geschützte Endpunkte
 - `UPLOAD_DIR` – Ablageort für hochgeladene Dateien (Standard `backend/uploads`)
+- `JWT_SECRET` – Geheimschlüssel für die Signierung der JWTs
 
 ### API-Beispiele
 
@@ -28,6 +29,8 @@ Der Server liest folgende Umgebungsvariablen:
 - `POST /recipients` – Empfänger anlegen (Header `Authorization: Bearer <TOKEN>`)
 - `DELETE /recipients/:id` – Empfänger löschen (Header `Authorization: Bearer <TOKEN>`)
 - `POST /upload` – Datei hochladen (Header `Authorization: Bearer <TOKEN>`, Feldname `file`)
+- `POST /register` – neuen Benutzer anlegen
+- `POST /login` – Login, gibt ein JWT zurück
 
 ## Deployment auf Fly.io
 
