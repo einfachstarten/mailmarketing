@@ -11,13 +11,13 @@
         <h1>Benutzerverwaltung</h1>
         <table id="userTable">
             <thead>
-                <tr><th>ID</th><th>E-Mail</th><th>Rolle</th><th>Aktion</th></tr>
+                <tr><th>ID</th><th>Benutzername</th><th>Rolle</th><th>Aktion</th></tr>
             </thead>
             <tbody></tbody>
         </table>
         <h2>Neuen Benutzer anlegen</h2>
         <form id="createUserForm">
-            <input type="email" id="newUserEmail" placeholder="E-Mail" required>
+            <input type="text" id="newUserUsername" placeholder="Benutzername" required>
             <input type="password" id="newUserPassword" placeholder="Passwort" required>
             <select id="newUserRole">
                 <option value="user">User</option>

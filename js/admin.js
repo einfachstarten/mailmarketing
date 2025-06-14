@@ -10,7 +10,7 @@ window.Admin = (function() {
             tbody.innerHTML = '';
             users.forEach(u => {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td>${u.id}</td><td>${u.email}</td><td>${u.role}</td>`;
+                tr.innerHTML = `<td>${u.id}</td><td>${u.username}</td><td>${u.role}</td>`;
                 const delBtn = document.createElement('button');
                 delBtn.textContent = 'Löschen';
                 delBtn.addEventListener('click', () => deleteUser(u.id));
@@ -44,7 +44,7 @@ window.Admin = (function() {
         }
     }
 
-    async function createUser(email, password, role) {
+    async function createUser(username, password, role) {
         const msgEl = document.getElementById('userMessage');
         const errEl = document.getElementById('userError');
         msgEl.textContent = '';
@@ -56,7 +56,7 @@ window.Admin = (function() {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${ServerConfig.get().authToken}`
                 },
-                body: JSON.stringify({ email, password, role })
+                body: JSON.stringify({ username, password, role })
             });
             if (!resp.ok) {
                 const data = await resp.json().catch(() => ({}));
@@ -78,9 +78,9 @@ document.addEventListener('DOMContentLoaded', () => {
     Admin.loadUsers();
     document.getElementById('createUserForm')?.addEventListener('submit', (e) => {
         e.preventDefault();
-        const email = document.getElementById('newUserEmail').value;
+        const username = document.getElementById('newUserUsername').value;
         const password = document.getElementById('newUserPassword').value;
         const role = document.getElementById('newUserRole').value;
-        Admin.createUser ? Admin.createUser(email, password, role) : createUser(email, password, role);
+        Admin.createUser ? Admin.createUser(username, password, role) : createUser(username, password, role);
     });
 });

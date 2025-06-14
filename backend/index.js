@@ -18,13 +18,19 @@ const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'db.sqlite');
 const AUTH_TOKEN = process.env.AUTH_TOKEN || 'secret-token';
 const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(__dirname, 'uploads');
 const JWT_SECRET = process.env.JWT_SECRET || 'change-me';
+const SESSION_SECRET = process.env.SESSION_SECRET || require('crypto').randomBytes(32).toString('hex');
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 app.use(express.json());
 app.use(session({
-    secret: JWT_SECRET,
+    secret: SESSION_SECRET,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        secure: true, // only over HTTPS
+        maxAge: 60 * 60 * 1000
+    }
 }));
 app.use('/uploads', express.static(UPLOAD_DIR));
 
@@ -74,7 +80,7 @@ db.serialize(() => {
     )`);
     db.run(`CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        email TEXT UNIQUE NOT NULL,
+        username TEXT UNIQUE NOT NULL,
         password_hash TEXT NOT NULL,
         role TEXT DEFAULT 'user'
     )`);
@@ -133,18 +139,18 @@ app.post('/upload', authMiddleware, upload.single('file'), (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
-    const { email, password } = req.body;
-    if (!email || !password) {
-        return res.status(400).json({ error: 'Email and password required' });
+    const { username, password } = req.body;
+    if (!username || !password) {
+        return res.status(400).json({ error: 'Username and password required' });
     }
     try {
         const hash = await bcrypt.hash(password, 10);
-        const stmt = db.prepare('INSERT INTO users (email, password_hash) VALUES (?, ?)');
-        stmt.run(email, hash, function(err) {
+        const stmt = db.prepare('INSERT INTO users (username, password_hash) VALUES (?, ?)');
+        stmt.run(username, hash, function(err) {
             if (err) {
                 return res.status(400).json({ error: 'User exists' });
             }
-            res.json({ id: this.lastID, email });
+            res.json({ id: this.lastID, username });
         });
         stmt.finalize();
     } catch (err) {
@@ -153,11 +159,11 @@ app.post('/register', async (req, res) => {
 });
 
 app.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-    if (!email || !password) {
-        return res.status(400).json({ error: 'Email and password required' });
+    const { username, password } = req.body;
+    if (!username || !password) {
+        return res.status(400).json({ error: 'Username and password required' });
     }
-    db.get('SELECT * FROM users WHERE email = ?', [email], async (err, user) => {
+    db.get('SELECT * FROM users WHERE username = ?', [username], async (err, user) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -168,14 +174,24 @@ app.post('/login', async (req, res) => {
         if (!match) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
-        const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
-        req.session.user = { id: user.id, email: user.email, role: user.role };
+        const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
+        req.session.user = { id: user.id, username: user.username, role: user.role };
         res.json({ token });
     });
 });
 
+app.post('/logout', (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            return res.status(500).json({ error: 'Logout failed' });
+        }
+        res.clearCookie('connect.sid');
+        res.json({ success: true });
+    });
+});
+
 app.get('/users', authMiddleware, adminOnly, (req, res) => {
-    db.all('SELECT id, email, role FROM users', (err, rows) => {
+    db.all('SELECT id, username, role FROM users', (err, rows) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -184,18 +200,18 @@ app.get('/users', authMiddleware, adminOnly, (req, res) => {
 });
 
 app.post('/users', authMiddleware, adminOnly, async (req, res) => {
-    const { email, password, role } = req.body;
-    if (!email || !password) {
-        return res.status(400).json({ error: 'Email and password required' });
+    const { username, password, role } = req.body;
+    if (!username || !password) {
+        return res.status(400).json({ error: 'Username and password required' });
     }
     try {
         const hash = await bcrypt.hash(password, 10);
-        const stmt = db.prepare('INSERT INTO users (email, password_hash, role) VALUES (?, ?, ?)');
-        stmt.run(email, hash, role || 'user', function(err) {
+        const stmt = db.prepare('INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)');
+        stmt.run(username, hash, role || 'user', function(err) {
             if (err) {
                 return res.status(400).json({ error: 'User exists' });
             }
-            res.json({ id: this.lastID, email, role: role || 'user' });
+            res.json({ id: this.lastID, username, role: role || 'user' });
         });
         stmt.finalize();
     } catch (err) {
@@ -221,6 +237,15 @@ app.get('/', ensureLoggedIn, (req, res) => {
 
 app.get('/index.html', ensureLoggedIn, (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'index.html'));
+});
+
+app.use((req, res, next) => {
+    if (req.path.endsWith('.html') && !['/login.html', '/register.html'].includes(req.path)) {
+        if (!req.session || !req.session.user) {
+            return res.redirect('/login.html');
+        }
+    }
+    next();
 });
 
 app.use(express.static(path.join(__dirname, '..')));

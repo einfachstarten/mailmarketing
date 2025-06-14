@@ -1,10 +1,10 @@
 window.Auth = (function() {
-    async function login(email, password) {
+    async function login(username, password) {
         try {
             const resp = await fetch(ServerConfig.get().baseUrl + '/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify({ username, password })
             });
             if (!resp.ok) throw new Error('Login failed');
             const data = await resp.json();
@@ -23,9 +23,9 @@ window.Auth = (function() {
 
 document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = document.getElementById('loginEmail').value;
+    const username = document.getElementById('loginUsername').value;
     const password = document.getElementById('loginPassword').value;
-    const ok = await Auth.login(email, password);
+    const ok = await Auth.login(username, password);
     if (ok) {
         window.location.href = 'index.html';
     } else {
