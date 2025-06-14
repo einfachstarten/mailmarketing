@@ -1,6 +1,6 @@
 window.ServerConfig = (function() {
     const DEFAULT_CONFIG = {
-        baseUrl: 'http://localhost:3000',
+        baseUrl: window.location.origin,
         authToken: 'secret-token'
     };
 
