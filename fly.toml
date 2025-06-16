@@ -27,3 +27,7 @@ primary_region = "iad"
     timeout  = "5s"
     path     = "/recipients"
     protocol = "http"
+
+[mounts]
+  source="uploads_data"
+  destination="/data"
