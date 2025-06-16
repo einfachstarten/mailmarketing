@@ -23,6 +23,7 @@ Der Server liest folgende Umgebungsvariablen:
 - `AUTH_TOKEN` – Bearer Token für geschützte Endpunkte
 - `UPLOAD_DIR` – Ablageort für hochgeladene Dateien (Standard `backend/uploads`)
 - `JWT_SECRET` – Geheimschlüssel für die Signierung der JWTs
+- `UPLOAD_TTL_DAYS` – Wie lange Dateien aufbewahrt werden (Standard `14`)
 
 ### API-Beispiele
 
@@ -59,6 +60,10 @@ Das Skript legt einen Testnutzer an und prüft den Login.
 3. Prüfe die Datei `fly.toml`. Darin ist die HTTP‑Service-Konfiguration samt
    Healthcheck hinterlegt. Weitere Umgebungsvariablen lassen sich bei Bedarf
    über `fly secrets` setzen.
+   Für den Upload wird ein Volume benötigt:
+   ```
+   flyctl volumes create uploads_data --size 1
+   ```
 4. Starte das Deployment mit
    ```
    flyctl deploy

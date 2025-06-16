@@ -16,10 +16,43 @@ app.use(pinoHttp({ logger }));
 const PORT = process.env.PORT;
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'db.sqlite');
 const AUTH_TOKEN = process.env.AUTH_TOKEN || 'secret-token';
-const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(__dirname, 'uploads');
+const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join('/data', 'uploads');
+const UPLOAD_TTL_DAYS = parseInt(process.env.UPLOAD_TTL_DAYS || '14', 10);
 const JWT_SECRET = process.env.JWT_SECRET || 'change-me';
 const SESSION_SECRET = process.env.SESSION_SECRET || require('crypto').randomBytes(32).toString('hex');
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+
+function cleanupOldUploads() {
+    fs.readdir(UPLOAD_DIR, (err, files) => {
+        if (err) {
+            logger.error({ err }, 'Failed to read upload directory');
+            return;
+        }
+        const now = Date.now();
+        const cutoff = now - UPLOAD_TTL_DAYS * 24 * 60 * 60 * 1000;
+        files.forEach(file => {
+            const filePath = path.join(UPLOAD_DIR, file);
+            fs.stat(filePath, (err, stats) => {
+                if (err) {
+                    logger.error({ err, file: filePath }, 'Stat failed');
+                    return;
+                }
+                if (stats.mtimeMs < cutoff) {
+                    fs.unlink(filePath, err => {
+                        if (err) {
+                            logger.error({ err, file: filePath }, 'Failed to remove old upload');
+                        } else {
+                            logger.info({ file: filePath }, 'Removed expired upload');
+                        }
+                    });
+                }
+            });
+        });
+    });
+}
+
+cleanupOldUploads();
+setInterval(cleanupOldUploads, 24 * 60 * 60 * 1000);
 
 app.use(express.json());
 app.use(session({
