@@ -60,9 +60,11 @@ Das Skript legt einen Testnutzer an und prüft den Login.
 3. Prüfe die Datei `fly.toml`. Darin ist die HTTP‑Service-Konfiguration samt
    Healthcheck hinterlegt. Weitere Umgebungsvariablen lassen sich bei Bedarf
    über `fly secrets` setzen.
-   Für den Upload wird ein Volume benötigt:
+   Für den Upload wird ein Volume benötigt. Wird die App mit mehreren Machines
+   betrieben, muss pro Machine ein Volume vorhanden sein. Erstelle daher die
+   Volumes einmalig (z. B. in Region `iad`):
    ```
-   flyctl volumes create uploads_data --size 1
+   flyctl volumes create uploads_data --region iad --size 1 --count 2
    ```
 4. Starte das Deployment mit
    ```
