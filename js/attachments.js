@@ -264,7 +264,7 @@ window.Attachments = (function() {
             return;
         }
 
-        container.innerHTML = attachments.map(attachment => `
+        container.innerHTML = attachments.map((attachment, idx) => `
             <div class="attachment-item">
                 <div class="attachment-info">
                     <div class="attachment-icon">${getFileIcon(attachment.type)}</div>
@@ -274,6 +274,7 @@ window.Attachments = (function() {
                         <small style="color: #4a90e2;">📁 Hochgeladen</small>
                     </div>
                 </div>
+                <button class="btn btn-small" onclick="Attachments.insertAttachmentLink('${attachment.id}')" title="Link einfügen">🔗</button>
                 <button onclick="Attachments.removeAttachment('${attachment.id}')"
                         class="btn-remove" title="Attachment entfernen">✕</button>
             </div>
@@ -396,6 +397,29 @@ window.Attachments = (function() {
         return params;
     }
 
+    /**
+     * Fügt einen Platzhalter-Link für ein Attachment in den Editor ein
+     * @param {string} attachmentId - ID des Attachments
+     */
+    function insertAttachmentLink(attachmentId) {
+        if (!window.Templates || typeof Templates.insertTextAtCursor !== 'function') return;
+
+        const index = attachments.findIndex(att => att.id === attachmentId);
+        if (index === -1) return;
+
+        const n = index + 1;
+        const placeholder = `<a href="{{attachment${n}_url}}">{{attachment${n}_name}}</a>`;
+        Templates.insertTextAtCursor(placeholder);
+    }
+
+    /**
+     * Fügt die Variable für die gesamte Attachment-Liste ein
+     */
+    function insertAttachmentList() {
+        if (!window.Templates || typeof Templates.insertTextAtCursor !== 'function') return;
+        Templates.insertTextAtCursor('{{attachment_links}}');
+    }
+
     // ===== GETTERS =====
 
     function getAttachments() {
@@ -442,11 +466,13 @@ window.Attachments = (function() {
         // Display functions
         updateDisplay,
         displayAttachmentList,
-        
+
         // Email integration
         generateEmailAttachmentLinks,
         getEmailTemplateParams,
-        
+        insertAttachmentLink,
+        insertAttachmentList,
+
         // Getters
         getAttachments,
         getAttachmentCount,

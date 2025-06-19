@@ -887,6 +887,35 @@ window.Templates = (function() {
         }
     }
 
+    // ===== TEXT INSERTION =====
+
+    /**
+     * Fügt Text an der Cursor-Position des aktuell fokussierten Feldes ein
+     * @param {string} text - einzufügender Text
+     */
+    function insertTextAtCursor(text) {
+        const el = document.activeElement;
+
+        if (el && (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT')) {
+            const start = el.selectionStart || 0;
+            const end = el.selectionEnd || 0;
+            el.value = el.value.slice(0, start) + text + el.value.slice(end);
+            el.selectionStart = el.selectionEnd = start + text.length;
+            markAsChanged();
+            el.focus();
+        } else {
+            const htmlEditor = document.getElementById('htmlContent');
+            if (htmlEditor) {
+                const start = htmlEditor.selectionStart || 0;
+                const end = htmlEditor.selectionEnd || 0;
+                htmlEditor.value = htmlEditor.value.slice(0, start) + text + htmlEditor.value.slice(end);
+                htmlEditor.selectionStart = htmlEditor.selectionEnd = start + text.length;
+                markAsChanged();
+                htmlEditor.focus();
+            }
+        }
+    }
+
     // ===== PUBLIC API =====
     return {
         // Core functions
@@ -909,10 +938,11 @@ window.Templates = (function() {
         
         // Preview & personalization
         personalizeContent,
-        
+
         // Utilities
         markAsChanged,
         markAsSaved,
-        showApplyButton
+        showApplyButton,
+        insertTextAtCursor
     };
 })();
