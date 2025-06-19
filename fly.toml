@@ -28,8 +28,8 @@ primary_region = "iad"
     path     = "/recipients"
     protocol = "http"
 
-[mounts]
-  source="uploads_data"
-  destination="/data"
-  initial_size="1gb"
-  processes=["app"]
+[[mounts]]
+  source = "uploads_data"
+  destination = "/data"
+  initial_size = "1gb"
+  processes = ["app"]
