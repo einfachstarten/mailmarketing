@@ -382,10 +382,18 @@ window.Attachments = (function() {
      * @returns {Object} Template-Parameter
      */
     function getEmailTemplateParams() {
-        return {
+        const params = {
             attachment_links: generateEmailAttachmentLinks(),
             attachment_count: attachments.length
         };
+
+        attachments.forEach((att, idx) => {
+            const n = idx + 1;
+            params[`attachment${n}_url`] = att.url;
+            params[`attachment${n}_name`] = att.name;
+        });
+
+        return params;
     }
 
     // ===== GETTERS =====
