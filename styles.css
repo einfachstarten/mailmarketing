@@ -262,6 +262,14 @@ small {
     background: #c0392b;
 }
 
+.btn.unsaved {
+    background: #f39c12;
+}
+
+.btn.unsaved:hover {
+    background: #d35400;
+}
+
 .btn.btn-outline {
     background: transparent;
     border: 2px solid #4a90e2;

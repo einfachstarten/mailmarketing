@@ -868,7 +868,18 @@ window.Templates = (function() {
      * Aktualisiert Save-Button Status
      */
     function updateSaveButtonState() {
-        // TODO: Visual indicator für unsaved changes implementieren
+        const saveBtn = document.querySelector('[onclick="Templates.save()"]');
+        if (!saveBtn) return;
+
+        if (hasUnsavedChanges) {
+            saveBtn.classList.add('unsaved');
+            if (!saveBtn.textContent.includes('*')) {
+                saveBtn.textContent = '💾 Speichern*';
+            }
+        } else {
+            saveBtn.classList.remove('unsaved');
+            saveBtn.textContent = '💾 Speichern';
+        }
     }
 
     /**
@@ -877,7 +888,7 @@ window.Templates = (function() {
     function showSaveSuccess() {
         const saveBtn = document.querySelector('[onclick="Templates.save()"]');
         if (saveBtn) {
-            const originalText = saveBtn.textContent;
+            const originalText = '💾 Speichern';
             saveBtn.textContent = '✅ Gespeichert!';
             saveBtn.style.background = '#27ae60';
             setTimeout(() => {
