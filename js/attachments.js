@@ -112,14 +112,16 @@ window.Attachments = (function() {
 
                 // Datei zum Server uploaden
                 const uploadResult = await uploadFileToServer(file);
-                
+
+                const absoluteUrl = new URL(uploadResult.url, ServerConfig.get().baseUrl).href;
+
                 // Attachment zu Liste hinzufügen
                 const attachment = {
                     id: generateAttachmentId(),
                     name: file.name, // Original-Name für Anzeige
                     type: file.type,
                     size: file.size,
-                    url: uploadResult.url, // Server-URL mit korrektem Dateinamen
+                    url: absoluteUrl, // absoluter Pfad zum File
                     serverFilename: uploadResult.filename,
                     addedAt: new Date()
                 };
@@ -267,12 +269,12 @@ window.Attachments = (function() {
                 <div class="attachment-info">
                     <div class="attachment-icon">${getFileIcon(attachment.type)}</div>
                     <div class="attachment-details">
-                        <strong>${Utils.escapeHtml(attachment.name)}</strong><br>
+                        <strong><a href="${attachment.url}" target="_new">${Utils.escapeHtml(attachment.name)}</a></strong><br>
                         <small>${Utils.formatFileSize(attachment.size)} • ${getFileTypeLabel(attachment.type)}</small><br>
                         <small style="color: #4a90e2;">📁 Hochgeladen</small>
                     </div>
                 </div>
-                <button onclick="Attachments.removeAttachment('${attachment.id}')" 
+                <button onclick="Attachments.removeAttachment('${attachment.id}')"
                         class="btn-remove" title="Attachment entfernen">✕</button>
             </div>
         `).join('');
@@ -309,8 +311,8 @@ window.Attachments = (function() {
         container.innerHTML = `
             <div class="send-attachment-summary">
                 <strong>${attachments.length} Attachment(s) hochgeladen:</strong><br>
-                ${attachments.map(att => 
-                    `<small>📎 <a href="${att.url}" target="_blank">${Utils.escapeHtml(att.name)}</a> (${Utils.formatFileSize(att.size)})</small>`
+                ${attachments.map(att =>
+                    `<small>📎 <a href="${att.url}" target="_new">${Utils.escapeHtml(att.name)}</a> (${Utils.formatFileSize(att.size)})</small>`
                 ).join('<br>')}
             </div>
         `;

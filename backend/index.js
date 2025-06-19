@@ -161,7 +161,8 @@ app.post('/upload', authMiddleware, upload.single('file'), (req, res) => {
     if (!req.file) {
         return res.status(400).json({ success: false, error: 'No file uploaded' });
     }
-    const url = `/uploads/${req.file.filename}`;
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const url = `${baseUrl}/uploads/${req.file.filename}`;
     res.json({ success: true, data: { filename: req.file.filename, url } });
 });
 

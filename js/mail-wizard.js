@@ -802,7 +802,7 @@ window.MailWizard = (function() {
         
         container.innerHTML = wizardData.attachments.map(att => `
             <div class="wizard-attachment-item">
-                <span>${att.name} (${Utils.formatFileSize(att.size)})</span>
+                <span><a href="${att.url}" target="_new">${att.name}</a> (${Utils.formatFileSize(att.size)})</span>
                 <button onclick="MailWizard.insertAttachmentLink('${att.id}')" class="wizard-btn-small">
                     📝 In Text einfügen
                 </button>
@@ -818,7 +818,7 @@ window.MailWizard = (function() {
         if (!attachment) return;
         
         const editor = document.getElementById('wizardVisualEditor');
-        const linkHtml = `<p><a href="${attachment.url}" style="color: #667eea;">📎 ${attachment.name}</a> (${Utils.formatFileSize(attachment.size)})</p>`;
+        const linkHtml = `<p><a href="${attachment.url}" target="_new" style="color: #667eea;">📎 ${attachment.name}</a> (${Utils.formatFileSize(attachment.size)})</p>`;
         
         if (editor) {
             editor.innerHTML += linkHtml;
