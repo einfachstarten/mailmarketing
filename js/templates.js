@@ -701,10 +701,28 @@ window.Templates = (function() {
     function personalizeContent(content, recipient, subject = '') {
         if (!content) return '';
         
-        return content
+        let result = content
             .replace(/\{\{name\}\}/g, recipient.name || 'Unbekannt')
             .replace(/\{\{email\}\}/g, recipient.email || '')
             .replace(/\{\{subject\}\}/g, subject);
+
+        if (window.Attachments) {
+            const params = Attachments.getEmailTemplateParams();
+            result = result
+                .replace(/\{\{attachments\}\}/g, params.attachment_links)
+                .replace(/\{\{attachment_links\}\}/g, params.attachment_links)
+                .replace(/\{\{attachment_count\}\}/g, params.attachment_count);
+
+            for (let i = 1; i <= params.attachment_count; i++) {
+                const url = params[`attachment${i}_url`] || '';
+                const name = params[`attachment${i}_name`] || '';
+                result = result
+                    .replace(new RegExp(`\\{\\{attachment${i}_url\\}\\}`, 'g'), url)
+                    .replace(new RegExp(`\\{\\{attachment${i}_name\\}\\}`, 'g'), name);
+            }
+        }
+
+        return result;
     }
 
     // ===== TEMPLATE MANAGEMENT =====
