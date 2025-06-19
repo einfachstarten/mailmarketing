@@ -41,10 +41,13 @@ window.App = (function() {
             // 4. Lade gespeicherte Daten
             loadApplicationData();
 
-            // 5. Prüfe Setup-Status
+            // 5. Parameter aus URL auswerten
+            parseInitialParams();
+
+            // 6. Prüfe Setup-Status
             checkSetupStatus();
 
-            // 6. Zeige initiale UI
+            // 7. Zeige initiale UI
             showInitialInterface();
 
             isInitialized = true;
@@ -126,6 +129,33 @@ window.App = (function() {
         }
 
         // Weitere gespeicherte Daten laden...
+    }
+
+    /**
+     * Liest URL-Parameter aus und passt Initialzustand an
+     */
+    function parseInitialParams() {
+        const params = new URLSearchParams(window.location.search);
+        const tab = params.get('tab');
+        if (tab && isValidTab(tab)) {
+            currentTab = tab;
+        }
+
+        if (params.get('setup') === '1') {
+            setTimeout(() => {
+                if (modules.wizard && typeof modules.wizard.show === 'function') {
+                    modules.wizard.show();
+                }
+            }, 300);
+        }
+
+        if (params.get('mailwizard') === '1') {
+            setTimeout(() => {
+                if (modules.mailwizard && typeof modules.mailwizard.startWizard === 'function') {
+                    modules.mailwizard.startWizard();
+                }
+            }, 300);
+        }
     }
 
     /**

@@ -1,36 +1,39 @@
 // Grundlegende JavaScript-Funktionen für die Navigation
 function startSetup() {
-    alert('Setup Wizard wird geladen...\n(Integration mit bestehendem Setup-Code erforderlich)');
-    // Hier würde der bestehende Wizard.show() aufgerufen
+    window.location.href = 'app.html?setup=1';
 }
 
 function showTemplateEditor() {
-    alert('Template Editor wird geladen...\n(Integration mit Templates-Modul erforderlich)');
-    // Hier würde zur Template-Ansicht gewechselt
+    window.location.href = 'app.html?tab=template';
 }
 
 function showMailWizard() {
-    alert('Mail Wizard wird geladen...\n(Integration mit MailWizard-Modul erforderlich)');
-    // Hier würde der MailWizard geöffnet
+    window.location.href = 'app.html?mailwizard=1';
 }
 
 function showRecipients() {
-    alert('Empfänger-Verwaltung wird geladen...\n(Integration mit Recipients-Modul erforderlich)');
-    // Hier würde zur Empfänger-Verwaltung gewechselt
+    window.location.href = 'app.html?tab=recipients';
 }
 
 function showHistory() {
-    alert('Verlauf wird geladen...\n(Integration mit History-Modul erforderlich)');
-    // Hier würde der Versand-Verlauf angezeigt
+    window.location.href = 'app.html?tab=send';
 }
 
 // Setup-Status prüfen (würde normalerweise aus localStorage gelesen)
 function checkSetupStatus() {
     const setupStatus = document.getElementById('setupStatus');
     
-    // Beispiel: Setup als konfiguriert anzeigen
-    // In der echten App würde hier der tatsächliche Status geprüft
-    const isConfigured = localStorage.getItem('emailjs_configured') === 'true';
+    // Konfiguration aus LocalStorage lesen
+    const cfgRaw = localStorage.getItem('emailConfig');
+    let isConfigured = false;
+    if (cfgRaw) {
+        try {
+            const cfg = JSON.parse(cfgRaw);
+            isConfigured = cfg && cfg.setupCompleted && cfg.serviceId && cfg.templateId && cfg.userId && cfg.fromName;
+        } catch (e) {
+            console.warn('Unable to parse emailConfig from storage');
+        }
+    }
     
     if (isConfigured) {
         setupStatus.className = 'setup-status configured';
