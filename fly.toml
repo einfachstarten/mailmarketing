@@ -31,3 +31,5 @@ primary_region = "iad"
 [mounts]
   source="uploads_data"
   destination="/data"
+  initial_size="1gb"
+  processes=["app"]
