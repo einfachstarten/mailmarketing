@@ -89,13 +89,89 @@
         <div class="wizard-modal">
             <div class="wizard-header">
                 <h2>E-Mail Marketing Setup</h2>
+                <div class="wizard-progress">
+                    <div id="step1-indicator" class="wizard-step-circle active">1</div>
+                    <div class="step-line"></div>
+                    <div id="step2-indicator" class="wizard-step-circle">2</div>
+                    <div class="step-line"></div>
+                    <div id="step3-indicator" class="wizard-step-circle">3</div>
+                </div>
                 <span class="wizard-close" onclick="window.Wizard?.hide()">&times;</span>
             </div>
             <div class="wizard-content">
-                <!-- Wizard-Inhalt wird durch wizard.js gefüllt -->
-                <div id="wizardStepContent">
-                    <p>Setup wird geladen...</p>
+                <!-- Schritt 1: EmailJS Konfiguration -->
+                <div id="wizard-step-1" class="wizard-step active">
+                    <div class="step-intro">
+                        <h3>📧 EmailJS Konfiguration</h3>
+                        <p>Verbinde dein EmailJS-Account für den E-Mail-Versand</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="wizard-serviceId">Service ID *</label>
+                        <input type="text" id="wizard-serviceId" placeholder="service_xxxxxxxxx" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="wizard-templateId">Template ID *</label>
+                        <input type="text" id="wizard-templateId" placeholder="template_xxxxxxxxx" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="wizard-userId">Public Key *</label>
+                        <input type="text" id="wizard-userId" placeholder="Dein Public Key" class="form-control" required>
+                    </div>
                 </div>
+
+                <!-- Schritt 2: Absender-Informationen -->
+                <div id="wizard-step-2" class="wizard-step">
+                    <div class="step-intro">
+                        <h3>👤 Absender-Informationen</h3>
+                        <p>Konfiguriere deine E-Mail-Absender-Details</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="wizard-fromName">Dein Name *</label>
+                        <input type="text" id="wizard-fromName" placeholder="Max Mustermann" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="wizard-testEmail">Test-E-Mail-Adresse *</label>
+                        <input type="email" id="wizard-testEmail" placeholder="test@example.com" class="form-control" required>
+                    </div>
+                </div>
+
+                <!-- Schritt 3: Test & Abschluss -->
+                <div id="wizard-step-3" class="wizard-step">
+                    <div class="step-intro">
+                        <h3>🧪 Test & Abschluss</h3>
+                        <p>Teste deine Konfiguration mit einer Test-E-Mail</p>
+                    </div>
+
+                    <div id="testEmailSection">
+                        <button type="button" id="testEmailBtn" class="btn btn-primary btn-block" onclick="window.Wizard?.sendTestEmail()">
+                            📤 Test-E-Mail senden
+                        </button>
+                        <div id="testSpinner" class="spinner hidden"></div>
+                        <div id="testResult"></div>
+                    </div>
+
+                    <div id="setupComplete" class="success-box hidden">
+                        <h4>🎉 Setup erfolgreich!</h4>
+                        <p>Dein E-Mail Marketing Tool ist einsatzbereit.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="wizard-buttons">
+                <button type="button" id="prevBtn" class="btn btn-secondary" onclick="window.Wizard?.previousStep()" disabled>
+                    ← Zurück
+                </button>
+                <button type="button" id="nextBtn" class="btn btn-primary" onclick="window.Wizard?.nextStep()">
+                    Weiter →
+                </button>
+                <button type="button" id="finishBtn" class="btn btn-success hidden" onclick="window.Wizard?.finishSetup()">
+                    Setup abschließen
+                </button>
             </div>
         </div>
     </div>
