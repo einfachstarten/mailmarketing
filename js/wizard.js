@@ -270,7 +270,7 @@ window.Wizard = (function() {
         // EmailJS initialisieren für Tests
         try {
             if (window.emailjs) {
-                emailjs.init(userId);
+                window.emailjs.init(userId);
             }
             return true;
         } catch (error) {
@@ -341,7 +341,7 @@ window.Wizard = (function() {
             console.log('Sending test email...', { to: testEmail, from: fromName });
 
             // E-Mail senden
-            const response = await emailjs.send(serviceId, templateId, templateParams);
+            const response = await window.emailjs.send(serviceId, templateId, templateParams);
             
             if (response.status === 200) {
                 showTestSuccess();
