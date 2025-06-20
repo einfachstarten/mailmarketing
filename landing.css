@@ -122,12 +122,14 @@ body {
     background: #fef3c7;
     border-color: #f59e0b;
     color: #92400e;
+    border-left: 4px solid #f39c12;
 }
 
 .setup-status.configured {
     background: #d1fae5;
     border-color: #10b981;
     color: #065f46;
+    border-left: 4px solid #27ae60;
 }
 
 .status-icon {
@@ -146,6 +148,12 @@ body {
 .status-desc {
     font-size: 0.9rem;
     opacity: 0.8;
+}
+
+.status-details {
+    font-size: 0.85em;
+    color: #666;
+    margin-top: 5px;
 }
 
 /* Action Buttons */
