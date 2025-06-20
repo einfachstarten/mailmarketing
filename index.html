@@ -84,7 +84,66 @@
         </p>
     </footer>
 
+    <!-- Setup Wizard Modal (vor </body>) -->
+    <div id="setupWizard" class="wizard-overlay hidden">
+        <div class="wizard-modal">
+            <div class="wizard-header">
+                <h2>E-Mail Marketing Setup</h2>
+                <span class="wizard-close" onclick="window.Wizard?.hide()">&times;</span>
+            </div>
+            <div class="wizard-content">
+                <!-- Wizard-Inhalt wird durch wizard.js gefüllt -->
+                <div id="wizardStepContent">
+                    <p>Setup wird geladen...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mail Wizard Modal -->
+    <div id="mailWizardModal" class="wizard-overlay hidden">
+        <div class="wizard-modal large">
+            <div class="wizard-header">
+                <h2>Neue E-Mail-Kampagne</h2>
+                <span class="wizard-close" onclick="window.MailWizard?.hideWizardModal()">&times;</span>
+            </div>
+            <div class="wizard-content">
+                <!-- Mail Wizard-Inhalt wird durch mail-wizard.js gefüllt -->
+                <div id="mailWizardStepContent">
+                    <p>Mail Wizard wird geladen...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bestehende Landing-Page Includes -->
     <script src="js/landing.js"></script>
+
+    <!-- Neue Module hinzufügen: -->
+
+    <!-- Core Utilities (als erstes laden) -->
+    <script src="js/utils.js"></script>
+
+    <!-- Configuration Management -->
+    <script src="js/config.js"></script>
+
+    <!-- Setup Wizard -->
+    <script src="js/wizard.js"></script>
+
+    <!-- Mail Wizard -->
+    <script src="js/mail-wizard.js"></script>
+
+    <!-- Main Application Controller -->
+    <script src="js/app.js"></script>
+
+    <!-- Additional Modules (falls vorhanden) -->
+    <script src="js/templates.js"></script>
+    <script src="js/recipients.js"></script>
+    <script src="js/sender.js"></script>
+    <script src="js/attachments.js"></script>
+
+    <!-- External Dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/emailjs/4.4.1/email.min.js"></script>
     </body>
 </html>
 
