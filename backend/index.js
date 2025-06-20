@@ -25,7 +25,16 @@ fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 let VERSION = 'dev';
 try {
-    VERSION = execSync('git rev-parse --short HEAD').toString().trim();
+    const pkg = require('./package.json');
+    const commit = execSync('git rev-parse --short HEAD').toString().trim();
+    let dirty = '';
+    try {
+        if (execSync('git status --porcelain').toString().trim()) {
+            dirty = '-dirty';
+        }
+    } catch {}
+    const date = new Date().toISOString().split('T')[0];
+    VERSION = `${pkg.version} (${commit}${dirty}, ${date})`;
 } catch (e) {
     logger.warn({ err: e }, 'Failed to determine git version');
 }
