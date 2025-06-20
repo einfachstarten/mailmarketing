@@ -8,6 +8,7 @@ const jwt = require('jsonwebtoken');
 const pino = require('pino');
 const pinoHttp = require('pino-http');
 const session = require('express-session');
+const { execSync } = require('child_process');
 
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
@@ -21,6 +22,13 @@ const UPLOAD_TTL_DAYS = parseInt(process.env.UPLOAD_TTL_DAYS || '14', 10);
 const JWT_SECRET = process.env.JWT_SECRET || 'change-me';
 const SESSION_SECRET = process.env.SESSION_SECRET || require('crypto').randomBytes(32).toString('hex');
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+
+let VERSION = 'dev';
+try {
+    VERSION = execSync('git rev-parse --short HEAD').toString().trim();
+} catch (e) {
+    logger.warn({ err: e }, 'Failed to determine git version');
+}
 
 function cleanupOldUploads() {
     fs.readdir(UPLOAD_DIR, (err, files) => {
@@ -265,6 +273,10 @@ app.get('/', (req, res) => {
 
 app.get('/index.html', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'index.html'));
+});
+
+app.get('/version.txt', (req, res) => {
+    res.type('text/plain').send(VERSION);
 });
 
 app.use(express.static(path.join(__dirname, '..')));
