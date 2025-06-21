@@ -93,7 +93,6 @@ function showRecipients() {
         } else {
             // Fallback: Navigation
             console.log('App module not found, using fallback navigation');
-            window.location.href = '/app.html#recipients';
         }
     } catch (error) {
         console.error('Error opening recipients:', error);
@@ -115,7 +114,6 @@ function showHistory() {
         } else {
             // Fallback: Navigation
             console.log('App module not found, using fallback navigation');
-            window.location.href = '/app.html#history';
         }
     } catch (error) {
         console.error('Error opening history:', error);
