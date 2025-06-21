@@ -20,7 +20,7 @@ window.Config = (function() {
         userId: '',
         fromName: '',
         setupCompleted: false,
-        version: '1.0'
+        version: '2.0'
     };
 
     const DEFAULT_SETTINGS = {
@@ -337,7 +337,7 @@ window.Config = (function() {
     function createBackup() {
         try {
             return {
-                version: '1.0',
+                version: '2.0',
                 timestamp: new Date().toISOString(),
                 created: Utils.formatDate(new Date()),
                 emailConfig: currentConfig,

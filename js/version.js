@@ -1,5 +1,5 @@
 // Auto-generated version file
-window.APP_VERSION = {"version":"1.0.490248","fullVersion":"1.0.490248 (2025-06-21 07:17:28)","buildDate":"2025-06-21 07:17:28","buildNumber":"490248","timestamp":1750490248};
+window.APP_VERSION = {"version":"2.0.507756","fullVersion":"2.0.507756 (2025-06-21 12:09:16)","buildDate":"2025-06-21 12:09:16","buildNumber":"507756","timestamp":1750507756};
 
 function displayVersion() {
     const versionElements = document.querySelectorAll('.app-version');
