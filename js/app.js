@@ -594,15 +594,7 @@ ${error.stack}
 
 // ===== AUTO-INITIALIZATION =====
 // App automatisch initialisieren wenn DOM ready
+// Initialisierung erst nach kompletter DOM-Ladung
 document.addEventListener('DOMContentLoaded', () => {
     App.init();
 });
-
-// Fallback für bereits geladenes DOM
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        App.init();
-    });
-} else {
-    App.init();
-}
