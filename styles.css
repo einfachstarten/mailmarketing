@@ -317,10 +317,11 @@ small {
 
 /* Container for editor and preview */
 .template-editor-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 20px !important;
     margin-top: 15px;
+    min-height: 500px;
 }
 
 /* === EDITORS === */
@@ -332,14 +333,19 @@ small {
     resize: vertical;
 }
 
+#simpleEditor,
+#htmlEditor {
+    min-height: 500px;
+}
+
 .preview {
+    min-height: 500px;
+    max-height: 500px;
+    overflow-y: auto;
     border: 2px solid #e0e6ed;
     border-radius: 6px;
     padding: 20px;
     background: white;
-    min-height: 400px;
-    max-height: 500px;
-    overflow-y: auto;
 }
 
 #templateFields {
@@ -1510,7 +1516,8 @@ small {
     }
 
     .template-editor-container {
-        grid-template-columns: 1fr !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 15px;
     }
     
     .recipient-input {
