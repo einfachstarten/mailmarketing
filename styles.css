@@ -126,6 +126,10 @@ body {
     flex-wrap: wrap;
 }
 
+.tab-container {
+    margin-top: 20px;
+}
+
 .tab {
     padding: 12px 24px;
     background: white;

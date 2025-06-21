@@ -15,9 +15,20 @@
             </a>
         </header>
 
-        <!-- Main Application Card -->
-        <main class="main-card">
-            <div class="card-content">
+        <!-- Tab Navigation -->
+        <nav class="tabs">
+            <button class="tab active" onclick="App.showTab('dashboard')">Dashboard</button>
+            <button class="tab" onclick="App.showTab('templates')">Templates</button>
+            <button class="tab" onclick="App.showTab('recipients')">Empfänger</button>
+            <button class="tab" onclick="App.showTab('mailwizard')">Mail Wizard</button>
+            <button class="tab" onclick="App.showTab('history')">Verlauf</button>
+        </nav>
+
+        <div class="tab-container">
+            <div id="dashboard" class="tab-content active">
+                <!-- Main Application Card -->
+                <main class="main-card">
+                    <div class="card-content">
                 <!-- Setup Status (wird durch JS aktualisiert) -->
                 <div id="setupStatus" class="setup-status needs-setup">
                     <div class="status-icon">⚙️</div>
@@ -75,6 +86,42 @@
             </div>
         </main>
     </div>
+
+            <!-- Templates Tab -->
+            <div id="templates" class="tab-content">
+                <main class="main-card">
+                    <h2>Templates</h2>
+                    <p>Template-Editor kommt hier hin.</p>
+                </main>
+            </div>
+
+            <!-- Recipients Tab -->
+            <div id="recipients" class="tab-content">
+                <main class="main-card">
+                    <h2>Empfänger</h2>
+                    <div id="recipientsList"></div>
+                </main>
+            </div>
+
+            <!-- Mail Wizard Tab -->
+            <div id="mailwizard" class="tab-content">
+                <main class="main-card">
+                    <h2>Mail Wizard</h2>
+                    <p>Kampagnen-Assistent startet hier.</p>
+                </main>
+            </div>
+
+            <!-- History Tab -->
+            <div id="history" class="tab-content">
+                <main class="main-card">
+                    <h2>Verlauf</h2>
+                    <div id="historyList"></div>
+                </main>
+            </div>
+
+        </div> <!-- end tab-container -->
+
+    </div> <!-- end container -->
 
     <!-- Footer mit Version -->
     <footer class="app-footer">
