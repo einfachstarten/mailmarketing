@@ -194,16 +194,16 @@ window.App = (function() {
             });
 
             // Aktiven Tab setzen
-            const activeTabButton = event?.target || 
+            const activeTabButton = event?.target ||
                 document.querySelector(`[onclick*="${tabName}"]`);
-            
-            if (activeTabButton) {
+
+            if (activeTabButton && activeTabButton.classList) {
                 activeTabButton.classList.add('active');
             }
 
             // Tab-Content anzeigen
             const tabContent = document.getElementById(tabName);
-            if (tabContent) {
+            if (tabContent && tabContent.classList) {
                 tabContent.classList.add('active');
             }
 
