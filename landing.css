@@ -654,3 +654,128 @@ body {
         gap: 5px;
     }
 }
+/* Mail Wizard Step Content Styling */
+.wizard-mail-types {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.wizard-mail-type-card {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+    background: white;
+}
+
+.wizard-mail-type-card:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.wizard-mail-type-card.selected {
+    border-color: #667eea;
+    background: #f8f9ff;
+}
+
+.mail-type-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    display: block;
+}
+
+.wizard-mail-type-card h3 {
+    margin: 0 0 8px 0;
+    color: #2c3e50;
+    font-size: 18px;
+}
+
+.wizard-mail-type-card p {
+    color: #6c757d;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.wizard-mail-type-card ul {
+    text-align: left;
+    font-size: 14px;
+    color: #6c757d;
+    margin: 0;
+    padding-left: 20px;
+    list-style-type: disc;
+}
+
+.wizard-mail-type-card li {
+    margin-bottom: 4px;
+}
+
+.step-title {
+    font-size: 24px;
+    margin-bottom: 8px;
+    color: #2c3e50;
+}
+
+.step-subtitle {
+    color: #7f8c8d;
+    margin-bottom: 32px;
+    font-size: 16px;
+}
+
+.step-intro {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.wizard-template-library {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.wizard-template-card {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: white;
+}
+
+.wizard-template-card:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+}
+
+.wizard-template-card.selected {
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+}
+
+.wizard-template-preview {
+    height: 150px;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    color: #dee2e6;
+}
+
+.wizard-template-info {
+    padding: 16px;
+}
+
+.wizard-template-name {
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: #2c3e50;
+}
+
+.wizard-template-description {
+    font-size: 14px;
+    color: #6c757d;
+}
