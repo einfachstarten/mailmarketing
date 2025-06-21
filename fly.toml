@@ -3,7 +3,13 @@ primary_region = "iad"
 
 
 [build]
-  dockerfile = "Dockerfile"
+  builder = "paketobuildpacks/builder:base"
+
+[build.args]
+  NODE_VERSION = "18"
+
+[[build.env]]
+  NODE_ENV = "production"
 
 [http_service]
   internal_port       = 8080
