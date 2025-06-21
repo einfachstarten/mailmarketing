@@ -6,3 +6,7 @@ backend/db.sqlite
 backend/uploads/
 # MacOS DS_Store
 .DS_Store
+
+# Version files (werden automatisch generiert)
+version.txt
+version.json

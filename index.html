@@ -76,13 +76,23 @@
         </main>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <p>
-            <strong>pigeon.run</strong> - Open Source E-Mail Marketing Tool<br>
-            <small>Läuft vollständig in deinem Browser • Keine Daten verlassen dein System • Version <span id="version">lade...</span></small>
-        </p>
+    <!-- Footer mit Version -->
+    <footer class="app-footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <span class="footer-brand">🐦 pigeon.run</span>
+                <span class="footer-desc">Self-Hosted Email Marketing</span>
+            </div>
+            <div class="footer-right">
+                <span class="version-info">
+                    Version: <span class="app-version version-short">loading...</span>
+                </span>
+            </div>
+        </div>
     </footer>
+
+    <!-- Version Script (lade als erstes) -->
+    <script src="js/version.js"></script>
 
     <!-- Setup Wizard Modal (vor </body>) -->
     <div id="setupWizard" class="wizard-overlay hidden">
@@ -433,7 +443,6 @@
     <script src="js/recipients.js"></script>
     <script src="js/sender.js"></script>
     <script src="js/attachments.js"></script>
-    <script src="js/version.js"></script>
 
     <!-- External Dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
