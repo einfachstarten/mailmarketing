@@ -90,8 +90,47 @@
             <!-- Templates Tab -->
             <div id="templates" class="tab-content">
                 <main class="main-card">
-                    <h2>Templates</h2>
-                    <p>Template-Editor kommt hier hin.</p>
+                    <h2>Template Editor</h2>
+
+                    <div class="template-controls">
+                        <div>
+                            <label for="templateName">Name *</label>
+                            <input type="text" id="templateName" placeholder="Vorlagenname">
+                        </div>
+                        <div>
+                            <label for="subject">Betreff</label>
+                            <input type="text" id="subject" placeholder="E-Mail Betreff">
+                        </div>
+                        <div>
+                            <label for="savedTemplates">Gespeicherte Vorlagen</label>
+                            <select id="savedTemplates">
+                                <option value="">Vorlage wählen...</option>
+                            </select>
+                        </div>
+                        <div class="editor-actions">
+                            <button class="btn btn-primary" onclick="Templates.save()">💾 Speichern</button>
+                            <button class="btn btn-secondary" onclick="Templates.loadSelected()">📂 Laden</button>
+                            <button class="btn btn-secondary" onclick="Templates.deleteTemplate()">🗑️ Löschen</button>
+                        </div>
+                    </div>
+
+                    <div class="editor-tabs">
+                        <button id="simpleEditorTab" class="btn btn-secondary active" onclick="Templates.switchMode('simple')">Simple Editor</button>
+                        <button id="htmlEditorTab" class="btn btn-secondary" onclick="Templates.switchMode('html')">HTML Editor</button>
+                        <button id="applyBtn" class="btn btn-success" style="display: none;" onclick="Templates.applyChanges()">✅ Änderungen übernehmen</button>
+                    </div>
+
+                    <div class="template-editor-container">
+                        <div id="simpleEditor">
+                            <div id="templateFields"></div>
+                        </div>
+                        <div id="htmlEditor" style="display: none;">
+                            <textarea id="htmlContent" class="editor"></textarea>
+                        </div>
+                        <div id="preview" class="preview" style="grid-column: span 2;"></div>
+                    </div>
+
+                    <div id="templateStatus"></div>
                 </main>
             </div>
 

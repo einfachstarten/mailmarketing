@@ -315,6 +315,14 @@ small {
     margin-top: 10px;
 }
 
+/* Container for editor and preview */
+.template-editor-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 15px;
+}
+
 /* === EDITORS === */
 .editor {
     min-height: 400px;
@@ -1484,6 +1492,10 @@ small {
     .template-controls {
         grid-template-columns: 1fr !important;
         gap: 10px !important;
+    }
+
+    .template-editor-container {
+        grid-template-columns: 1fr !important;
     }
     
     .recipient-input {
