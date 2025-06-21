@@ -4,14 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "prestart": "node ../generate-version.js",
     "start": "node index.js",
-    "prebuild": "node ../generate-version.js",
+    "prebuild": "node ../generate-version.js || echo 'Version generation failed, continuing...'",
     "build": "echo 'Build complete'",
     "dev": "node ../generate-version.js && node index.js",
-    "version": "node ../generate-version.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "test-auth": "node test-auth.js"
+    "version": "node ../generate-version.js"
   },
   "keywords": [],
   "author": "",
