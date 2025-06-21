@@ -146,15 +146,29 @@ window.Recipients = (function() {
     function loadCSV() {
         const fileInput = document.getElementById('csvFile');
         const file = fileInput?.files?.[0];
-        
+
         if (!file) {
             console.warn('No file selected for CSV import');
             return;
         }
 
+        processCSVFile(file);
+
+        // File Input zurücksetzen
+        const dropInput = document.getElementById('csvFileInput');
+        if (fileInput) fileInput.value = '';
+        if (dropInput) dropInput.value = '';
+    }
+
+    /**
+     * Verarbeitet eine übergebene CSV-Datei
+     * @param {File} file - CSV-Datei
+     */
+    function processCSVFile(file) {
+        if (!file) return;
+
         console.log(`Loading CSV file: ${file.name} (${Utils.formatFileSize(file.size)})`);
-        
-        // PapaParse für robustes CSV-Parsing
+
         if (typeof Papa === 'undefined') {
             Utils.showStatus('recipientStatus', 'CSV-Parser nicht verfügbar', 'error');
             return;
@@ -167,7 +181,7 @@ window.Recipients = (function() {
             delimiter: ',',
             quotes: true,
             delimitersToGuess: [',', '\t', '|', ';'],
-            dynamicTyping: false, // Alles als String
+            dynamicTyping: false,
             error: handleCSVParseError
         });
     }
@@ -211,7 +225,9 @@ window.Recipients = (function() {
         
         // File Input zurücksetzen
         const fileInput = document.getElementById('csvFile');
+        const dropInput = document.getElementById('csvFileInput');
         if (fileInput) fileInput.value = '';
+        if (dropInput) dropInput.value = '';
     }
 
     /**
@@ -483,6 +499,26 @@ window.Recipients = (function() {
         console.log('All recipients cleared');
     }
 
+    /**
+     * Exportiert aktuelle Empfänger als CSV-Datei
+     */
+    function exportCSV() {
+        if (recipients.length === 0) {
+            Utils.showStatus('recipientStatus', 'Keine Empfänger vorhanden', 'info');
+            return;
+        }
+
+        const lines = recipients.map(r => {
+            const name = r.name ? `"${r.name.replace(/"/g, '""')}"` : '';
+            const email = r.email;
+            return name ? `${name},${email}` : email;
+        });
+        const csvContent = lines.join('\n');
+        const filename = `recipients-${Utils.getTimestampForFilename()}.csv`;
+        Utils.downloadFile(csvContent, filename, 'text/csv');
+        Utils.showStatus('recipientStatus', 'CSV exportiert', 'success');
+    }
+
     // ===== UTILITY FUNCTIONS =====
 
     /**
@@ -552,17 +588,13 @@ window.Recipients = (function() {
         }
 
         container.innerHTML = recipients.map((recipient, index) => `
-            <div class="recipient">
-                <div>
-                    <strong>${Utils.escapeHtml(recipient.name)}</strong><br>
-                    <small style="color: #7f8c8d;">${Utils.escapeHtml(recipient.email)}</small>
+            <div class="recipient-item">
+                <div class="recipient-info">
+                    <div class="recipient-name">${Utils.escapeHtml(recipient.name)}</div>
+                    <div class="recipient-email">${Utils.escapeHtml(recipient.email)}</div>
                 </div>
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span class="status ${recipient.status}">${getStatusText(recipient.status)}</span>
-                    <button onclick="Recipients.removeRecipient(${index})" 
-                            style="background: #e74c3c; color: white; border: none; border-radius: 3px; padding: 4px 8px; cursor: pointer; font-size: 12px;"
-                            title="Empfänger entfernen">✕</button>
-                </div>
+                <span class="recipient-status status ${recipient.status}">${getStatusText(recipient.status)}</span>
+                <button class="recipient-remove" onclick="Recipients.removeRecipient(${index})">✕</button>
             </div>
         `).join('');
     }
@@ -717,12 +749,14 @@ window.Recipients = (function() {
         
         // Import functions
         loadCSV,
+        processCSVFile,
         addManual,
         loadTestData,
         
         // Management functions
         removeRecipient,
         clear,
+        exportCSV,
         updateRecipientStatus,
         resetAllStatus,
         
