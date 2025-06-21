@@ -17,10 +17,8 @@ function startSetup() {
             window.Wizard.show();
         } else {
             console.error('Wizard module not found');
-            // Fallback: Zur Setup-Seite navigieren
-            if (confirm('Setup-Wizard lädt... Zur Setup-Seite wechseln?')) {
-                window.location.href = '/setup.html';
-            }
+            // Temporärer Fallback bis Tab-System verfügbar ist
+            alert('Setup-Wizard wird geladen...');
         }
     } catch (error) {
         console.error('Error starting setup:', error);
@@ -45,10 +43,8 @@ function showTemplateEditor() {
         }
     } catch (error) {
         console.error('Error opening template editor:', error);
-        // Weitere Fallback-Option
-        if (confirm('Template Editor laden? (Neue Seite)')) {
-            window.location.href = '/templates.html';
-        }
+        // Temporärer Fallback bis Tab-System verfügbar ist
+        alert('Template Editor wird geladen...');
     }
 }
 
@@ -101,10 +97,8 @@ function showRecipients() {
         }
     } catch (error) {
         console.error('Error opening recipients:', error);
-        // Weitere Fallback-Option
-        if (confirm('Empfänger-Verwaltung laden? (Neue Seite)')) {
-            window.location.href = '/recipients.html';
-        }
+        // Temporärer Fallback bis Tab-System verfügbar ist
+        alert('Empfänger-Verwaltung wird geladen...');
     }
 }
 
@@ -125,10 +119,8 @@ function showHistory() {
         }
     } catch (error) {
         console.error('Error opening history:', error);
-        // Weitere Fallback-Option
-        if (confirm('Verlauf laden? (Neue Seite)')) {
-            window.location.href = '/history.html';
-        }
+        // Temporärer Fallback bis Tab-System verfügbar ist
+        alert('Verlauf wird geladen...');
     }
 }
 
