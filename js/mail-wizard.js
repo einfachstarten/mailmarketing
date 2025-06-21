@@ -305,8 +305,105 @@ window.MailWizard = (function() {
         const modal = document.getElementById('mailWizardModal');
         if (modal) {
             modal.classList.remove('hidden');
+            generateWizardHTML();
             updateWizardStep();
         }
+    }
+
+    /**
+     * Generiert komplettes Wizard-HTML dynamisch
+     */
+    function generateWizardHTML() {
+        generateProgressIndicators();
+        generateWizardSteps();
+        generateWizardButtons();
+    }
+
+    /**
+     * Generiert Progress-Indikatoren
+     */
+    function generateProgressIndicators() {
+        const container = document.getElementById('wizardProgressContainer');
+        if (!container) return;
+
+        const progressHTML = Array.from({length: 6}, (_, i) => {
+            const stepNum = i + 1;
+            const isActive = stepNum === currentStep;
+            const isCompleted = stepNum < currentStep;
+
+            let classes = 'wizard-step-circle';
+            if (isActive) classes += ' active';
+            if (isCompleted) classes += ' completed';
+
+            return `\n            <div class="${classes}">${stepNum}</div>\n            ${stepNum < 6 ? '<div class="step-line"></div>' : ''}\n        `;
+        }).join('');
+
+        container.innerHTML = progressHTML;
+    }
+
+    /**
+     * Generiert alle Wizard-Schritte
+     */
+    function generateWizardSteps() {
+        const container = document.getElementById('wizardContentContainer');
+        if (!container) return;
+
+        container.innerHTML = `\n        ${generateStep1()}\n        ${generateStep2()}\n        ${generateStep3()}\n        ${generateStep4()}\n        ${generateStep5()}\n        ${generateStep6()}\n    `;
+    }
+
+    /**
+     * Generiert Schritt 1: Mail-Typ
+     */
+    function generateStep1() {
+        return `\n        <div id="mail-wizard-step-1" class="wizard-step-content active">\n            <div class="step-intro">\n                <h3 class="step-title">📧 Mail-Typ wählen</h3>\n                <p class="step-subtitle">Welche Art von E-Mail möchtest du versenden?</p>\n            </div>\n            \n            <div class="wizard-mail-types">\n                <div class="wizard-mail-type-card" onclick="MailWizard.selectMailType('newsletter')">\n                    <div class="mail-type-icon">📰</div>\n                    <h3>Newsletter</h3>\n                    <p>Regelmäßige Updates und News</p>\n                    <ul>\n                        <li>Professionelle Templates</li>\n                        <li>Mehrere Sections</li>\n                        <li>Call-to-Action Buttons</li>\n                    </ul>\n                </div>\n                \n                <div class="wizard-mail-type-card" onclick="MailWizard.selectMailType('announcement')">\n                    <div class="mail-type-icon">📢</div>\n                    <h3>Ankündigung</h3>\n                    <p>Wichtige Neuigkeiten mitteilen</p>\n                    <ul>\n                        <li>Aufmerksamkeitsstarkes Design</li>\n                        <li>Klare Botschaft</li>\n                        <li>Sofortige Wirkung</li>\n                    </ul>\n                </div>\n                \n                <div class="wizard-mail-type-card" onclick="MailWizard.selectMailType('custom')">\n                    <div class="mail-type-icon">🎨</div>\n                    <h3>Individuell</h3>\n                    <p>Komplett frei gestaltbar</p>\n                    <ul>\n                        <li>Blank Template</li>\n                        <li>Volle Kontrolle</li>\n                        <li>Eigenes Design</li>\n                    </ul>\n                </div>\n            </div>\n        </div>\n    `;
+    }
+
+    /**
+     * Generiert Schritt 2: Template
+     */
+    function generateStep2() {
+        return `\n        <div id="mail-wizard-step-2" class="wizard-step-content">\n            <div class="step-intro">\n                <h3 class="step-title">🎨 Template auswählen</h3>\n                <p class="step-subtitle">Template für <span id="selected-mail-type">deine E-Mail</span> wählen</p>\n            </div>\n            \n            <div id="wizardTemplateLibrary" class="wizard-template-library">\n                <!-- Templates werden dynamisch geladen -->\n            </div>\n        </div>\n    `;
+    }
+
+    /**
+     * Generiert Schritt 3: Editor
+     */
+    function generateStep3() {
+        return `\n        <div id="mail-wizard-step-3" class="wizard-step-content">\n            <div class="step-intro">\n                <h3 class="step-title">✏️ Inhalt bearbeiten</h3>\n                <p class="step-subtitle">Betreff und E-Mail-Inhalt anpassen</p>\n            </div>\n            \n            <div class="wizard-editor-container">\n                <div class="form-group">\n                    <label for="wizardSubject">Betreff *</label>\n                    <input type="text" id="wizardSubject" class="form-control" placeholder="E-Mail Betreff eingeben...">\n                    <small class="form-hint">Verwende {{name}} für Personalisierung</small>\n                </div>\n                \n                <div class="wizard-editor-toolbar">\n                    <button type="button" onclick="MailWizard.formatText('bold')" title="Fett">\n                        <strong>B</strong>\n                    </button>\n                    <button type="button" onclick="MailWizard.formatText('italic')" title="Kursiv">\n                        <em>I</em>\n                    </button>\n                    <button type="button" onclick="MailWizard.insertVariable('{{name}}')" title="Name einfügen">\n                        {{name}}\n                    </button>\n                </div>\n                \n                <div class="form-group">\n                    <label for="wizardVisualEditor">E-Mail Inhalt</label>\n                    <div id="wizardVisualEditor" class="wizard-visual-editor" contenteditable="true">\n                        <!-- Inhalt wird dynamisch geladen -->\n                    </div>\n                </div>\n                \n                <div class="wizard-preview">\n                    <h4>Live Vorschau:</h4>\n                    <div id="wizardEmailPreview" class="email-preview">\n                        <!-- Vorschau wird dynamisch generiert -->\n                    </div>\n                </div>\n            </div>\n        </div>\n    `;
+    }
+
+    /**
+     * Generiert Schritt 4: Empfänger
+     */
+    function generateStep4() {
+        return `\n        <div id="mail-wizard-step-4" class="wizard-step-content">\n            <div class="step-intro">\n                <h3 class="step-title">👥 Empfänger auswählen</h3>\n                <p class="step-subtitle">Wer soll diese E-Mail erhalten?</p>\n            </div>\n            \n            <div class="wizard-recipient-controls">\n                <input type="text" id="recipientSearch" placeholder="Empfänger suchen..." class="form-control">\n                <div class="recipient-actions">\n                    <button type="button" onclick="MailWizard.selectAllRecipients()">Alle auswählen</button>\n                    <button type="button" onclick="MailWizard.deselectAllRecipients()">Alle abwählen</button>\n                </div>\n            </div>\n            \n            <div id="wizardRecipientList" class="wizard-recipient-list">\n                <p>Keine Empfänger verfügbar. <a href="#" onclick="alert('Empfänger-Verwaltung öffnen')">Empfänger hinzufügen</a></p>\n            </div>\n            \n            <div class="wizard-recipient-stats">\n                <div class="recipient-stat-card">\n                    <div class="stat-number" id="selectedRecipientCount">0</div>\n                    <div class="stat-label">Ausgewählt</div>\n                </div>\n                <div class="recipient-stat-card">\n                    <div class="stat-number" id="totalRecipientCount">0</div>\n                    <div class="stat-label">Gesamt</div>\n                </div>\n            </div>\n        </div>\n    `;
+    }
+
+    /**
+     * Generiert Schritt 5: Anhänge
+     */
+    function generateStep5() {
+        return `\n        <div id="mail-wizard-step-5" class="wizard-step-content">\n            <div class="step-intro">\n                <h3 class="step-title">📎 Anhänge (Optional)</h3>\n                <p class="step-subtitle">Dateien zu deiner E-Mail hinzufügen</p>\n            </div>\n            \n            <div class="attachment-upload">\n                <div id="attachmentDropZone" class="attachment-drop-zone">\n                    <p>📁 Dateien hier ablegen oder klicken zum Auswählen</p>\n                    <input type="file" id="attachmentFileInput" multiple hidden>\n                </div>\n            </div>\n            \n            <div id="attachmentList" class="attachment-list">\n                <!-- Anhänge werden hier angezeigt -->\n            </div>\n        </div>\n    `;
+    }
+
+    /**
+     * Generiert Schritt 6: Review
+     */
+    function generateStep6() {
+        return `\n        <div id="mail-wizard-step-6" class="wizard-step-content">\n            <div class="step-intro">\n                <h3 class="step-title">✅ Überprüfung & Versand</h3>\n                <p class="step-subtitle">Letzte Kontrolle vor dem Versand</p>\n            </div>\n            \n            <div class="wizard-review-container">\n                <div class="wizard-summary">\n                    <h4>Kampagnen-Zusammenfassung:</h4>\n                    <div id="wizardSummary">\n                        <div class="wizard-summary-item">\n                            <strong>Mail-Typ:</strong> <span id="summary-mailtype">Nicht ausgewählt</span>\n                        </div>\n                        <div class="wizard-summary-item">\n                            <strong>Template:</strong> <span id="summary-template">Nicht ausgewählt</span>\n                        </div>\n                        <div class="wizard-summary-item">\n                            <strong>Betreff:</strong> <span id="summary-subject">Nicht gesetzt</span>\n                        </div>\n                        <div class="wizard-summary-item">\n                            <strong>Empfänger:</strong> <span id="summary-recipients">0 ausgewählt</span>\n                        </div>\n                    </div>\n                </div>\n                \n                <div class="wizard-mobile-preview">\n                    <h4>Mobil-Vorschau:</h4>\n                    <div id="wizardMobilePreview" class="mobile-preview-container">\n                        <p>Vorschau wird nach Template-Auswahl angezeigt</p>\n                    </div>\n                </div>\n                \n                <div class="wizard-send-options">\n                    <div class="form-group">\n                        <label>\n                            <input type="checkbox" id="sendTestEmail"> \n                            Zuerst Test-E-Mail an mich senden\n                        </label>\n                    </div>\n                    \n                    <div class="form-group">\n                        <label for="sendSpeed">Versand-Geschwindigkeit:</label>\n                        <select id="sendSpeed" class="form-control">\n                            <option value="500">Sehr schnell (0.5s)</option>\n                            <option value="1000" selected>Normal (1s)</option>\n                            <option value="2000">Langsam (2s)</option>\n                            <option value="5000">Sehr langsam (5s)</option>\n                        </select>\n                    </div>\n                </div>\n            </div>\n        </div>\n    `;
+    }
+
+    /**
+     * Generiert Wizard-Buttons
+     */
+    function generateWizardButtons() {
+        const container = document.getElementById('wizardButtonsContainer');
+        if (!container) return;
+
+        const isFirstStep = currentStep === 1;
+        const isLastStep = currentStep === 6;
+
+        container.innerHTML = `\n        <button type="button" id="wizardPrevBtn" class="btn btn-secondary" \n                onclick="MailWizard.previousStep()" ${isFirstStep ? 'disabled' : ''}>\n            ← Zurück\n        </button>\n        \n        <button type="button" id="wizardNextBtn" class="btn btn-primary" \n                onclick="MailWizard.nextStep()" ${isLastStep ? 'style="display:none"' : ''}>\n            Weiter →\n        </button>\n        \n        <button type="button" id="wizardFinishBtn" class="btn btn-success" \n                onclick="MailWizard.finishWizard()" ${!isLastStep ? 'style="display:none"' : ''}>\n            🚀 Kampagne starten\n        </button>\n    `;
     }
 
     /**
@@ -352,70 +449,93 @@ window.MailWizard = (function() {
      * Aktualisiert Wizard-Anzeige
      */
     function updateWizardStep() {
+        console.log('Updating wizard step to:', currentStep);
+
         // Progress Update
-        document.querySelectorAll('.wizard-step-circle').forEach((circle, index) => {
-            circle.classList.remove('active', 'completed');
-            if (index + 1 < currentStep) {
-                circle.classList.add('completed');
-            } else if (index + 1 === currentStep) {
-                circle.classList.add('active');
-            }
-        });
+        generateProgressIndicators();
 
         // Content Update
         document.querySelectorAll('.wizard-step-content').forEach(content => {
             content.classList.remove('active');
         });
-        
+
         const currentContent = document.getElementById(`mail-wizard-step-${currentStep}`);
         if (currentContent) {
             currentContent.classList.add('active');
+        } else {
+            console.error('Step content not found:', `mail-wizard-step-${currentStep}`);
         }
 
         // Button Update
-        const prevBtn = document.getElementById('wizardPrevBtn');
-        const nextBtn = document.getElementById('wizardNextBtn');
+        generateWizardButtons();
 
-        if (prevBtn) prevBtn.disabled = currentStep === 1;
-        if (nextBtn) nextBtn.textContent = currentStep === 6 ? '🚀 Mail erstellen' : 'Weiter →';
-
-        const breadcrumb = document.getElementById('wizardBreadcrumb');
-        if (breadcrumb) {
-            breadcrumb.textContent = `Schritt ${currentStep} von 6: ${STEP_NAMES[currentStep - 1]}`;
-        }
-
-        const backLink = document.getElementById('wizardBackLink');
-        if (backLink) {
-            if (currentStep > 1) {
-                backLink.classList.remove('hidden');
-                backLink.textContent = `← Zurück zu Schritt ${currentStep - 1}`;
-            } else {
-                backLink.classList.add('hidden');
-            }
-        }
+        // Step-spezifische Aktionen
+        handleStepEnter(currentStep);
     }
 
     /**
      * Behandelt Step-Enter-Events
      */
     function handleStepEnter(step) {
-        switch (step) {
+        switch(step) {
+            case 1:
+                // Mail-Typ Schritt - nichts spezielles
+                break;
             case 2:
+                // Template Schritt - Template-Bibliothek laden
                 loadTemplateLibrary();
                 break;
             case 3:
+                // Editor Schritt - Editor initialisieren
                 initializeEditor();
                 break;
             case 4:
-                loadRecipientSelector();
+                // Empfänger Schritt - Empfänger laden
+                loadRecipients();
                 break;
             case 5:
-                loadAttachmentManager();
+                // Anhänge Schritt - Drop-Zone initialisieren
+                initializeAttachments();
                 break;
             case 6:
-                prepareReviewStep();
+                // Review Schritt - Zusammenfassung aktualisieren
+                updateReviewSummary();
                 break;
         }
+    }
+
+    /**
+     * Lädt Empfänger-Liste
+     */
+    function loadRecipients() {
+        const list = document.getElementById('wizardRecipientList');
+        if (list) {
+            list.innerHTML = '<p>Empfänger-System wird implementiert...</p>';
+        }
+    }
+
+    /**
+     * Initialisiert Anhänge-System
+     */
+    function initializeAttachments() {
+        console.log('Initializing attachments...');
+    }
+
+    /**
+     * Aktualisiert Review-Zusammenfassung
+     */
+    function updateReviewSummary() {
+        const elements = {
+            'summary-mailtype': getMailTypeLabel(wizardData.mailType) || 'Nicht ausgewählt',
+            'summary-template': getTemplateLabel(wizardData.template) || 'Nicht ausgewählt',
+            'summary-subject': wizardData.subject || 'Nicht gesetzt',
+            'summary-recipients': `${wizardData.selectedRecipients.length} ausgewählt`
+        };
+
+        Object.entries(elements).forEach(([id, text]) => {
+            const element = document.getElementById(id);
+            if (element) element.textContent = text;
+        });
     }
 
     // ===== STEP VALIDATION =====
