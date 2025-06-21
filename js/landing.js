@@ -58,28 +58,25 @@ function showTemplateEditor() {
  */
 function showMailWizard() {
     try {
-        // Prüfe Setup-Status
+        // Erweiterte Setup-Prüfung
         const isConfigured = localStorage.getItem('emailjs_configured') === 'true';
-        
-        if (!isConfigured) {
+        const serviceId = localStorage.getItem('emailjs_service_id');
+
+        if (!isConfigured || !serviceId) {
             if (confirm('Setup noch nicht abgeschlossen. Jetzt konfigurieren?')) {
                 startSetup();
                 return;
+            } else {
+                return; // Abbruch
             }
         }
-        
+
         // Mail Wizard starten
         if (window.MailWizard && typeof window.MailWizard.startWizard === 'function') {
             console.log('Starting mail wizard...');
             window.MailWizard.startWizard();
-        } else if (window.App && typeof window.App.showTab === 'function') {
-            // Fallback: Zur Mail-Tab wechseln
-            console.log('MailWizard module not found, switching to mail tab');
-            window.App.showTab('mail');
         } else {
-            // Letzter Fallback: Navigation
-            console.log('Using fallback navigation to mail page');
-            window.location.href = '/app.html#mail';
+            alert('Mail Wizard wird geladen...');
         }
     } catch (error) {
         console.error('Error starting mail wizard:', error);

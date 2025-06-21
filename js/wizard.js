@@ -492,6 +492,11 @@ window.Wizard = (function() {
         const success = Config.saveConfig(config);
         
         if (success) {
+            // WICHTIG: Setup-Status für Landing Page setzen
+            localStorage.setItem('emailjs_configured', 'true');
+            localStorage.setItem('emailjs_service_id', config.serviceId);
+            localStorage.setItem('fromName', config.fromName);
+            
             // Hauptkonfiguration auch aktualisieren
             updateMainConfigUI(config);
             console.log('Wizard config saved successfully');
@@ -525,19 +530,16 @@ window.Wizard = (function() {
      */
     function finishSetup() {
         try {
+            // Sicherstellen, dass Config gespeichert ist
+            saveWizardConfig();
+            
             // Wizard verstecken
             hide();
             
-            // Setup-Prompt verstecken
-            Utils.toggleElement('setupPrompt', false);
-            
-            // Hauptanwendung initialisieren
-            if (window.App && typeof App.checkSetupStatus === 'function') {
-                // App über Setup-Abschluss informieren
+            // Landing Page über Setup-Abschluss informieren
+            if (window.checkSetupStatus) {
                 setTimeout(() => {
-                    if (Config) {
-                        Config.updateConfigUI();
-                    }
+                    window.checkSetupStatus();
                 }, 100);
             }
             
