@@ -8,7 +8,8 @@ window.App = (function() {
 
     // ===== APPLICATION STATE =====
     let isInitialized = false;
-    let currentTab = 'template';
+    // Default-Tab beim Start (muss zu index.html passen)
+    let currentTab = 'dashboard';
     let modules = {};
 
     // ===== INITIALIZATION =====
@@ -115,7 +116,7 @@ window.App = (function() {
      */
     function loadApplicationData() {
         // Letzten Tab wiederherstellen
-        const savedTab = Utils.loadFromStorage('currentTab', 'template');
+        const savedTab = Utils.loadFromStorage('currentTab', 'dashboard');
         if (isValidTab(savedTab)) {
             currentTab = savedTab;
         }
@@ -227,10 +228,14 @@ window.App = (function() {
      */
     function handleTabSwitch(tabName) {
         switch (tabName) {
-            case 'send':
-                // Empfänger-Liste für Versenden-Tab aktualisieren
-                if (modules.sender && typeof modules.sender.updateRecipientsList === 'function') {
-                    modules.sender.updateRecipientsList();
+            case 'dashboard':
+                // Dashboard benötigt keine speziellen Aktionen
+                break;
+
+            case 'templates':
+                // Template-Preview aktualisieren
+                if (modules.templates && typeof modules.templates.updatePreview === 'function') {
+                    Utils.safeCall(modules.templates.updatePreview, 'Tab switch template preview');
                 }
                 break;
 
@@ -241,18 +246,12 @@ window.App = (function() {
                 }
                 break;
 
-            case 'template':
-                // Template-Preview aktualisieren
-                if (modules.templates && typeof modules.templates.updatePreview === 'function') {
-                    Utils.safeCall(modules.templates.updatePreview, 'Tab switch template preview');
-                }
+            case 'mailwizard':
+                // Beim Wechsel zum Mail Wizard sind keine Aktionen erforderlich
                 break;
 
-            case 'config':
-                // Konfiguration in UI laden
-                if (Config && typeof Config.updateConfigUI === 'function') {
-                    Config.updateConfigUI();
-                }
+            case 'history':
+                // Verlauf-Tab: zukünftig können hier Daten nachgeladen werden
                 break;
         }
     }
@@ -263,7 +262,8 @@ window.App = (function() {
      * @returns {boolean} true wenn gültig
      */
     function isValidTab(tabName) {
-        const validTabs = ['template', 'recipients', 'send', 'config'];
+        // Liste der vorhandenen Tabs (muss mit index.html übereinstimmen)
+        const validTabs = ['dashboard', 'templates', 'recipients', 'mailwizard', 'history'];
         return validTabs.includes(tabName);
     }
 
@@ -367,10 +367,10 @@ window.App = (function() {
                 }
             }
 
-            // Tab-Navigation (Ctrl + 1-4)
-            if ((e.ctrlKey || e.metaKey) && ['1', '2', '3', '4'].includes(e.key)) {
+            // Tab-Navigation (Ctrl + 1-5)
+            if ((e.ctrlKey || e.metaKey) && ['1', '2', '3', '4', '5'].includes(e.key)) {
                 e.preventDefault();
-                const tabs = ['template', 'recipients', 'send', 'config'];
+                const tabs = ['dashboard', 'templates', 'recipients', 'mailwizard', 'history'];
                 const tabIndex = parseInt(e.key) - 1;
                 if (tabs[tabIndex]) {
                     showTab(tabs[tabIndex]);

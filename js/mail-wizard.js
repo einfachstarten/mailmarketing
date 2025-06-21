@@ -1054,9 +1054,9 @@ window.MailWizard = (function() {
             // Wizard schließen
             hideWizardModal();
             
-            // Zum Send-Tab wechseln
+            // Nach Abschluss zum Mailwizard-Tab wechseln
             if (window.App) {
-                App.showTab('send');
+                App.showTab('mailwizard');
             }
             
             // Erfolgs-Nachricht
