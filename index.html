@@ -137,8 +137,43 @@
             <!-- Recipients Tab -->
             <div id="recipients" class="tab-content">
                 <main class="main-card">
-                    <h2>Empfänger</h2>
-                    <div id="recipientsList"></div>
+                    <h2>📧 Empfänger-Verwaltung</h2>
+
+                    <!-- CSV Import Bereich -->
+                    <div class="section">
+                        <h3>CSV-Datei importieren</h3>
+                        <div class="csv-import-container">
+                            <input type="file" id="csvFileInput" accept=".csv" style="display: none;">
+                            <div class="csv-drop-zone" onclick="document.getElementById('csvFileInput').click();">
+                                <div class="drop-zone-content">
+                                    <span class="drop-zone-icon">📁</span>
+                                    <p>CSV-Datei auswählen oder hierher ziehen</p>
+                                    <small>Format: name,email oder nur email pro Zeile</small>
+                                </div>
+                            </div>
+                            <button class="btn btn-secondary" onclick="Recipients.loadTestData()">📋 Test-Daten laden</button>
+                        </div>
+                    </div>
+
+                    <!-- Empfänger-Statistiken -->
+                    <div class="recipient-stats-container">
+                        <div id="recipientStats"></div>
+                    </div>
+
+                    <!-- Empfänger-Liste -->
+                    <div class="section">
+                        <div class="recipient-controls">
+                            <h3>Empfänger-Liste</h3>
+                            <div class="recipient-actions">
+                                <button class="btn btn-primary" onclick="Recipients.clear()">🗑️ Alle löschen</button>
+                                <button class="btn btn-secondary" onclick="Recipients.exportCSV()">💾 Als CSV exportieren</button>
+                            </div>
+                        </div>
+                        <div id="recipientsList" class="recipient-list"></div>
+                    </div>
+
+                    <!-- Status-Bereich -->
+                    <div id="recipientStatus"></div>
                 </main>
             </div>
 
@@ -317,6 +352,9 @@
     <script src="js/recipients.js"></script>
     <script src="js/sender.js"></script>
     <script src="js/attachments.js"></script>
+
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
     <!-- Main Application Controller (nach allen Modulen) -->
     <script src="js/app.js"></script>

@@ -241,10 +241,10 @@ window.App = (function() {
                 break;
 
             case 'recipients':
-                // Empfänger-Statistiken aktualisieren
-                if (modules.recipients && typeof modules.recipients.updateStats === 'function') {
-                    modules.recipients.updateStats();
+                if (modules.recipients && typeof modules.recipients.updateDisplay === 'function') {
+                    modules.recipients.updateDisplay();
                 }
+                setupCSVImport();
                 break;
 
             case 'mailwizard':
@@ -454,6 +454,41 @@ window.App = (function() {
             if (Config && typeof Config.loadConfig === 'function') {
                 Config.loadConfig();
             }
+        }
+    }
+
+    // ===== CSV IMPORT HANDLING =====
+    function setupCSVImport() {
+        const fileInput = document.getElementById('csvFileInput');
+        const dropZone = document.querySelector('.csv-drop-zone');
+
+        if (fileInput) {
+            fileInput.addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    Recipients.processCSVFile(e.target.files[0]);
+                }
+            });
+        }
+
+        if (dropZone) {
+            dropZone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('dragover');
+            });
+
+            dropZone.addEventListener('dragleave', function() {
+                this.classList.remove('dragover');
+            });
+
+            dropZone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+
+                const files = e.dataTransfer.files;
+                if (files.length > 0 && files[0].type === 'text/csv') {
+                    Recipients.processCSVFile(files[0]);
+                }
+            });
         }
     }
 
