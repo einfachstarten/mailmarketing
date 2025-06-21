@@ -618,6 +618,21 @@ small {
     overflow: hidden;
 }
 
+/* Generic modal container used for wizards */
+.wizard-modal {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow: hidden;
+}
+
+.wizard-modal.large {
+    max-width: 1000px;
+}
+
 .wizard-header {
     background: linear-gradient(135deg, #4a90e2, #357abd);
     color: white;
@@ -1508,7 +1523,7 @@ small {
         gap: 15px !important;
     }
 
-    .wizard-container, .mail-wizard-container {
+    .wizard-container, .mail-wizard-container, .wizard-modal {
         width: 95%;
         max-height: 90vh;
     }
