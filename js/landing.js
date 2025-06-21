@@ -151,7 +151,7 @@ function checkSetupStatus() {
                     <div class="status-desc">Bereit für E-Mail-Kampagnen</div>
                     <div class="status-details">Service: ${serviceId.substring(0, 15)}... | Von: ${fromName}</div>
                 </div>
-                <button class="btn-primary" onclick="showMailWizard()">
+                <button class="btn btn-primary" onclick="showMailWizard()">
                     Kampagne starten
                 </button>
             `;

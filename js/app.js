@@ -156,7 +156,8 @@ window.App = (function() {
      */
     function showInitialInterface() {
         // Aktiven Tab setzen
-        showTab(currentTab);
+        // Dashboard immer als initialen Tab anzeigen
+        showTab('dashboard');
         
         // Template-Preview aktualisieren wenn Templates-Modul verfügbar
         if (modules.templates && typeof modules.templates.updatePreview === 'function') {
