@@ -1382,11 +1382,10 @@ function generateWizardButtons() {
     // ===== WIZARD COMPLETION =====
 
     /**
-     * Schließt Wizard ab und speichert Kampagne (sendet noch NICHT)
+     * Schließt Wizard ab und speichert Kampagne (KEIN Versand!)
      */
     function finishWizard() {
-        console.log('=== SAVE CAMPAIGN DEBUG START ===');
-        console.log('Wizard Data:', wizardData);
+        console.log('=== SAVE CAMPAIGN (WIZARD) ===');
 
         try {
             // Validierung
@@ -1398,7 +1397,7 @@ function generateWizardButtons() {
             // Kampagnen-Objekt erstellen
             const campaignData = {
                 id: generateCampaignId(),
-                name: `Kampagne vom ${new Date().toLocaleDateString('de-DE')}`,
+                name: wizardData.subject || `Kampagne vom ${new Date().toLocaleDateString('de-DE')}`,
                 subject: wizardData.subject,
                 content: wizardData.content,
                 selectedRecipients: wizardData.selectedRecipients.map(email => findRecipientByEmail(email)),
@@ -1413,21 +1412,52 @@ function generateWizardButtons() {
 
             console.log('Campaign created:', campaignData);
 
-            // Kampagne "speichern" (in Memory/LocalStorage)
+            // Kampagne speichern
             saveCampaignDraft(campaignData);
 
-            // Modal schließen
-            hideWizardModal();
+            // Erfolgs-Feedback (EINFACH)
+            showSimpleSuccessMessage(campaignData);
 
-            // Zu Campaign-Übersicht wechseln
-            showCampaignOverview(campaignData);
+            // Wizard schließen nach 2 Sekunden
+            setTimeout(() => {
+                hideWizardModal();
 
-            console.log('=== SAVE CAMPAIGN DEBUG END ===');
+                // Zum Kampagnen-Tab wechseln
+                if (window.App && typeof App.showTab === 'function') {
+                    App.showTab('campaigns');
+                }
+            }, 2000);
 
         } catch (error) {
             console.error('Save campaign error:', error);
             alert(`Fehler beim Speichern der Kampagne: ${error.message}`);
         }
+    }
+
+    /**
+     * Zeigt einfache Erfolgs-Nachricht (KEIN komplexes Modal)
+     */
+    function showSimpleSuccessMessage(campaignData) {
+        const modal = document.getElementById('mailWizardModal');
+        if (!modal) return;
+
+        // Einfache Success-Nachricht
+        modal.innerHTML = `
+            <div class="wizard-modal">
+                <div class="success-message-container">
+                    <div class="success-icon">🎉</div>
+                    <h2>Kampagne gespeichert!</h2>
+                    <div class="success-details">
+                        <p><strong>${campaignData.name}</strong></p>
+                        <p>📧 ${campaignData.stats.total} Empfänger</p>
+                        <p>📅 ${campaignData.createdAt.toLocaleDateString('de-DE')}</p>
+                    </div>
+                    <div class="success-info">
+                        <p>Du wirst zum Kampagnen-Tab weitergeleitet...</p>
+                    </div>
+                </div>
+            </div>
+        `;
     }
 
     /**

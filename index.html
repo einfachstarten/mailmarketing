@@ -55,6 +55,7 @@
             <button class="tab" onclick="App.showTab('templates')">Templates</button>
             <button class="tab" onclick="App.showTab('recipients')">Empfänger</button>
             <button class="tab" onclick="App.showTab('mailwizard')">Mail Wizard</button>
+            <button class="tab" onclick="App.showTab('campaigns')">Kampagnen</button>
             <button class="tab" onclick="App.showTab('history')">Verlauf</button>
         </nav>
 
@@ -367,6 +368,39 @@
                 </main>
             </div>
 
+            <!-- Campaigns Tab -->
+            <div id="campaigns" class="tab-content">
+                <main class="main-card">
+                    <h2>📋 Kampagnen-Verwaltung</h2>
+
+                    <!-- Quick Actions -->
+                    <div class="campaign-quick-actions">
+                        <button class="btn btn-primary" onclick="showMailWizard()">
+                            ➕ Neue Kampagne erstellen
+                        </button>
+                        <button class="btn btn-secondary" onclick="Campaigns.refreshList()">
+                            🔄 Liste aktualisieren
+                        </button>
+                    </div>
+
+                    <!-- Kampagnen-Liste -->
+                    <div class="campaigns-section">
+                        <h3>📂 Gespeicherte Kampagnen</h3>
+                        <div id="campaignsList" class="campaigns-list">
+                            <!-- Wird dynamisch gefüllt -->
+                        </div>
+                    </div>
+
+                    <!-- Aktive Kampagne -->
+                    <div id="activeCampaignSection" class="active-campaign-section" style="display: none;">
+                        <h3>🚀 Aktive Kampagne</h3>
+                        <div id="activeCampaignContainer">
+                            <!-- Aktiver Versand wird hier angezeigt -->
+                        </div>
+                    </div>
+                </main>
+            </div>
+
             <!-- History Tab -->
             <div id="history" class="tab-content">
                 <main class="main-card">
@@ -619,6 +653,7 @@
     <script src="js/recipients.js"></script>
     <script src="js/sender.js"></script>
     <script src="js/attachments.js"></script>
+    <script src="js/campaigns.js"></script>
     <script src="js/campaign-sender.js"></script>
 
     <!-- External Libraries -->
