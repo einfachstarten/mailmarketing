@@ -127,27 +127,8 @@ window.Utils = (function() {
     function showStatus(elementId, message, type = 'info') {
         console.log(`Status [${type}] for ${elementId}:`, message);
 
-        const element = document.getElementById(elementId);
-        if (!element) {
-            console.warn(`Status element not found: ${elementId} - using console log only`);
-            // Fallback: Console-only status
-            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
-            console.log(`${prefix} ${message}`);
-            return;
-        }
-
-        element.textContent = message;
-        element.className = `status ${type}`;
-
-        // Auto-clear nach 5 Sekunden für success/info
-        if (type === 'success' || type === 'info') {
-            setTimeout(() => {
-                if (element.textContent === message) {
-                    element.textContent = '';
-                    element.className = 'status';
-                }
-            }, 5000);
-        }
+        // Legacy API-Unterstützung: ElementId wird ignoriert
+        showToast(message, type);
     }
 
     /**

@@ -407,14 +407,7 @@ window.Wizard = (function() {
      * Zeigt Test-Erfolg an
      */
     function showTestSuccess() {
-        const result = document.getElementById('testResult');
-        if (result) {
-            result.innerHTML = `
-                <div class="test-result success-box">
-                    ✅ Test-E-Mail erfolgreich gesendet! Prüfe dein Postfach.
-                </div>
-            `;
-        }
+        Utils.showToast('✅ Test-E-Mail erfolgreich gesendet! Prüfe dein Postfach.', 'success');
     }
 
     /**
@@ -422,15 +415,11 @@ window.Wizard = (function() {
      * @param {string} errorMessage - Fehlermeldung
      */
     function showTestError(errorMessage) {
-        const result = document.getElementById('testResult');
-        if (result) {
-            result.innerHTML = `
-                <div class="test-result error-box">
-                    ❌ Fehler beim Senden: ${errorMessage}<br>
-                    Prüfe deine EmailJS-Konfiguration.
-                </div>
-            `;
-        }
+        Utils.showToast(
+            `❌ Fehler beim Senden: ${errorMessage}<br>Prüfe deine EmailJS-Konfiguration.`,
+            'error',
+            8000
+        );
     }
 
     /**

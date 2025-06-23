@@ -296,7 +296,7 @@ function loadCurrentSettings() {
 
     } catch (error) {
         console.error('Error loading settings:', error);
-        Utils.showStatus('settingsStatus', 'Fehler beim Laden der Einstellungen', 'error');
+        Utils.showToast('Fehler beim Laden der Einstellungen', 'error');
     }
 }
 
@@ -315,7 +315,7 @@ function saveSettings() {
 
         // Validierung
         if (!newConfig.serviceId || !newConfig.templateId || !newConfig.userId || !newConfig.fromName) {
-            Utils.showStatus('settingsStatus', 'Bitte alle Felder ausfüllen', 'error');
+            Utils.showToast('Bitte alle Felder ausfüllen', 'error');
             return;
         }
 
@@ -323,7 +323,7 @@ function saveSettings() {
         if (Config) {
             const success = Config.saveConfig(newConfig);
             if (!success) {
-                Utils.showStatus('settingsStatus', 'Fehler beim Speichern der EmailJS-Konfiguration', 'error');
+                Utils.showToast('Fehler beim Speichern der EmailJS-Konfiguration', 'error');
                 return;
             }
         }
@@ -333,7 +333,7 @@ function saveSettings() {
         localStorage.setItem('autoSaveTemplates', document.getElementById('settings-autoSave').checked);
 
         // UI aktualisieren
-        Utils.showStatus('settingsStatus', 'Einstellungen gespeichert!', 'success');
+        Utils.showToast('Einstellungen gespeichert!', 'success');
 
         // Setup-Status neu laden
         setTimeout(() => {
@@ -343,7 +343,7 @@ function saveSettings() {
 
     } catch (error) {
         console.error('Error saving settings:', error);
-        Utils.showStatus('settingsStatus', 'Fehler beim Speichern', 'error');
+        Utils.showToast('Fehler beim Speichern', 'error');
     }
 }
 
@@ -351,19 +351,22 @@ function saveSettings() {
  * Setzt alle Daten zurück
  */
 function resetSettings() {
-    if (confirm('Wirklich alle Daten löschen? Dies kann nicht rückgängig gemacht werden!')) {
-        // Alle relevanten localStorage Keys löschen
-        const keysToDelete = [
+    Utils.showConfirm(
+        'Wirklich alle Daten löschen? Dies kann nicht rückgängig gemacht werden!',
+        () => {
+            // Alle relevanten localStorage Keys löschen
+            const keysToDelete = [
             'emailjs_service_id', 'emailjs_template_id', 'emailjs_user_id', 'fromName',
             'emailjs_configured', 'recipients', 'emailTemplates', 'emailConfig',
             'appSettings', 'sendSpeed', 'autoSaveTemplates'
-        ];
+            ];
 
-        keysToDelete.forEach(key => localStorage.removeItem(key));
+            keysToDelete.forEach(key => localStorage.removeItem(key));
 
-        // Page reload
-        location.reload();
-    }
+            // Page reload
+            location.reload();
+        }
+    );
 }
 
 /**

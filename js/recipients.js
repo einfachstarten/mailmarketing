@@ -182,7 +182,7 @@ window.Recipients = (function() {
         console.log(`Loading CSV file: ${file.name} (${Utils.formatFileSize(file.size)})`);
 
         if (typeof Papa === 'undefined') {
-            Utils.showStatus('recipientStatus', 'CSV-Parser nicht verfügbar', 'error');
+            Utils.showToast('CSV-Parser nicht verfügbar', 'error');
             return;
         }
 
@@ -197,7 +197,7 @@ window.Recipients = (function() {
         console.log('CSV Parse Results:', results);
         
         if (!results.data || results.data.length === 0) {
-            Utils.showStatus('recipientStatus', 'CSV-Datei ist leer', 'error');
+            Utils.showToast('CSV-Datei ist leer', 'error');
             return;
         }
 
@@ -206,7 +206,7 @@ window.Recipients = (function() {
         importErrors = processedData.errors;
         
         if (newRecipients.length === 0) {
-            Utils.showStatus('recipientStatus', 'Keine gültigen E-Mail-Adressen gefunden', 'error');
+            Utils.showToast('Keine gültigen E-Mail-Adressen gefunden', 'error');
             showImportErrors();
             return;
         }
@@ -379,7 +379,7 @@ window.Recipients = (function() {
      */
     function handleCSVParseError(error) {
         console.error('CSV Parse Error:', error);
-        Utils.showStatus('recipientStatus', `CSV-Parse-Fehler: ${error.message}`, 'error');
+        Utils.showToast(`CSV-Parse-Fehler: ${error.message}`, 'error');
     }
 
     // ===== RECIPIENT MANAGEMENT =====
@@ -458,7 +458,7 @@ window.Recipients = (function() {
         if (nameInput) nameInput.value = '';
         if (emailInput) emailInput.value = '';
 
-        Utils.showStatus('recipientStatus', `Empfänger ${email} hinzugefügt`, 'success');
+        Utils.showToast(`Empfänger ${email} hinzugefügt`, 'success');
     }
 
     function addManual() {
@@ -501,9 +501,9 @@ window.Recipients = (function() {
         
         if (addedCount > 0) {
             updateDisplay();
-            Utils.showStatus('recipientStatus', `${addedCount} Test-Empfänger hinzugefügt`, 'success');
+            Utils.showToast(`${addedCount} Test-Empfänger hinzugefügt`, 'success');
         } else {
-            Utils.showStatus('recipientStatus', 'Alle Test-Empfänger bereits vorhanden', 'info');
+            Utils.showToast('Alle Test-Empfänger bereits vorhanden', 'info');
         }
     }
 
@@ -512,7 +512,7 @@ window.Recipients = (function() {
      */
     function clear() {
         if (recipients.length === 0) {
-            Utils.showStatus('recipientStatus', 'Keine Empfänger vorhanden', 'info');
+            Utils.showToast('Keine Empfänger vorhanden', 'info');
             return;
         }
         
@@ -527,7 +527,7 @@ window.Recipients = (function() {
         updateDisplay();
         persistRecipients();
         
-        Utils.showStatus('recipientStatus', `${count} Empfänger gelöscht`, 'success');
+        Utils.showToast(`${count} Empfänger gelöscht`, 'success');
         console.log('All recipients cleared');
     }
 
@@ -536,7 +536,7 @@ window.Recipients = (function() {
      */
     function exportCSV() {
         if (recipients.length === 0) {
-            Utils.showStatus('recipientStatus', 'Keine Empfänger vorhanden', 'info');
+            Utils.showToast('Keine Empfänger vorhanden', 'info');
             return;
         }
 
@@ -548,7 +548,7 @@ window.Recipients = (function() {
         const csvContent = lines.join('\n');
         const filename = `recipients-${Utils.getTimestampForFilename()}.csv`;
         Utils.downloadFile(csvContent, filename, 'text/csv');
-        Utils.showStatus('recipientStatus', 'CSV exportiert', 'success');
+        Utils.showToast('CSV exportiert', 'success');
     }
 
     // ===== UTILITY FUNCTIONS =====
@@ -707,7 +707,7 @@ window.Recipients = (function() {
         }
 
         const messageType = stats.errors > stats.added ? 'error' : 'success';
-        Utils.showStatus('recipientStatus', message, messageType);
+        Utils.showToast(message, messageType);
         
         if (stats.errors > 0) {
             setTimeout(showImportErrors, 1000);
@@ -740,7 +740,7 @@ window.Recipients = (function() {
      * @param {string} message - Fehlermeldung
      */
     function showImportError(message) {
-        Utils.showStatus('recipientStatus', message, 'error');
+        Utils.showToast(message, 'error');
     }
 
     // ===== GETTERS & INFO =====

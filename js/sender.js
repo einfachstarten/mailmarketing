@@ -71,7 +71,7 @@ window.Sender = (function() {
             // Pre-Flight Checks
             const validationResult = validateCampaignStart();
             if (!validationResult.valid) {
-                Utils.showStatus('sendStatus', validationResult.message, 'error');
+                Utils.showToast(validationResult.message, 'error');
                 return;
             }
 
@@ -86,7 +86,7 @@ window.Sender = (function() {
             
         } catch (error) {
             console.error('Campaign start error:', error);
-            Utils.showStatus('sendStatus', `Kampagne-Fehler: ${error.message}`, 'error');
+            Utils.showToast(`Kampagne-Fehler: ${error.message}`, 'error');
             stop();
         }
     }
@@ -103,7 +103,7 @@ window.Sender = (function() {
             // Pre-Flight Checks
             const validationResult = validateCampaignData(campaignData);
             if (!validationResult.valid) {
-                Utils.showStatus('sendStatus', validationResult.message, 'error');
+                Utils.showToast(validationResult.message, 'error');
                 return;
             }
 
@@ -118,7 +118,7 @@ window.Sender = (function() {
 
         } catch (error) {
             console.error('Campaign start error:', error);
-            Utils.showStatus('sendStatus', `Kampagne-Fehler: ${error.message}`, 'error');
+            Utils.showToast(`Kampagne-Fehler: ${error.message}`, 'error');
             stop();
         }
     }
@@ -277,7 +277,7 @@ window.Sender = (function() {
     async function executeCampaign() {
         const recipients = currentCampaign.recipients;
         
-        Utils.showStatus('sendStatus', 'Kampagne gestartet...', 'success');
+        Utils.showToast('Kampagne gestartet...', 'success');
 
         ProgressManager.init({
             containerId: 'sendProgressContainer',
@@ -519,7 +519,7 @@ async function sendSingleEmail(recipient) {
         }
 
         campaignPaused = true;
-        Utils.showStatus('sendStatus', 'Kampagne pausiert...', 'info');
+        Utils.showToast('Kampagne pausiert...', 'info');
         
         console.log('Campaign paused');
     }
@@ -534,7 +534,7 @@ async function sendSingleEmail(recipient) {
         }
 
         campaignPaused = false;
-        Utils.showStatus('sendStatus', 'Kampagne fortgesetzt...', 'success');
+        Utils.showToast('Kampagne fortgesetzt...', 'success');
         
         console.log('Campaign resumed');
     }
@@ -662,7 +662,7 @@ async function sendSingleEmail(recipient) {
             messageType = 'error';
         }
         
-        Utils.showStatus('sendStatus', message, messageType);
+        Utils.showToast(message, messageType);
         
         // Detaillierte Statistiken loggen
         console.log('Campaign Results:', {
