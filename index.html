@@ -198,8 +198,132 @@
             <!-- Mail Wizard Tab -->
             <div id="mailwizard" class="tab-content">
                 <main class="main-card">
-                    <h2>Mail Wizard</h2>
-                    <p>Kampagnen-Assistent startet hier.</p>
+                    <h2>🚀 E-Mail Kampagne</h2>
+
+                    <!-- Kampagnen-Daten Anzeige -->
+                    <div id="campaignDataContainer" class="section" style="display: none;">
+                        <h3>📋 Kampagnen-Übersicht</h3>
+                        <div class="campaign-summary">
+                            <div class="campaign-info-grid">
+                                <div class="campaign-info-item">
+                                    <label>📧 Betreff:</label>
+                                    <span id="campaignSubject">-</span>
+                                </div>
+                                <div class="campaign-info-item">
+                                    <label>📄 Template:</label>
+                                    <span id="campaignTemplate">-</span>
+                                </div>
+                                <div class="campaign-info-item">
+                                    <label>👥 Empfänger:</label>
+                                    <span id="campaignRecipientCount">0</span>
+                                </div>
+                                <div class="campaign-info-item">
+                                    <label>📎 Anhänge:</label>
+                                    <span id="campaignAttachmentCount">0</span>
+                                </div>
+                            </div>
+
+                            <!-- Empfänger-Liste Preview -->
+                            <div class="campaign-recipients-preview">
+                                <h4>Empfänger-Liste:</h4>
+                                <div id="campaignRecipientsList" class="recipient-preview-list"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Versand-Kontrollen -->
+                    <div id="sendControlsContainer" class="section" style="display: none;">
+                        <h3>📤 Versand-Einstellungen</h3>
+                        <div class="send-controls">
+                            <div class="send-options">
+                                <div class="form-group">
+                                    <label for="sendDelay">Verzögerung zwischen E-Mails (Sekunden):</label>
+                                    <input type="number" id="sendDelay" value="2" min="1" max="10" class="form-control" style="width: 100px;">
+                                    <small>Empfohlen: 2-5 Sekunden um Spam-Filter zu vermeiden</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>
+                                        <input type="checkbox" id="testModeCheckbox" checked>
+                                        Test-Modus (sendet nur an erste 3 Empfänger)
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="send-actions">
+                                <button id="startCampaignBtn" class="btn btn-success btn-large" onclick="CampaignSender.startCampaign()">
+                                    🚀 Kampagne starten
+                                </button>
+                                <button id="previewEmailBtn" class="btn btn-secondary" onclick="CampaignSender.showPreview()">
+                                    👁️ E-Mail Vorschau
+                                </button>
+                                <button id="newCampaignBtn" class="btn btn-primary" onclick="showMailWizard()" style="display: none;">
+                                    ➕ Neue Kampagne
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Versand-Progress -->
+                    <div id="sendProgressContainer" class="section" style="display: none;">
+                        <h3>📊 Versand-Fortschritt</h3>
+                        <div class="progress-container">
+                            <div class="progress-bar-container">
+                                <div id="sendProgressBar" class="progress-bar" style="width: 0%;"></div>
+                            </div>
+                            <div class="progress-info">
+                                <span id="progressText">Vorbereitung...</span>
+                                <span id="progressStats">0 / 0</span>
+                            </div>
+                        </div>
+
+                        <!-- Live Status Log -->
+                        <div class="send-log">
+                            <h4>📜 Versand-Log:</h4>
+                            <div id="sendLog" class="log-container"></div>
+                        </div>
+                    </div>
+
+                    <!-- Ergebnis-Zusammenfassung -->
+                    <div id="resultsContainer" class="section" style="display: none;">
+                        <h3>✅ Versand abgeschlossen</h3>
+                        <div class="results-summary">
+                            <div class="result-stats">
+                                <div class="result-stat">
+                                    <div class="stat-number" id="sentCount">0</div>
+                                    <div class="stat-label">Erfolgreich gesendet</div>
+                                </div>
+                                <div class="result-stat">
+                                    <div class="stat-number" id="errorCount">0</div>
+                                    <div class="stat-label">Fehler</div>
+                                </div>
+                                <div class="result-stat">
+                                    <div class="stat-number" id="totalTime">0s</div>
+                                    <div class="stat-label">Gesamtzeit</div>
+                                </div>
+                            </div>
+
+                            <div id="errorDetails" class="error-details" style="display: none;">
+                                <h4>❌ Fehler-Details:</h4>
+                                <div id="errorList" class="error-list"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Empty State (initial) -->
+                    <div id="emptyState" class="empty-state">
+                        <div class="empty-state-content">
+                            <div class="empty-icon">📧</div>
+                            <h3>Keine aktive Kampagne</h3>
+                            <p>Verwenden Sie den Mail Wizard um eine neue E-Mail-Kampagne zu erstellen.</p>
+                            <button class="btn btn-primary" onclick="showMailWizard()">
+                                🧙‍♂️ Mail Wizard starten
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Status Messages -->
+                    <div id="campaignStatus"></div>
                 </main>
             </div>
 
@@ -370,6 +494,7 @@
     <script src="js/recipients.js"></script>
     <script src="js/sender.js"></script>
     <script src="js/attachments.js"></script>
+    <script src="js/campaign-sender.js"></script>
 
     <!-- External Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>

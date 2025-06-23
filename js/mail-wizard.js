@@ -1102,40 +1102,18 @@ window.MailWizard = (function() {
      * Überträgt Wizard-Daten zum Haupt-Editor
      */
     function transferToMainEditor() {
-        // Subject
-        const subjectInput = document.getElementById('subject');
-        if (subjectInput) {
-            subjectInput.value = wizardData.subject;
-        }
-        
-        // HTML Content
-        const htmlContent = document.getElementById('htmlContent');
-        if (htmlContent) {
-            htmlContent.value = wizardData.content;
-        }
-        
-        // Template Name für Speicherung
-        const templateName = document.getElementById('templateName');
-        if (templateName && !templateName.value.trim()) {
-            const timestamp = new Date().toLocaleDateString('de-DE');
-            templateName.value = `Wizard Mail ${timestamp}`;
-        }
-        
-        // Preview aktualisieren
-        if (window.Templates) {
-            Templates.updatePreview();
-            
-            // Simple Editor neu parsen
-            setTimeout(() => {
-                if (Templates.getCurrentMode() === 'simple') {
-                    Templates.parseTemplate();
-                }
-            }, 100);
-        }
-        
-        // Send-Tab Empfänger-Liste aktualisieren
-        if (window.Sender) {
-            Sender.updateRecipientsList();
+        // Daten sammeln
+        const campaignData = {
+            subject: wizardData.subject,
+            content: wizardData.content,
+            template: wizardData.template,
+            selectedRecipients: wizardData.selectedRecipients,
+            attachments: wizardData.attachments || []
+        };
+
+        // An CampaignSender übergeben
+        if (window.CampaignSender) {
+            CampaignSender.loadCampaignData(campaignData);
         }
     }
 

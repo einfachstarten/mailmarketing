@@ -2137,6 +2137,232 @@ small {
     color: #374151;
 }
 
+/* === CAMPAIGN SUMMARY === */
+.campaign-summary {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 30px;
+}
+
+.campaign-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.campaign-info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.campaign-info-item label {
+    font-weight: 500;
+    color: #495057;
+}
+
+.campaign-info-item span {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.campaign-recipients-preview {
+    border-top: 1px solid #e9ecef;
+    padding-top: 20px;
+}
+
+.recipient-preview-list {
+    max-height: 120px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 14px;
+}
+
+/* === SEND CONTROLS === */
+.send-controls {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 30px;
+}
+
+.send-options {
+    margin-bottom: 24px;
+}
+
+.send-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.btn-large {
+    padding: 15px 30px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* === PROGRESS === */
+.progress-container {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 30px;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 30px;
+    background: #e9ecef;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #4a90e2, #27ae60);
+    border-radius: 15px;
+    transition: width 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 500;
+}
+
+/* === SEND LOG === */
+.send-log {
+    margin-top: 24px;
+}
+
+.log-container {
+    background: #2c3e50;
+    color: #ecf0f1;
+    border-radius: 8px;
+    padding: 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #34495e;
+}
+
+.log-entry {
+    margin-bottom: 4px;
+    padding: 2px 0;
+}
+
+.log-entry.success {
+    color: #2ecc71;
+}
+
+.log-entry.error {
+    color: #e74c3c;
+}
+
+.log-entry.info {
+    color: #3498db;
+}
+
+/* === RESULTS === */
+.results-summary {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.result-stats {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.result-stat {
+    text-align: center;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e9ecef;
+    min-width: 120px;
+}
+
+.result-stat .stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #4a90e2;
+    margin-bottom: 8px;
+}
+
+.result-stat .stat-label {
+    font-size: 14px;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.error-details {
+    border-top: 1px solid #e9ecef;
+    padding-top: 20px;
+}
+
+.error-list {
+    background: #fff5f5;
+    border: 1px solid #fed7d7;
+    border-radius: 6px;
+    padding: 12px;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+/* === EMPTY STATE === */
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+}
+
+.empty-state-content {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.empty-icon {
+    font-size: 72px;
+    margin-bottom: 24px;
+    opacity: 0.6;
+}
+
+.empty-state h3 {
+    color: #2c3e50;
+    margin-bottom: 12px;
+}
+
+.empty-state p {
+    color: #6c757d;
+    margin-bottom: 24px;
+    line-height: 1.6;
+}
+
 /* Responsive Footer */
 @media (max-width: 768px) {
     .footer-content {
