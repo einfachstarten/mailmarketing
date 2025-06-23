@@ -7,6 +7,40 @@
     <link rel="stylesheet" href="styles.css">
     </head>
 <body>
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-container">
+            <!-- CSS-basierter Orb (WebGL-Alternative) -->
+            <div class="css-orb">
+                <div class="orb-core"></div>
+                <div class="orb-ring ring-1"></div>
+                <div class="orb-ring ring-2"></div>
+                <div class="orb-ring ring-3"></div>
+                <div class="orb-glow"></div>
+            </div>
+
+            <!-- Loading Text & Progress -->
+            <div class="loading-content">
+                <h2 class="loading-title">🐦 pigeon.run</h2>
+                <p class="loading-subtitle">E-Mail Marketing Tool wird geladen...</p>
+
+                <!-- Animated Dots -->
+                <div class="loading-dots">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+
+                <!-- Optional: Progress Bar -->
+                <div class="loading-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="loadingProgress"></div>
+                    </div>
+                    <span class="progress-text" id="loadingText">Lade Komponenten...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <!-- Simple Header -->
         <header class="header">
@@ -506,6 +540,102 @@
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
     console.log('EmailJS loaded:', window.emailjs ? 'YES' : 'NO');
+    </script>
+
+    <script>
+        // Loading Screen Management
+        window.LoadingScreen = (function() {
+            let progressValue = 0;
+            let loadingTexts = [
+                'Lade Komponenten...',
+                'Initialisiere Module...',
+                'Vorbereitung der Benutzeroberfläche...',
+                'Fast fertig...'
+            ];
+            let currentTextIndex = 0;
+
+            function updateProgress(percent, customText = null) {
+                const progressBar = document.getElementById('loadingProgress');
+                const progressText = document.getElementById('loadingText');
+
+                if (progressBar) {
+                    progressBar.style.width = percent + '%';
+                }
+
+                if (progressText && customText) {
+                    progressText.textContent = customText;
+                } else if (progressText && percent > progressValue) {
+                    if (percent > 25 && currentTextIndex < 1) {
+                        currentTextIndex = 1;
+                        progressText.textContent = loadingTexts[currentTextIndex];
+                    } else if (percent > 50 && currentTextIndex < 2) {
+                        currentTextIndex = 2;
+                        progressText.textContent = loadingTexts[currentTextIndex];
+                    } else if (percent > 80 && currentTextIndex < 3) {
+                        currentTextIndex = 3;
+                        progressText.textContent = loadingTexts[currentTextIndex];
+                    }
+                }
+
+                progressValue = percent;
+            }
+
+            function hide() {
+                const loadingScreen = document.getElementById('loadingScreen');
+                if (loadingScreen) {
+                    updateProgress(100, 'Fertig!');
+                    setTimeout(() => {
+                        loadingScreen.classList.add('hidden');
+                        setTimeout(() => {
+                            loadingScreen.remove();
+                        }, 500);
+                    }, 200);
+                }
+            }
+
+            function simulateProgress() {
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += Math.random() * 15;
+                    if (progress >= 90) {
+                        clearInterval(interval);
+                        progress = 90;
+                    }
+                    updateProgress(Math.min(progress, 90));
+                }, 200);
+            }
+
+            return {
+                updateProgress,
+                hide,
+                simulateProgress
+            };
+        })();
+
+        // Start simulated progress immediately
+        LoadingScreen.simulateProgress();
+
+        // Hide loading screen when app is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            function checkAppReady() {
+                const isReady = window.App &&
+                               window.Templates &&
+                               window.Recipients &&
+                               document.querySelector('.tabs');
+
+                if (isReady) {
+                    LoadingScreen.hide();
+                } else {
+                    setTimeout(checkAppReady, 100);
+                }
+            }
+
+            setTimeout(checkAppReady, 500);
+        });
+
+        setTimeout(() => {
+            LoadingScreen.hide();
+        }, 10000);
     </script>
     </body>
 </html>

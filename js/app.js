@@ -48,7 +48,14 @@ window.App = (function() {
             // 6. Zeige initiale UI
             showInitialInterface();
 
+            // App fertig geladen
             isInitialized = true;
+
+            // Loading Screen verstecken
+            if (window.LoadingScreen) {
+                LoadingScreen.hide();
+            }
+
             console.log('✅ App initialization complete');
 
         } catch (error) {
