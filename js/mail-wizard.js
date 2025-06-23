@@ -376,7 +376,7 @@ window.MailWizard = (function() {
      * Generiert Schritt 4: Empfänger
      */
     function generateStep4() {
-        return `\n        <div id="mail-wizard-step-4" class="wizard-step-content">\n            <div class="step-intro">\n                <h3 class="step-title">👥 Empfänger auswählen</h3>\n                <p class="step-subtitle">Wer soll diese E-Mail erhalten?</p>\n            </div>\n            \n            <div class="wizard-recipient-controls">\n                <input type="text" id="recipientSearch" placeholder="Empfänger suchen..." class="form-control">\n                <div class="recipient-actions">\n                    <button type="button" onclick="MailWizard.selectAllRecipients()">Alle auswählen</button>\n                    <button type="button" onclick="MailWizard.deselectAllRecipients()">Alle abwählen</button>\n                </div>\n            </div>\n            \n            <div id="wizardRecipientList" class="wizard-recipient-list">\n                <p>Keine Empfänger verfügbar. <a href="#" onclick="alert('Empfänger-Verwaltung öffnen')">Empfänger hinzufügen</a></p>\n            </div>\n            \n            <div class="wizard-recipient-stats">\n                <div class="recipient-stat-card">\n                    <div class="stat-number" id="selectedRecipientCount">0</div>\n                    <div class="stat-label">Ausgewählt</div>\n                </div>\n                <div class="recipient-stat-card">\n                    <div class="stat-number" id="totalRecipientCount">0</div>\n                    <div class="stat-label">Gesamt</div>\n                </div>\n            </div>\n        </div>\n    `;
+        return `\n        <div id="mail-wizard-step-4" class="wizard-step-content">\n            <div class="step-intro">\n                <h3 class="step-title">👥 Empfänger auswählen</h3>\n                <p class="step-subtitle">Wer soll diese E-Mail erhalten?</p>\n            </div>\n            \n            <div class="wizard-recipient-controls">\n                <input type="text" id="wizardRecipientSearch" placeholder="Empfänger suchen..." class="form-control">\n                <div class="recipient-actions">\n                    <button type="button" onclick="MailWizard.selectAllRecipients()">Alle auswählen</button>\n                    <button type="button" onclick="MailWizard.deselectAllRecipients()">Alle abwählen</button>\n                </div>\n            </div>\n            \n            <div id="wizardRecipientList" class="wizard-recipient-list">\n                <p>Keine Empfänger verfügbar. <a href="#" onclick="alert('Empfänger-Verwaltung öffnen')">Empfänger hinzufügen</a></p>\n            </div>\n            \n            <div class="wizard-recipient-stats">\n                <div class="recipient-stat-card">\n                    <div class="stat-number" id="wizardSelectedRecipients">0</div>\n                    <div class="stat-label">Ausgewählt</div>\n                </div>\n                <div class="recipient-stat-card">\n                    <div class="stat-number" id="wizardTotalRecipients">0</div>\n                    <div class="stat-label">Gesamt</div>\n                </div>\n            </div>\n        </div>\n    `;
     }
 
     /**
@@ -491,7 +491,7 @@ window.MailWizard = (function() {
                 break;
             case 4:
                 // Empfänger Schritt - Empfänger laden
-                loadRecipientsIntoWizard();
+                loadRecipientSelector();
                 break;
             case 5:
                 // Anhänge Schritt - Drop-Zone initialisieren
@@ -507,58 +507,6 @@ window.MailWizard = (function() {
     /**
      * Lädt Empfänger-Liste
      */
-    function loadRecipientsIntoWizard() {
-        if (!window.Recipients) {
-            console.warn('Recipients module not available');
-            return;
-        }
-
-        const allRecipients = Recipients.getAll();
-        const recipientCount = allRecipients.length;
-
-        const selectedSpan = document.querySelector('.wizard-recipient-stats .stat-number');
-        const totalSpan = document.querySelectorAll('.wizard-recipient-stats .stat-number')[1];
-
-        if (totalSpan) {
-            totalSpan.textContent = recipientCount;
-        }
-
-        const listContainer = document.getElementById('wizardRecipientList');
-        if (!listContainer) return;
-
-        if (recipientCount === 0) {
-            listContainer.innerHTML = `
-                <div class="wizard-empty-recipients">
-                    <p>Keine Empfänger verfügbar.</p>
-                    <p><a href="#" onclick="App.showTab('recipients')">Gehen Sie zum Recipients-Tab um Empfänger hinzuzufügen.</a></p>
-                </div>
-            `;
-            return;
-        }
-
-        listContainer.innerHTML = allRecipients.map((recipient, index) => `
-            <div class="wizard-recipient-item">
-                <label class="wizard-recipient-checkbox">
-                    <input type="checkbox" value="${index}" onchange="updateRecipientSelection()">
-                    <span class="checkmark"></span>
-                </label>
-                <div class="wizard-recipient-info">
-                    <div class="wizard-recipient-name">${Utils.escapeHtml(recipient.name)}</div>
-                    <div class="wizard-recipient-email">${Utils.escapeHtml(recipient.email)}</div>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function updateRecipientSelection() {
-        const checkboxes = document.querySelectorAll('#wizardRecipientList input[type="checkbox"]');
-        const selectedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
-
-        const selectedSpan = document.querySelector('.wizard-recipient-stats .stat-number');
-        if (selectedSpan) {
-            selectedSpan.textContent = selectedCount;
-        }
-    }
 
     /**
      * Initialisiert Anhänge-System
@@ -610,7 +558,8 @@ window.MailWizard = (function() {
                 }
                 break;
             case 4:
-                if (wizardData.selectedRecipients.length === 0) {
+                console.log('Validating recipients:', wizardData.selectedRecipients); // DEBUG
+                if (!wizardData.selectedRecipients || wizardData.selectedRecipients.length === 0) {
                     alert('Bitte wähle mindestens einen Empfänger aus');
                     return false;
                 }
@@ -779,12 +728,12 @@ window.MailWizard = (function() {
         }
         
         // Alle verfügbaren Empfänger laden
-        allRecipients = Recipients.getRecipients();
+        allRecipients = Recipients.getAll() || [];
         filteredRecipients = [...allRecipients];
         recipientPage = 1;
-        
-        // Standardmäßig alle auswählen
-        wizardData.selectedRecipients = allRecipients.map(r => r.email);
+
+        // Standardmäßig KEINE Empfänger auswählen
+        wizardData.selectedRecipients = [];
         
         updateRecipientDisplay();
         updateRecipientStats();
@@ -841,14 +790,18 @@ window.MailWizard = (function() {
      * Togglet Empfänger-Auswahl
      */
     function toggleRecipient(email) {
+        console.log('Toggling recipient:', email); // DEBUG
+
         const index = wizardData.selectedRecipients.indexOf(email);
-        
+
         if (index > -1) {
             wizardData.selectedRecipients.splice(index, 1);
+            console.log('Removed recipient, now selected:', wizardData.selectedRecipients); // DEBUG
         } else {
             wizardData.selectedRecipients.push(email);
+            console.log('Added recipient, now selected:', wizardData.selectedRecipients); // DEBUG
         }
-        
+
         updateRecipientDisplay();
         updateRecipientStats();
     }
