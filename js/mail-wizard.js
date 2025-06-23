@@ -632,7 +632,111 @@ function generateWizardButtons() {
      * Initialisiert Anhänge-System
      */
     function initializeAttachments() {
-        console.log('Initializing attachments...');
+        console.log('Initializing wizard attachments integration...');
+
+        // DOM braucht einen Moment nach dem Rendern
+        setTimeout(() => {
+            setupAttachmentIntegration();
+        }, 100);
+    }
+
+    function setupAttachmentIntegration() {
+        const fileInput = document.getElementById('attachmentFileInput');
+        const dropZone = document.getElementById('attachmentDropZone');
+        const attachmentList = document.getElementById('attachmentList');
+
+        if (!fileInput || !dropZone) {
+            console.error('Attachment elements not found in DOM');
+            return;
+        }
+
+        // File Input Handler
+        fileInput.addEventListener('change', (e) => {
+            handleWizardFileSelect(e.target.files);
+        });
+
+        // Drop Zone Click Handler
+        dropZone.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Drag & Drop Handlers
+        dropZone.addEventListener('dragover', handleWizardDragOver);
+        dropZone.addEventListener('drop', handleWizardDrop);
+        dropZone.addEventListener('dragleave', handleWizardDragLeave);
+
+        // Initial Display Update
+        updateWizardAttachmentDisplay();
+
+        console.log('✓ Attachment integration setup complete');
+    }
+
+    async function handleWizardFileSelect(files) {
+        if (!window.Attachments) {
+            console.error('Attachments module not available');
+            return;
+        }
+
+        // Show progress indicator
+        const dropZone = document.getElementById('attachmentDropZone');
+        if (dropZone) {
+            dropZone.innerHTML = '<p>📤 Uploading files...</p>';
+        }
+
+        try {
+            // Use Attachments module
+            await Attachments.processFiles(Array.from(files));
+
+            // Update wizard data
+            wizardData.attachments = Attachments.getAttachments();
+
+            // Update display
+            updateWizardAttachmentDisplay();
+
+            // Restore drop zone
+            resetDropZone();
+
+        } catch (error) {
+            handleUploadError(error, files[0]?.name || 'Datei');
+        }
+    }
+
+    function handleWizardDragOver(e) {
+        e.preventDefault();
+        e.currentTarget.classList.add('dragover');
+    }
+
+    function handleWizardDrop(e) {
+        e.preventDefault();
+        e.currentTarget.classList.remove('dragover');
+        handleWizardFileSelect(e.dataTransfer.files);
+    }
+
+    function handleWizardDragLeave(e) {
+        e.currentTarget.classList.remove('dragover');
+    }
+
+    function resetDropZone() {
+        const dropZone = document.getElementById('attachmentDropZone');
+        if (dropZone) {
+            dropZone.innerHTML = '<p>📁 Dateien hier ablegen oder klicken zum Auswählen</p>';
+        }
+    }
+
+    function handleUploadError(error, fileName) {
+        console.error('Upload error:', error);
+
+        let errorMessage = 'Upload fehlgeschlagen';
+        if (error.message.includes('too large')) {
+            errorMessage = 'Datei zu groß (max. 20MB)';
+        } else if (error.message.includes('not allowed')) {
+            errorMessage = 'Dateityp nicht unterstützt';
+        } else if (error.message.includes('server')) {
+            errorMessage = 'Server-Fehler beim Upload';
+        }
+
+        Utils.showToast(`${fileName}: ${errorMessage}`, 'error');
+        resetDropZone();
     }
 
     /**
@@ -1258,22 +1362,41 @@ function generateWizardButtons() {
      * Aktualisiert Attachment-Anzeige im Wizard
      */
     function updateWizardAttachmentDisplay() {
-        const container = document.getElementById('wizardAttachmentList');
+        const container = document.getElementById('attachmentList');
         if (!container) return;
-        
-        if (wizardData.attachments.length === 0) {
-            container.innerHTML = '<p class="placeholder">Keine Attachments vorhanden</p>';
+
+        const attachments = wizardData.attachments || [];
+
+        if (attachments.length === 0) {
+            container.innerHTML = '<p class="placeholder">Keine Anhänge vorhanden</p>';
             return;
         }
-        
-        container.innerHTML = wizardData.attachments.map(att => `
-            <div class="wizard-attachment-item">
-                <span><a href="${att.url}" target="_new">${att.name}</a> (${Utils.formatFileSize(att.size)})</span>
-                <button onclick="MailWizard.insertAttachmentLink('${att.id}')" class="wizard-btn-small">
-                    📝 In Text einfügen
-                </button>
-            </div>
-        `).join('');
+
+        container.innerHTML = `
+        <div class="wizard-attachment-stats">
+            <h4>📎 ${attachments.length} Datei(en) ausgewählt</h4>
+        </div>
+        <div class="wizard-attachment-items">
+            ${attachments.map((att, index) => `
+                <div class="wizard-attachment-item">
+                    <div class="attachment-info">
+                        <span class="attachment-name">📄 ${att.name}</span>
+                        <span class="attachment-size">${Utils.formatFileSize(att.size)}</span>
+                    </div>
+                    <div class="attachment-actions">
+                        <button type="button" class="btn btn-sm btn-secondary" 
+                                onclick="MailWizard.insertAttachmentLink('${att.id}')">
+                            📝 In E-Mail einfügen
+                        </button>
+                        <button type="button" class="btn btn-sm btn-danger" 
+                                onclick="MailWizard.removeWizardAttachment(${index})">
+                            🗑️ Entfernen
+                        </button>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+        `;
     }
 
     /**
@@ -1290,6 +1413,20 @@ function generateWizardButtons() {
             editor.innerHTML += linkHtml;
             updateWizardPreview();
         }
+    }
+
+    function removeWizardAttachment(index) {
+        if (!wizardData.attachments[index]) return;
+
+        const attachment = wizardData.attachments[index];
+
+        if (window.Attachments) {
+            Attachments.removeAttachment(attachment.id);
+        }
+
+        wizardData.attachments = window.Attachments ? Attachments.getAttachments() : [];
+
+        updateWizardAttachmentDisplay();
     }
 
     // ===== STEP 6: REVIEW =====
@@ -1784,6 +1921,8 @@ function generateWizardButtons() {
         selectMailType,
         selectTemplate,
         insertAttachmentLink,
+        removeWizardAttachment,
+        initializeAttachments,
         
         // Empfänger-Funktionen
         toggleRecipient,
