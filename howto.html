@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmailJS Setup Tutorial - pigeon.run</title>
+    <link rel="stylesheet" href="css/index.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .tutorial-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .tutorial-header {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .tutorial-content {
+            padding: 40px;
+        }
+        
+        .step {
+            margin-bottom: 40px;
+            padding: 25px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            position: relative;
+        }
+        
+        .step-number {
+            position: absolute;
+            top: -15px;
+            left: 25px;
+            background: #4a90e2;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .step h3 {
+            margin-top: 10px;
+            color: #2c3e50;
+        }
+        
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        
+        .highlight {
+            background: yellow;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+            color: #856404;
+        }
+        
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+            color: #155724;
+        }
+        
+        .screenshot-placeholder {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            color: #6c757d;
+            margin: 20px 0;
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        .back-button:hover {
+            background: white;
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .tutorial-content {
+                padding: 20px;
+            }
+            
+            .step {
+                padding: 20px;
+                margin-bottom: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="window.close() || window.history.back()">
+        ← Zurück
+    </button>
+    
+    <div class="tutorial-container">
+        <div class="tutorial-header">
+            <h1>📖 EmailJS Setup Tutorial</h1>
+            <p>Schritt-für-Schritt Anleitung für die Konfiguration</p>
+        </div>
+        
+        <div class="tutorial-content">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>🔑 EmailJS Account erstellen</h3>
+                <p>Gehe zu <strong>emailjs.com</strong> und erstelle einen kostenlosen Account.</p>
+                
+                <div class="screenshot-placeholder">
+                    📸 Screenshot: EmailJS Registrierung
+                </div>
+                
+                <div class="warning">
+                    <strong>💡 Tipp:</strong> Der kostenlose Plan erlaubt 200 E-Mails pro Monat - perfekt zum Testen!
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>📧 E-Mail Service hinzufügen</h3>
+                <p>Im EmailJS Dashboard klicke auf <strong>"Add Service"</strong> und wähle deinen E-Mail-Anbieter:</p>
+                <ul>
+                    <li><strong>Gmail:</strong> Am einfachsten für private Nutzer</li>
+                    <li><strong>Outlook:</strong> Für Microsoft-Nutzer</li>
+                    <li><strong>Yahoo:</strong> Alternative Option</li>
+                    <li><strong>SMTP:</strong> Für eigene E-Mail-Server</li>
+                </ul>
+                
+                <div class="screenshot-placeholder">
+                    📸 Screenshot: Service auswählen
+                </div>
+                
+                <p>Nach der Konfiguration erhältst du eine <span class="highlight">Service ID</span> (beginnt mit "service_").</p>
+                
+                <div class="code-block">
+                    Beispiel Service ID: service_abc123xyz
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>📄 E-Mail Template erstellen</h3>
+                <p>Klicke auf <strong>"Create Template"</strong> und erstelle ein Template mit folgenden Variablen:</p>
+                
+                <div class="code-block">
+Subject: {{subject}}
+
+Hallo {{name}},
+
+{{message}}
+
+Mit freundlichen Grüßen,
+{{name}}
+{{email}}
+                </div>
+                
+                <div class="warning">
+                    <strong>⚠️ Wichtig:</strong> Die Variablen {{subject}}, {{message}}, {{name}} und {{email}} müssen exakt so geschrieben werden!
+                </div>
+                
+                <div class="screenshot-placeholder">
+                    📸 Screenshot: Template Editor
+                </div>
+                
+                <p>Nach dem Speichern erhältst du eine <span class="highlight">Template ID</span> (beginnt mit "template_").</p>
+                
+                <div class="code-block">
+                    Beispiel Template ID: template_xyz789abc
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">4</div>
+                <h3>🔐 Public Key finden</h3>
+                <p>Gehe zu <strong>"Account" → "General"</strong> und kopiere deinen <span class="highlight">Public Key</span>:</p>
+                
+                <div class="screenshot-placeholder">
+                    📸 Screenshot: Public Key Location
+                </div>
+                
+                <div class="code-block">
+                    Beispiel Public Key: user_ABCDEfghIJKLmnopQRST
+                </div>
+                
+                <div class="warning">
+                    <strong>🔒 Sicherheit:</strong> Der Public Key ist sicher für Frontend-Anwendungen. Der Private Key wird NICHT benötigt!
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">5</div>
+                <h3>⚙️ Daten in pigeon.run eingeben</h3>
+                <p>Jetzt kannst du die drei Werte in das Setup-Formular eingeben:</p>
+                
+                <div class="code-block">
+✅ Service ID: service_abc123xyz
+✅ Template ID: template_xyz789abc  
+✅ Public Key: user_ABCDEfghIJKLmnopQRST
+✅ Dein Name: Max Mustermann
+                </div>
+                
+                <div class="success">
+                    <strong>🎉 Geschafft!</strong> Nach dem Test-E-Mail-Versand ist dein Setup komplett!
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">6</div>
+                <h3>🚨 Häufige Probleme & Lösungen</h3>
+                
+                <h4>❌ "User ID not found"</h4>
+                <p><strong>Lösung:</strong> Public Key falsch kopiert. Gehe zu EmailJS → Account → General und kopiere den kompletten Key.</p>
+                
+                <h4>❌ "Template not found"</h4>
+                <p><strong>Lösung:</strong> Template ID falsch oder Template nicht gespeichert. Überprüfe EmailJS → Templates.</p>
+                
+                <h4>❌ "Service not found"</h4>
+                <p><strong>Lösung:</strong> Service ID falsch oder Service nicht richtig konfiguriert.</p>
+                
+                <h4>❌ E-Mail kommt nicht an</h4>
+                <p><strong>Lösung:</strong> 
+                <ul>
+                    <li>Spam-Ordner überprüfen</li>
+                    <li>Gmail: "Weniger sichere Apps" aktivieren</li>
+                    <li>2FA deaktivieren oder App-Passwort verwenden</li>
+                </ul>
+                </p>
+                
+                <div class="warning">
+                    <strong>💡 Debug-Tipp:</strong> Öffne die Browser-Konsole (F12) um detaillierte Fehlermeldungen zu sehen!
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">7</div>
+                <h3>🎯 Nächste Schritte</h3>
+                <p>Nach erfolgreichem Setup kannst du:</p>
+                <ul>
+                    <li>📝 <strong>Templates erstellen:</strong> HTML-E-Mail-Vorlagen designen</li>
+                    <li>👥 <strong>Empfänger importieren:</strong> CSV-Listen hochladen</li>
+                    <li>🚀 <strong>Kampagnen versenden:</strong> Mit dem Mail Wizard</li>
+                    <li>📊 <strong>Erfolg verfolgen:</strong> Im Verlauf-Tab</li>
+                </ul>
+                
+                <div class="success">
+                    <strong>🚀 Ready to go!</strong> Schließe dieses Tutorial und starte deine erste E-Mail-Kampagne!
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Smooth scrolling für bessere UX
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Keyboard shortcut: ESC zum Schließen
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                window.close() || window.history.back();
+            }
+        });
+    </script>
+</body>
+</html>
