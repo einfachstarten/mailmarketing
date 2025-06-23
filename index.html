@@ -460,17 +460,17 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="wizard-serviceId">Service ID *</label>
+                        <label for="wizard-serviceId" data-help="emailjs-service-id">Service ID *</label>
                         <input type="text" id="wizard-serviceId" placeholder="service_xxxxxxxxx" class="form-control" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="wizard-templateId">Template ID *</label>
+                        <label for="wizard-templateId" data-help="emailjs-template-id">Template ID *</label>
                         <input type="text" id="wizard-templateId" placeholder="template_xxxxxxxxx" class="form-control" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="wizard-userId">Public Key *</label>
+                        <label for="wizard-userId" data-help="emailjs-public-key">Public Key *</label>
                         <input type="text" id="wizard-userId" placeholder="Dein Public Key" class="form-control" required>
                     </div>
                 </div>
@@ -564,15 +564,15 @@
                     <div class="settings-section">
                         <h3>📧 EmailJS Konfiguration</h3>
                         <div class="form-group">
-                            <label for="settings-serviceId">Service ID</label>
+                            <label for="settings-serviceId" data-help="emailjs-service-id">Service ID</label>
                             <input type="text" id="settings-serviceId" class="form-control" placeholder="service_xxxxxxxxx">
                         </div>
                         <div class="form-group">
-                            <label for="settings-templateId">Template ID</label>
+                            <label for="settings-templateId" data-help="emailjs-template-id">Template ID</label>
                             <input type="text" id="settings-templateId" class="form-control" placeholder="template_xxxxxxxxx">
                         </div>
                         <div class="form-group">
-                            <label for="settings-userId">Public Key</label>
+                            <label for="settings-userId" data-help="emailjs-public-key">Public Key</label>
                             <input type="text" id="settings-userId" class="form-control" placeholder="Dein Public Key">
                         </div>
                         <div class="form-group">
@@ -643,6 +643,7 @@
 
     <!-- Core Utilities (als erstes laden) -->
     <script src="js/utils.js"></script>
+    <script src="js/help-system.js"></script>
     <script src="js/progress-manager.js"></script>
 
     <!-- Configuration Management -->

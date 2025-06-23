@@ -90,6 +90,13 @@ window.App = (function() {
      * Initialisiert alle Core-Module
      */
     function initializeCoreModules() {
+        // Help System zuerst initialisieren
+        if (window.HelpSystem) {
+            HelpSystem.init();
+            modules.helpSystem = HelpSystem;
+            console.log('✓ Help System loaded');
+        }
+
         // Config-Modul initialisieren
         if (window.Config) {
             Config.init();
