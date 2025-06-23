@@ -427,9 +427,39 @@ window.MailWizard = (function() {
     /**
      * Generiert Schritt 6: Review
      */
-    function generateStep6() {
-        return `\n        <div id="mail-wizard-step-6" class="wizard-step-content">\n            <div class="step-intro">\n                <h3 class="step-title">✅ Überprüfung & Versand</h3>\n                <p class="step-subtitle">Letzte Kontrolle vor dem Versand</p>\n            </div>\n            \n            <div class="wizard-review-container">\n                <div class="wizard-summary">\n                    <h4>Kampagnen-Zusammenfassung:</h4>\n                    <div id="wizardSummary">\n                        <div class="wizard-summary-item">\n                            <strong>Mail-Typ:</strong> <span id="summary-mailtype">Nicht ausgewählt</span>\n                        </div>\n                        <div class="wizard-summary-item">\n                            <strong>Template:</strong> <span id="summary-template">Nicht ausgewählt</span>\n                        </div>\n                        <div class="wizard-summary-item">\n                            <strong>Betreff:</strong> <span id="summary-subject">Nicht gesetzt</span>\n                        </div>\n                        <div class="wizard-summary-item">\n                            <strong>Empfänger:</strong> <span id="summary-recipients">0 ausgewählt</span>\n                        </div>\n                    </div>\n                </div>\n                \n                <div class="wizard-mobile-preview">\n                    <h4>Mobil-Vorschau:</h4>\n                    <div id="wizardMobilePreview" class="mobile-preview-container">\n                        <p>Vorschau wird nach Template-Auswahl angezeigt</p>\n                    </div>\n                </div>\n                \n                <div class="wizard-send-options">\n                    <div class="form-group">\n                        <label>\n                            <input type="checkbox" id="sendTestEmail"> \n                            Zuerst Test-E-Mail an mich senden\n                        </label>\n                    </div>\n                    \n                    <div class="form-group">\n                        <label for="sendSpeed">Versand-Geschwindigkeit:</label>\n                        <select id="sendSpeed" class="form-control">\n                            <option value="500">Sehr schnell (0.5s)</option>\n                            <option value="1000" selected>Normal (1s)</option>\n                            <option value="2000">Langsam (2s)</option>\n                            <option value="5000">Sehr langsam (5s)</option>\n                        </select>\n                    </div>\n                </div>\n            </div>\n        </div>\n    `;
-    }
+function generateStep6() {
+        return `
+        <div id="mail-wizard-step-6" class="wizard-step-content">
+            <div class="step-intro">
+                <h3 class="step-title">🎯 Finale Überprüfung</h3>
+                <p class="step-subtitle">Prüfe alle Details vor dem Versand</p>
+            </div>
+            
+            <!-- Bestehende Summary -->
+            <div class="wizard-summary">
+                <!-- ... bestehender Summary-Code ... -->
+            </div>
+            
+            <!-- Neue Test-Funktionen -->
+            <div class="wizard-test-section">
+                <h4>🧪 Vor dem Versand testen</h4>
+                <div class="test-actions">
+                    <button type="button" class="btn btn-info" onclick="MailWizard.sendTestEmail()">
+                        📧 Test-E-Mail senden
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="MailWizard.generateRealEmailPreview()">
+                        🔄 Vorschau aktualisieren
+                    </button>
+                </div>
+                <small>Test-E-Mail wird an den ersten ausgewählten Empfänger gesendet</small>
+            </div>
+            
+            <div id="wizardEmailPreview" class="wizard-email-preview">
+                <!-- Vorschau wird hier generiert -->
+            </div>
+        </div>
+    `;
+}
 
     /**
      * Generiert Wizard-Buttons
@@ -620,6 +650,162 @@ function generateWizardButtons() {
             const element = document.getElementById(id);
             if (element) element.textContent = text;
         });
+
+        // NEUE FUNKTION: Echte E-Mail-Vorschau generieren
+        generateRealEmailPreview();
+    }
+
+    /**
+     * Generiert echte E-Mail-Vorschau mit Personalisierung
+     */
+    function generateRealEmailPreview() {
+        const previewContainer = document.getElementById('wizardEmailPreview');
+        if (!previewContainer) return;
+
+        const testRecipient = wizardData.selectedRecipients.length > 0 ?
+            findRecipientByEmail(wizardData.selectedRecipients[0]) :
+            { name: 'Max Mustermann', email: 'test@example.com' };
+
+        console.log('=== PREVIEW PERSONALIZATION DEBUG ===');
+        console.log('Test Recipient:', testRecipient);
+        console.log('Wizard Subject:', wizardData.subject);
+        console.log('Wizard Content:', wizardData.content?.substring(0, 200));
+
+        let personalizedSubject = wizardData.subject || 'Kein Betreff';
+        let personalizedContent = wizardData.content || '<p>Kein Inhalt</p>';
+
+        if (window.Templates && typeof Templates.personalizeContent === 'function') {
+            console.log('Using Templates.personalizeContent...');
+            personalizedSubject = Templates.personalizeContent(personalizedSubject, testRecipient);
+            personalizedContent = Templates.personalizeContent(personalizedContent, testRecipient);
+        } else {
+            console.log('Templates module not available, using fallback...');
+            const recipientName = testRecipient.name ||
+                                 (testRecipient.email ? testRecipient.email.split('@')[0].replace(/[._]/g, ' ') : '') ||
+                                 'Liebe/r Interessent/in';
+
+            personalizedSubject = personalizedSubject.replace(/\{\{name\}\}/g, recipientName);
+            personalizedContent = personalizedContent.replace(/\{\{name\}\}/g, recipientName)
+                                                    .replace(/\{\{email\}\}/g, testRecipient.email || '');
+        }
+
+        console.log('Personalized Subject:', personalizedSubject);
+        console.log('Personalized Content Preview:', personalizedContent.substring(0, 200));
+        console.log('Still has placeholders:', {
+            subject: personalizedSubject.includes('{{'),
+            content: personalizedContent.includes('{{')
+        });
+        console.log('=== END PREVIEW DEBUG ===');
+
+        previewContainer.innerHTML = `
+        <div class="email-preview-container">
+            <div class="email-header">
+                <h4>📧 E-Mail-Vorschau für: ${testRecipient.name} (${testRecipient.email})</h4>
+                <div class="preview-warning">
+                    <strong>Betreff:</strong> ${personalizedSubject}
+                </div>
+            </div>
+            <div class="email-body" style="border: 1px solid #ddd; padding: 20px; background: white; font-family: Arial, sans-serif;">
+                ${personalizedContent}
+            </div>
+            <div class="email-footer">
+                <small>Diese Vorschau zeigt wie die E-Mail beim Empfänger aussieht</small>
+            </div>
+        </div>
+        `;
+
+        if (personalizedSubject.includes('{{') || personalizedContent.includes('{{')) {
+            previewContainer.innerHTML += `
+            <div class="alert alert-warning" style="margin-top: 15px; padding: 10px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px;">
+                ⚠️ <strong>Warnung:</strong> Template enthält noch nicht aufgelöste Platzhalter. 
+                Prüfe die Browser-Console für Debug-Informationen.
+            </div>
+            `;
+        }
+    }
+
+    /**
+     * Findet Empfänger-Objekt anhand E-Mail
+     */
+    function findRecipientByEmail(email) {
+        if (window.Recipients && typeof Recipients.getRecipients === 'function') {
+            const allRecipients = Recipients.getRecipients();
+            const found = allRecipients.find(r => r.email === email);
+            if (found) return found;
+        }
+
+        return {
+            email: email,
+            name: window.Utils ? Utils.getNameFromEmail(email) : email.split('@')[0].replace(/[._]/g, ' ')
+        };
+    }
+
+    /**
+     * Sendet Test-E-Mail an ersten Empfänger
+     */
+    async function sendTestEmail() {
+        if (wizardData.selectedRecipients.length === 0) {
+            alert('Bitte zuerst Empfänger auswählen');
+            return;
+        }
+
+        const testRecipient = findRecipientByEmail(wizardData.selectedRecipients[0]);
+
+        if (!confirm(`Test-E-Mail an ${testRecipient.name} (${testRecipient.email}) senden?`)) {
+            return;
+        }
+
+        try {
+            const testCampaign = {
+                config: window.Config ? Config.getConfig() : {
+                    serviceId: localStorage.getItem('emailjs_service_id'),
+                    templateId: localStorage.getItem('emailjs_template_id'),
+                    fromName: localStorage.getItem('fromName')
+                },
+                template: {
+                    subject: wizardData.subject,
+                    content: wizardData.content
+                }
+            };
+
+            console.log('=== TEST EMAIL DEBUG ===');
+            console.log('Test Campaign:', testCampaign);
+            console.log('Test Recipient:', testRecipient);
+
+            let personalizedSubject = testCampaign.template.subject;
+            let personalizedContent = testCampaign.template.content;
+
+            if (window.Templates && typeof Templates.personalizeContent === 'function') {
+                personalizedSubject = Templates.personalizeContent(personalizedSubject, testRecipient);
+                personalizedContent = Templates.personalizeContent(personalizedContent, testRecipient);
+            }
+
+            const templateParams = {
+                subject: personalizedSubject,
+                message: personalizedContent,
+                to_email: testRecipient.email,
+                name: testCampaign.config.fromName,
+                email: testRecipient.email
+            };
+
+            console.log('Test Email Params:', templateParams);
+
+            const response = await emailjs.send(
+                testCampaign.config.serviceId,
+                testCampaign.config.templateId,
+                templateParams
+            );
+
+            if (response.status === 200) {
+                alert(`✅ Test-E-Mail erfolgreich an ${testRecipient.email} gesendet!`);
+            } else {
+                throw new Error(`EmailJS Status: ${response.status}`);
+            }
+
+        } catch (error) {
+            console.error('Test email failed:', error);
+            alert(`❌ Test-E-Mail fehlgeschlagen: ${error.message}`);
+        }
     }
 
     // ===== STEP VALIDATION =====
@@ -1321,7 +1507,11 @@ function generateWizardButtons() {
         formatText,
         insertVariable,
         updateWizardPreview,
-        
+
+        // Preview & Testing
+        generateRealEmailPreview,
+        sendTestEmail,
+
         // Completion
         finishWizard,
         

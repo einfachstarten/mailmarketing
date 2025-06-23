@@ -696,12 +696,25 @@ window.Templates = (function() {
      * @returns {string} Personalisierter Content
      */
     function personalizeContent(content, recipient) {
-        if (!content) return '';
-        if (!recipient) return content;
+        console.log('=== personalizeContent DEBUG START ===');
+        console.log('Input content:', content?.substring(0, 100));
+        console.log('Input recipient:', recipient);
+
+        if (!content) {
+            console.warn('No content provided to personalizeContent');
+            return '';
+        }
+
+        if (!recipient) {
+            console.warn('No recipient provided to personalizeContent');
+            return content;
+        }
 
         const recipientName = recipient.name ||
-                             Utils.getNameFromEmail(recipient.email) ||
+                             (recipient.email && Utils ? Utils.getNameFromEmail(recipient.email) : '') ||
                              'Liebe/r Interessent/in';
+
+        console.log('Determined recipient name:', recipientName);
 
         const now = new Date();
         const variables = {
@@ -717,20 +730,28 @@ window.Templates = (function() {
             '{{year}}': now.getFullYear().toString()
         };
 
+        console.log('Replacement variables:', variables);
+
         let personalizedContent = content;
+        let replacementsMade = 0;
 
         Object.entries(variables).forEach(([placeholder, value]) => {
-            const escapedPlaceholder = placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const regex = new RegExp(escapedPlaceholder, 'g');
-            personalizedContent = personalizedContent.replace(regex, value);
+            const beforeCount = (personalizedContent.match(new RegExp(placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length;
+
+            if (beforeCount > 0) {
+                const escapedPlaceholder = placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const regex = new RegExp(escapedPlaceholder, 'g');
+                personalizedContent = personalizedContent.replace(regex, value);
+                replacementsMade += beforeCount;
+
+                console.log(`Replaced ${beforeCount}x "${placeholder}" with "${value}"`);
+            }
         });
 
-        console.log('Template personalization:', {
-            original: content.substring(0, 100) + '...',
-            recipient: recipient,
-            personalized: personalizedContent.substring(0, 100) + '...',
-            foundPlaceholders: Object.keys(variables).filter(placeholder => content.includes(placeholder))
-        });
+        console.log('Total replacements made:', replacementsMade);
+        console.log('Final content preview:', personalizedContent.substring(0, 100));
+        console.log('Still contains placeholders:', personalizedContent.includes('{{'));
+        console.log('=== personalizeContent DEBUG END ===');
 
         return personalizedContent;
     }
