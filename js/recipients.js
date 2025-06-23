@@ -426,7 +426,7 @@ window.Recipients = (function() {
         const emailInput = document.getElementById('manualRecipientEmail');
 
         if (!emailInput || !emailInput.value.trim()) {
-            alert('Bitte geben Sie eine E-Mail-Adresse ein.');
+            Utils.showToast('Bitte geben Sie eine E-Mail-Adresse ein.', 'warning');
             return;
         }
 
@@ -435,12 +435,12 @@ window.Recipients = (function() {
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            alert('Bitte geben Sie eine gültige E-Mail-Adresse ein.');
+            Utils.showToast('Bitte geben Sie eine gültige E-Mail-Adresse ein.', 'error');
             return;
         }
 
         if (recipients.some(r => r.email.toLowerCase() === email.toLowerCase())) {
-            alert('Diese E-Mail-Adresse ist bereits vorhanden.');
+            Utils.showToast('Diese E-Mail-Adresse ist bereits vorhanden.', 'error');
             return;
         }
 
@@ -725,10 +725,14 @@ window.Recipients = (function() {
             .map(error => `Zeile ${error.row}: ${error.message}`)
             .join('\n');
         
-        const additional = importErrors.length > maxShow ? 
+        const additional = importErrors.length > maxShow ?
             `\n... und ${importErrors.length - maxShow} weitere Fehler` : '';
-        
-        alert(`Import-Fehler:\n\n${errorList}${additional}`);
+
+        Utils.showToast(
+            `Import-Fehler:<br><br>${errorList.replace(/\n/g, '<br>')}${additional.replace(/\n/g, '<br>')}`,
+            'error',
+            8000
+        );
     }
 
     /**

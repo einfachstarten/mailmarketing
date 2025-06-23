@@ -516,7 +516,8 @@ window.Config = (function() {
      * @returns {boolean} true wenn zurückgesetzt
      */
     function resetConfig(confirm = true) {
-        if (confirm && !window.confirm('Wirklich alle Einstellungen zurücksetzen?')) {
+        if (confirm) {
+            Utils.showConfirm('Wirklich alle Einstellungen zurücksetzen?', () => resetConfig(false));
             return false;
         }
         
@@ -539,7 +540,8 @@ window.Config = (function() {
      * @returns {boolean} true wenn gelöscht
      */
     function clearAllTemplates(confirm = true) {
-        if (confirm && !window.confirm('Wirklich alle Templates löschen?')) {
+        if (confirm) {
+            Utils.showConfirm('Wirklich alle Templates löschen?', () => clearAllTemplates(false));
             return false;
         }
         

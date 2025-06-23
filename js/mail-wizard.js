@@ -1621,7 +1621,7 @@ function generateWizardButtons() {
         try {
             const campaignData = loadCampaignDraft(campaignId);
             if (!campaignData) {
-                alert('Kampagne nicht gefunden');
+                Utils.showToast('Kampagne nicht gefunden', 'error');
                 return;
             }
 
