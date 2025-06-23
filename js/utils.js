@@ -530,6 +530,47 @@ window.Utils = (function() {
         }
     }
 
+    // ===== CSS UTILITIES =====
+
+    /**
+     * Lädt eine CSS-Datei und resolved, wenn sie geladen wurde
+     * @param {string} href - Pfad zur CSS-Datei
+     * @returns {Promise<void>}
+     */
+    function loadCSS(href) {
+        return new Promise((resolve, reject) => {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = href;
+            link.onload = () => resolve();
+            link.onerror = reject;
+            document.head.appendChild(link);
+        });
+    }
+
+    /**
+     * Wartet bis styles.css vollständig geladen wurde
+     * @returns {Promise<void>}
+     */
+    function waitForCSS() {
+        return new Promise(resolve => {
+            function checkCSS() {
+                const testEl = document.createElement('div');
+                testEl.className = 'container';
+                document.body.appendChild(testEl);
+                const style = window.getComputedStyle(testEl);
+                const loaded = style.maxWidth === '1400px';
+                document.body.removeChild(testEl);
+                if (loaded) {
+                    resolve();
+                } else {
+                    setTimeout(checkCSS, 50);
+                }
+            }
+            checkCSS();
+        });
+    }
+
     // ===== PUBLIC API =====
     return {
         // Validation
@@ -578,6 +619,8 @@ window.Utils = (function() {
         
         // Browser utilities
         isLocalStorageAvailable,
-        copyToClipboard
+        copyToClipboard,
+        loadCSS,
+        waitForCSS
     };
 })();

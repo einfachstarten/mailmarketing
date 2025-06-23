@@ -33,17 +33,37 @@ function displayVersion() {
         } else {
             el.textContent = window.APP_VERSION.version;
         }
-        el.title = \`Version: \${window.APP_VERSION.version}\nBuild: \${window.APP_VERSION.buildDate}\`;
+        el.title = \`Version: \${window.APP_VERSION.version}\\nBuild: \${window.APP_VERSION.buildDate}\`;
     });
 }
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', displayVersion);
-} else {
-    displayVersion();
+function insertVersionedCSS() {
+    const href = 'styles.css?v=' + window.APP_VERSION.buildNumber;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    link.onload = () => document.body.classList.add('css-loaded');
+    link.onerror = () => {
+        const fallback = document.createElement('link');
+        fallback.rel = 'stylesheet';
+        fallback.href = 'styles.css';
+        fallback.onload = () => document.body.classList.add('css-loaded');
+        document.head.appendChild(fallback);
+    };
+    document.head.appendChild(link);
 }
 
-console.log('App Version:', window.APP_VERSION.version);
+function initVersion() {
+    displayVersion();
+    insertVersionedCSS();
+    console.log('App Version:', window.APP_VERSION.version);
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initVersion);
+} else {
+    initVersion();
+}
 `;
         
         fs.writeFileSync('js/version.js', versionJs);
