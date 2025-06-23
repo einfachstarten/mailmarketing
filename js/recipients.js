@@ -14,11 +14,7 @@ window.Recipients = (function() {
     // Test-Daten für Demo-Zwecke
     const TEST_DATA = [
         { name: 'Marcus Braun', email: 'marcusbraun@outlook.com' },
-        { name: '', email: 'anna.mueller@example.com' },
-        { name: 'Max Schmidt', email: 'max@example.com' },
-        { name: '', email: 'sarah.weber@company.de' },
-        { name: 'Lisa Frank', email: 'lisa.frank@startup.de' },
-        { name: '', email: 'thomas.berg@freelancer.com' }
+        { name: 'Marcus GMX Braun', email: 'marcus.braun@gmx.at' }
     ];
 
     // ===== INITIALIZATION =====
