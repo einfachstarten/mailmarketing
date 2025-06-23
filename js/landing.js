@@ -18,11 +18,11 @@ function startSetup() {
         } else {
             console.error('Wizard module not found');
             // Temporärer Fallback bis Tab-System verfügbar ist
-            alert('Setup-Wizard wird geladen...');
+            Utils.showToast('Setup-Wizard wird geladen...', 'info');
         }
     } catch (error) {
         console.error('Error starting setup:', error);
-        alert('Fehler beim Starten des Setup-Wizards: ' + error.message);
+        Utils.showToast('Fehler beim Starten des Setup-Wizards: ' + error.message, 'error');
     }
 }
 
@@ -44,7 +44,7 @@ function showTemplateEditor() {
     } catch (error) {
         console.error('Error opening template editor:', error);
         // Temporärer Fallback bis Tab-System verfügbar ist
-        alert('Template Editor wird geladen...');
+        Utils.showToast('Template Editor wird geladen...', 'info');
     }
 }
 
@@ -59,12 +59,13 @@ function showMailWizard() {
         const serviceId = localStorage.getItem('emailjs_service_id');
 
         if (!isConfigured || !serviceId) {
-            if (confirm('Setup noch nicht abgeschlossen. Jetzt konfigurieren?')) {
-                startSetup();
-                return;
-            } else {
-                return; // Abbruch
-            }
+            Utils.showConfirm(
+                'Setup noch nicht abgeschlossen. Jetzt konfigurieren?',
+                () => {
+                    startSetup();
+                }
+            );
+            return;
         }
 
         // Mail Wizard starten
@@ -72,11 +73,11 @@ function showMailWizard() {
             console.log('Starting mail wizard...');
             window.MailWizard.startWizard();
         } else {
-            alert('Mail Wizard wird geladen...');
+            Utils.showToast('Mail Wizard wird geladen...', 'info');
         }
     } catch (error) {
         console.error('Error starting mail wizard:', error);
-        alert('Fehler beim Starten des Mail Wizards: ' + error.message);
+        Utils.showToast('Fehler beim Starten des Mail Wizards: ' + error.message, 'error');
     }
 }
 
@@ -97,7 +98,7 @@ function showRecipients() {
     } catch (error) {
         console.error('Error opening recipients:', error);
         // Temporärer Fallback bis Tab-System verfügbar ist
-        alert('Empfänger-Verwaltung wird geladen...');
+        Utils.showToast('Empfänger-Verwaltung wird geladen...', 'info');
     }
 }
 
@@ -118,7 +119,7 @@ function showHistory() {
     } catch (error) {
         console.error('Error opening history:', error);
         // Temporärer Fallback bis Tab-System verfügbar ist
-        alert('Verlauf wird geladen...');
+        Utils.showToast('Verlauf wird geladen...', 'info');
     }
 }
 

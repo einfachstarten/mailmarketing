@@ -517,7 +517,10 @@ window.Config = (function() {
      */
     function resetConfig(confirm = true) {
         if (confirm) {
-            Utils.showConfirm('Wirklich alle Einstellungen zurücksetzen?', () => resetConfig(false));
+            Utils.showConfirm(
+                'Wirklich alle Einstellungen zurücksetzen? Dies kann nicht rückgängig gemacht werden!',
+                () => resetConfig(false)
+            );
             return false;
         }
         
@@ -541,7 +544,10 @@ window.Config = (function() {
      */
     function clearAllTemplates(confirm = true) {
         if (confirm) {
-            Utils.showConfirm('Wirklich alle Templates löschen?', () => clearAllTemplates(false));
+            Utils.showConfirm(
+                'Wirklich alle Templates löschen? Dies kann nicht rückgängig gemacht werden!',
+                () => clearAllTemplates(false)
+            );
             return false;
         }
         
