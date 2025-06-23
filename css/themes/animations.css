@@ -1,0 +1,52 @@
+/* === ORB ANIMATIONS === */
+@keyframes orbFloat {
+    0%, 100% { 
+        transform: translateY(0px); 
+    }
+    50% { 
+        transform: translateY(-20px); 
+    }
+}
+
+@keyframes orbPulse {
+    0%, 100% { 
+        transform: translate(-50%, -50%) scale(1); 
+        box-shadow: 0 0 30px rgba(102, 126, 234, 0.6);
+    }
+    50% { 
+        transform: translate(-50%, -50%) scale(1.1); 
+        box-shadow: 0 0 50px rgba(102, 126, 234, 0.8);
+    }
+}
+
+@keyframes orbRotate {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes orbRotateReverse {
+    from { transform: translate(-50%, -50%) rotate(360deg); }
+    to { transform: translate(-50%, -50%) rotate(0deg); }
+}
+
+@keyframes orbGlow {
+    0%, 100% { 
+        opacity: 0.5; 
+        transform: translate(-50%, -50%) scale(1); 
+    }
+    50% { 
+        opacity: 0.8; 
+        transform: translate(-50%, -50%) scale(1.1); 
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

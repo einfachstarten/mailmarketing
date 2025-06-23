@@ -1,0 +1,18 @@
+/* === LAYOUT === */
+.container {
+    max-width: 1400px;
+    min-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    min-height: 500px;
+}
+
+.hidden {
+    display: none !important;
+}

@@ -1,0 +1,397 @@
+/* === STATUS INDICATORS === */
+.status {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status.pending {
+    background: #f39c12;
+    color: white;
+}
+
+.status.sent {
+    background: #27ae60;
+    color: white;
+}
+
+.status.error {
+    background: #e74c3c;
+    color: white;
+}
+
+.status.sending {
+    background: #3498db;
+    color: white;
+}
+
+/* === PROGRESS === */
+.progress {
+    background: #ecf0f1;
+    border-radius: 10px;
+    height: 20px;
+    margin: 20px 0;
+    overflow: hidden;
+}
+
+.progress-bar {
+    background: #4a90e2;
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s;
+    border-radius: 10px;
+}
+
+#progressText {
+    text-align: center;
+    margin-top: 10px;
+    color: #7f8c8d;
+    font-size: 14px;
+}
+
+/* === PROGRESS === */
+.progress-container {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 30px;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 30px;
+    background: #e9ecef;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #4a90e2, #27ae60);
+    border-radius: 15px;
+    transition: width 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 500;
+}
+
+/* === LOADING SCREEN === */
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.loading-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.loading-container {
+    text-align: center;
+    color: white;
+    animation: fadeInUp 0.8s ease;
+}
+
+/* === CSS ORB (WebGL-Alternative) === */
+.css-orb {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 40px;
+    animation: orbFloat 6s ease-in-out infinite;
+}
+
+.orb-core {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle at 30% 30%, 
+        rgba(255, 255, 255, 0.8), 
+        rgba(102, 126, 234, 0.9), 
+        rgba(29, 78, 216, 1));
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: orbPulse 3s ease-in-out infinite;
+    box-shadow: 
+        0 0 30px rgba(102, 126, 234, 0.6),
+        inset 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.orb-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation-duration: 4s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+.ring-1 {
+    width: 120px;
+    height: 120px;
+    animation-name: orbRotate;
+    border-top-color: rgba(102, 126, 234, 0.8);
+}
+
+.ring-2 {
+    width: 160px;
+    height: 160px;
+    animation-name: orbRotateReverse;
+    animation-duration: 6s;
+    border-right-color: rgba(118, 75, 162, 0.6);
+}
+
+.ring-3 {
+    width: 200px;
+    height: 200px;
+    animation-name: orbRotate;
+    animation-duration: 8s;
+    border-left-color: rgba(102, 126, 234, 0.4);
+}
+
+.orb-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 240px;
+    height: 240px;
+    background: radial-gradient(circle, 
+        rgba(102, 126, 234, 0.3) 0%, 
+        rgba(102, 126, 234, 0.1) 50%, 
+        transparent 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: orbGlow 4s ease-in-out infinite;
+}
+
+/* === LOADING CONTENT === */
+.loading-content {
+    animation: fadeInUp 1s ease 0.3s both;
+}
+
+.loading-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.loading-subtitle {
+    font-size: 1.1rem;
+    margin: 0 0 30px 0;
+    opacity: 0.9;
+    font-weight: 400;
+}
+
+/* === ANIMATED DOTS === */
+.loading-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 30px;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    animation: dotBounce 1.4s ease-in-out infinite both;
+}
+
+.dot:nth-child(1) { animation-delay: -0.32s; }
+.dot:nth-child(2) { animation-delay: -0.16s; }
+.dot:nth-child(3) { animation-delay: 0s; }
+
+@keyframes dotBounce {
+    0%, 80%, 100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+}
+
+/* === PROGRESS BAR === */
+.loading-progress {
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, 
+        rgba(255, 255, 255, 0.8) 0%, 
+        rgba(255, 255, 255, 1) 50%, 
+        rgba(255, 255, 255, 0.8) 100%);
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.3s ease;
+    animation: progressShimmer 2s linear infinite;
+}
+
+.progress-text {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    font-weight: 500;
+}
+
+@keyframes progressShimmer {
+    0% { background-position: -200px 0; }
+    100% { background-position: 200px 0; }
+}
+
+/* === UNIFIED PROGRESS SYSTEM === */
+.unified-progress-container {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    transition: opacity 0.3s ease;
+}
+
+.unified-progress-bar-container {
+    margin-bottom: 16px;
+}
+
+.unified-progress-track {
+    width: 100%;
+    height: 24px;
+    background: #e9ecef;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.unified-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #28a745, #20c997, #17a2b8);
+    border-radius: 12px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.unified-progress-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255,255,255,0.4), 
+        transparent);
+    animation: progressShine 2s ease-in-out infinite;
+}
+
+.unified-progress-bar.progress-complete {
+    background: linear-gradient(90deg, #28a745, #20c997);
+    animation: progressPulse 0.8s ease-in-out;
+}
+
+.unified-progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.unified-progress-text {
+    flex: 1;
+}
+
+.unified-progress-count {
+    font-family: 'Courier New', monospace;
+    background: #e9ecef;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.unified-progress-log-container {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    background: white;
+}
+
+.unified-progress-log {
+    padding: 12px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.unified-log-entry {
+    padding: 2px 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.unified-log-entry:last-child {
+    border-bottom: none;
+}
+
+.unified-log-time {
+    color: #6c757d;
+    margin-right: 8px;
+}
+
+.unified-log-info { color: #17a2b8; }
+.unified-log-success { color: #28a745; }
+.unified-log-warning { color: #ffc107; }
+.unified-log-error { color: #dc3545; }
+
+@keyframes progressShine {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+@keyframes progressPulse {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(1.1); }
+}

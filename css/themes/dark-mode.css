@@ -1,0 +1,18 @@
+/* === DARK MODE SUPPORT (Optional) === */
+@media (prefers-color-scheme: dark) {
+    /* Uncomment to enable dark mode
+    body {
+        background: #1a1a1a;
+        color: #e0e0e0;
+    }
+    
+    .container {
+        background: #2c2c2c;
+    }
+    
+    .header, .tab-content {
+        background: #3c3c3c;
+        color: #e0e0e0;
+    }
+    */
+}

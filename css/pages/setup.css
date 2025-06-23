@@ -1,0 +1,19 @@
+/* === SETUP PROMPT === */
+.setup-prompt {
+    text-align: center;
+    padding: 60px 20px;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 15px;
+    margin: 40px 0;
+}
+
+.setup-prompt h2 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.setup-prompt p {
+    color: #7f8c8d;
+    margin-bottom: 25px;
+    font-size: 16px;
+}
