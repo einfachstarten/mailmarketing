@@ -651,6 +651,13 @@ ${error.stack}
 // ===== AUTO-INITIALIZATION =====
 // App automatisch initialisieren wenn DOM ready
 // Initialisierung erst nach kompletter DOM-Ladung
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    if (window.Utils && typeof Utils.waitForCSS === 'function') {
+        try {
+            await Utils.waitForCSS();
+        } catch (e) {
+            console.warn('CSS readiness check failed', e);
+        }
+    }
     App.init();
 });
