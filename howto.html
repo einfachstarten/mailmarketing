@@ -4,10 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EmailJS Setup Tutorial - pigeon.run</title>
-    <link rel="stylesheet" href="css/index.css">
     <style>
+        /* === TUTORIAL PAGE DESIGN === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             line-height: 1.6;
             color: #2d3748;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -16,124 +22,332 @@
         }
         
         .tutorial-container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
             overflow: hidden;
+            position: relative;
         }
         
         .tutorial-header {
-            background: linear-gradient(135deg, #4a90e2, #357abd);
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
             color: white;
-            padding: 30px;
+            padding: 40px 30px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tutorial-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: headerFloat 20s linear infinite;
+        }
+        
+        @keyframes headerFloat {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .tutorial-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .tutorial-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
         }
         
         .tutorial-content {
-            padding: 40px;
+            padding: 50px 40px;
         }
         
         .step {
-            margin-bottom: 40px;
-            padding: 25px;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
+            margin-bottom: 50px;
+            padding: 30px;
+            border: 2px solid #f1f5f9;
+            border-radius: 16px;
             position: relative;
+            background: linear-gradient(135deg, #fafbfc 0%, #f8fafc 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .step:hover {
+            border-color: #e2e8f0;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
         }
         
         .step-number {
             position: absolute;
-            top: -15px;
-            left: 25px;
-            background: #4a90e2;
+            top: -20px;
+            left: 30px;
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
             color: white;
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
+            font-weight: 700;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
         }
         
         .step h3 {
-            margin-top: 10px;
-            color: #2c3e50;
+            margin-bottom: 15px;
+            color: #1a202c;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .step p {
+            margin-bottom: 15px;
+            color: #4a5568;
+            line-height: 1.7;
+        }
+        
+        .step ul {
+            margin: 15px 0 15px 20px;
+            color: #4a5568;
+        }
+        
+        .step li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        
+        .step h4 {
+            margin: 20px 0 10px 0;
+            color: #2d3748;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        /* URL und Code Highlighting */
+        .url-link {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border: 2px solid #90caf9;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'SF Mono', Monaco, Consolas, monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .url-link::before {
+            content: '\ud83d\udd17';
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 1.2rem;
         }
         
         .code-block {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 6px;
-            padding: 15px;
-            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 18px;
+            font-family: 'SF Mono', Monaco, Consolas, monospace;
+            font-size: 0.85rem;
             margin: 15px 0;
-            overflow-x: auto;
+            white-space: pre-wrap;
+            line-height: 1.4;
+            position: relative;
+            overflow: hidden;
         }
         
-        .highlight {
-            background: yellow;
-            padding: 2px 4px;
-            border-radius: 3px;
+        .code-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4a90e2, #667eea);
         }
         
+        /* Template Fields */
+        .template-field {
+            background: linear-gradient(135deg, #f1f8ff 0%, #e6f3ff 100%);
+            border: 2px solid #b3d9ff;
+            border-radius: 6px;
+            padding: 12px 15px;
+            margin: 8px 0;
+            font-family: 'SF Mono', Monaco, Consolas, monospace;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        
+        .template-field strong {
+            color: #1565c0;
+            min-width: 120px;
+            margin-right: 10px;
+        }
+        
+        /* Alert Boxes */
         .warning {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 6px;
-            padding: 15px;
-            margin: 15px 0;
-            color: #856404;
+            background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+            border: 2px solid #ffb74d;
+            border-left: 6px solid #ff9800;
+            border-radius: 8px;
+            padding: 18px;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .warning::before {
+            content: '\u26a0\ufe0f';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.4rem;
         }
         
         .success {
-            background: #d4edda;
-            border: 1px solid #c3e6cb;
-            border-radius: 6px;
-            padding: 15px;
-            margin: 15px 0;
-            color: #155724;
-        }
-        
-        .screenshot-placeholder {
-            background: #f8f9fa;
-            border: 2px dashed #dee2e6;
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            border: 2px solid #81c784;
+            border-left: 6px solid #4caf50;
             border-radius: 8px;
-            padding: 40px;
-            text-align: center;
-            color: #6c757d;
+            padding: 18px;
             margin: 20px 0;
+            position: relative;
         }
         
+        .success::before {
+            content: '\ud83c\udf89';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.4rem;
+        }
+        
+        /* Highlighting */
+        .highlight {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #856404;
+            border: 1px solid #f6c23e;
+        }
+        
+        /* Back Button */
         .back-button {
             position: fixed;
-            top: 20px;
-            left: 20px;
-            background: rgba(255,255,255,0.9);
-            border: none;
-            border-radius: 8px;
+            top: 25px;
+            left: 25px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #4a90e2;
+            border: 2px solid #4a90e2;
+            border-radius: 12px;
             padding: 12px 20px;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
         }
         
         .back-button:hover {
-            background: white;
+            background: #4a90e2;
+            color: white;
             transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(74, 144, 226, 0.3);
         }
         
+        /* Responsive Design */
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .tutorial-container {
+                border-radius: 15px;
+            }
+            
+            .tutorial-header {
+                padding: 30px 20px;
+            }
+            
+            .tutorial-header h1 {
+                font-size: 2rem;
+            }
+            
             .tutorial-content {
-                padding: 20px;
+                padding: 30px 20px;
             }
             
             .step {
                 padding: 20px;
-                margin-bottom: 25px;
+                margin-bottom: 30px;
+            }
+            
+            .step-number {
+                width: 35px;
+                height: 35px;
+                top: -17px;
+                left: 20px;
+            }
+            
+            .back-button {
+                top: 15px;
+                left: 15px;
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+            
+            .url-link,
+            .code-block,
+            .template-field {
+                font-size: 0.8rem;
+                padding: 12px;
+            }
+        }
+        
+        /* Smooth Animations */
+        .step {
+            animation: fadeInUp 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+        
+        .step:nth-child(1) { animation-delay: 0.1s; }
+        .step:nth-child(2) { animation-delay: 0.2s; }
+        .step:nth-child(3) { animation-delay: 0.3s; }
+        .step:nth-child(4) { animation-delay: 0.4s; }
+        .step:nth-child(5) { animation-delay: 0.5s; }
+        .step:nth-child(6) { animation-delay: 0.6s; }
+        .step:nth-child(7) { animation-delay: 0.7s; }
+        .step:nth-child(8) { animation-delay: 0.8s; }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
     </style>
@@ -146,28 +360,28 @@
     <div class="tutorial-container">
         <div class="tutorial-header">
             <h1>📖 EmailJS Setup Tutorial</h1>
-            <p>Schritt-für-Schritt Anleitung für die Konfiguration</p>
+            <p>Komplette Schritt-für-Schritt Anleitung für pigeon.run</p>
         </div>
         
         <div class="tutorial-content">
-            <div class="step">
+            <div class="step" id="step-1">
                 <div class="step-number">1</div>
                 <h3>🔑 EmailJS Account erstellen</h3>
-                <p>Gehe zu <strong>emailjs.com</strong> und erstelle einen kostenlosen Account.</p>
+                <p>Gehe zu dieser URL und erstelle einen neuen Account:</p>
                 
-                <div class="screenshot-placeholder">
-                    📸 Screenshot: EmailJS Registrierung
-                </div>
+                <div class="url-link">https://dashboard.emailjs.com/sign-up</div>
                 
-                <div class="warning">
-                    <strong>💡 Tipp:</strong> Der kostenlose Plan erlaubt 200 E-Mails pro Monat - perfekt zum Testen!
-                </div>
+                <p>Registriere dich mit deiner E-Mail-Adresse. Der kostenlose Plan erlaubt 200 E-Mails pro Monat - perfekt zum Testen.</p>
             </div>
             
-            <div class="step">
+            <div class="step" id="step-2">
                 <div class="step-number">2</div>
                 <h3>📧 E-Mail Service hinzufügen</h3>
-                <p>Im EmailJS Dashboard klicke auf <strong>"Add Service"</strong> und wähle deinen E-Mail-Anbieter:</p>
+                <p>Nach der Registrierung siehst du einen blauen Button:</p>
+                
+                <div class="code-block">Add New Service</div>
+                
+                <p>Klicke darauf und wähle deinen E-Mail-Anbieter:</p>
                 <ul>
                     <li><strong>Gmail:</strong> Am einfachsten für private Nutzer</li>
                     <li><strong>Outlook:</strong> Für Microsoft-Nutzer</li>
@@ -175,146 +389,154 @@
                     <li><strong>SMTP:</strong> Für eigene E-Mail-Server</li>
                 </ul>
                 
-                <div class="screenshot-placeholder">
-                    📸 Screenshot: Service auswählen
-                </div>
-                
                 <p>Nach der Konfiguration erhältst du eine <span class="highlight">Service ID</span> (beginnt mit "service_").</p>
                 
-                <div class="code-block">
-                    Beispiel Service ID: service_abc123xyz
-                </div>
+                <div class="code-block">Beispiel Service ID: service_abc123xyz</div>
             </div>
             
-            <div class="step">
+            <div class="step" id="step-3">
                 <div class="step-number">3</div>
                 <h3>📄 E-Mail Template erstellen</h3>
-                <p>Klicke auf <strong>"Create Template"</strong> und erstelle ein Template mit folgenden Variablen:</p>
+                <p>Gehe zu Templates:</p>
                 
-                <div class="code-block">
-Subject: {{subject}}
-
-Hallo {{name}},
-
-{{message}}
-
-Mit freundlichen Grüßen,
-{{name}}
-{{email}}
+                <div class="url-link">https://dashboard.emailjs.com/admin/templates</div>
+                
+                <p>Klicke "Create New Template" und konfiguriere <strong>exakt</strong> diese Felder:</p>
+                
+                <h4>📝 Content Tab (links):</h4>
+                
+                <div class="template-field">
+                    <strong>Subject:</strong> {{subject}}
+                </div>
+                
+                <div class="template-field">
+                    <strong>Content:</strong> {{message}}
+                </div>
+                
+                <h4>📬 Settings Tab (rechts):</h4>
+                
+                <div class="template-field">
+                    <strong>To Email:</strong> {{to_email}}
+                </div>
+                
+                <div class="template-field">
+                    <strong>From Name:</strong> {{name}}
+                </div>
+                
+                <div class="template-field">
+                    <strong>From Email:</strong> ✅ Use Default Email Address (Checkbox angehakt!)
+                </div>
+                
+                <div class="template-field">
+                    <strong>Reply To:</strong> {{email}}
+                </div>
+                
+                <div class="template-field">
+                    <strong>Bcc:</strong> (leer lassen)
+                </div>
+                
+                <div class="template-field">
+                    <strong>Cc:</strong> (leer lassen)
                 </div>
                 
                 <div class="warning">
-                    <strong>⚠️ Wichtig:</strong> Die Variablen {{subject}}, {{message}}, {{name}} und {{email}} müssen exakt so geschrieben werden!
+                    <strong>⚠️ Kritisch wichtig:</strong> Die Variablen müssen exakt so geschrieben werden mit doppelten geschwungenen Klammern {{variable}}!
                 </div>
                 
-                <div class="screenshot-placeholder">
-                    📸 Screenshot: Template Editor
-                </div>
-                
-                <p>Nach dem Speichern erhältst du eine <span class="highlight">Template ID</span> (beginnt mit "template_").</p>
-                
-                <div class="code-block">
-                    Beispiel Template ID: template_xyz789abc
-                </div>
+                <p>Klicke <strong>"Save"</strong> um das Template zu speichern.</p>
             </div>
             
             <div class="step">
                 <div class="step-number">4</div>
-                <h3>🔐 Public Key finden</h3>
-                <p>Gehe zu <strong>"Account" → "General"</strong> und kopiere deinen <span class="highlight">Public Key</span>:</p>
+                <h3>🆔 Template ID finden</h3>
+                <p>Nach dem Speichern findest du die Template ID hier:</p>
                 
-                <div class="screenshot-placeholder">
-                    📸 Screenshot: Public Key Location
-                </div>
+                <div class="url-link">https://dashboard.emailjs.com/admin/templates/[deine-template-id]/settings</div>
                 
-                <div class="code-block">
-                    Beispiel Public Key: user_ABCDEfghIJKLmnopQRST
-                </div>
+                <p>Die Template ID steht in der URL und beginnt mit "template_".</p>
                 
-                <div class="warning">
-                    <strong>🔒 Sicherheit:</strong> Der Public Key ist sicher für Frontend-Anwendungen. Der Private Key wird NICHT benötigt!
-                </div>
+                <div class="code-block">Beispiel Template ID: template_xyz789abc</div>
             </div>
             
-            <div class="step">
+            <div class="step" id="step-4">
                 <div class="step-number">5</div>
-                <h3>⚙️ Daten in pigeon.run eingeben</h3>
-                <p>Jetzt kannst du die drei Werte in das Setup-Formular eingeben:</p>
+                <h3>🔐 Public Key finden</h3>
+                <p>Gehe zu deinen Account-Einstellungen:</p>
                 
-                <div class="code-block">
-✅ Service ID: service_abc123xyz
-✅ Template ID: template_xyz789abc  
-✅ Public Key: user_ABCDEfghIJKLmnopQRST
-✅ Dein Name: Max Mustermann
-                </div>
+                <div class="url-link">https://dashboard.emailjs.com/admin/account</div>
                 
-                <div class="success">
-                    <strong>🎉 Geschafft!</strong> Nach dem Test-E-Mail-Versand ist dein Setup komplett!
+                <p>Im <strong>"General"</strong> Tab findest du den <span class="highlight">Public Key</span>:</p>
+                
+                <div class="code-block">Beispiel Public Key: user_ABCDEfghIJKLmnopQRST</div>
+                
+                <div class="warning">
+                    <strong>🔒 Wichtig:</strong> Nur den Public Key verwenden! Der Private Key wird NICHT benötigt und ist unsicher für Frontend-Apps.
                 </div>
             </div>
             
             <div class="step">
                 <div class="step-number">6</div>
-                <h3>🚨 Häufige Probleme & Lösungen</h3>
+                <h3>⚙️ Daten in pigeon.run eingeben</h3>
+                <p>Jetzt trägst du alle Werte in das Setup-Formular ein:</p>
                 
-                <h4>❌ "User ID not found"</h4>
-                <p><strong>Lösung:</strong> Public Key falsch kopiert. Gehe zu EmailJS → Account → General und kopiere den kompletten Key.</p>
+                <div class="code-block">✅ Service ID: service_abc123xyz
+✅ Template ID: template_xyz789abc  
+✅ Public Key: user_ABCDEfghIJKLmnopQRST
+✅ Dein Name: Max Mustermann
+✅ Test E-Mail: max@beispiel.de</div>
                 
-                <h4>❌ "Template not found"</h4>
-                <p><strong>Lösung:</strong> Template ID falsch oder Template nicht gespeichert. Überprüfe EmailJS → Templates.</p>
+                <p>Klicke <strong>"Test-E-Mail senden"</strong> um die Konfiguration zu prüfen.</p>
                 
-                <h4>❌ "Service not found"</h4>
-                <p><strong>Lösung:</strong> Service ID falsch oder Service nicht richtig konfiguriert.</p>
-                
-                <h4>❌ E-Mail kommt nicht an</h4>
-                <p><strong>Lösung:</strong> 
-                <ul>
-                    <li>Spam-Ordner überprüfen</li>
-                    <li>Gmail: "Weniger sichere Apps" aktivieren</li>
-                    <li>2FA deaktivieren oder App-Passwort verwenden</li>
-                </ul>
-                </p>
-                
-                <div class="warning">
-                    <strong>💡 Debug-Tipp:</strong> Öffne die Browser-Konsole (F12) um detaillierte Fehlermeldungen zu sehen!
+                <div class="success">
+                    <strong>🎉 Geschafft!</strong> Nach dem erfolgreichen Test ist dein pigeon.run Setup komplett einsatzbereit!
                 </div>
             </div>
             
             <div class="step">
                 <div class="step-number">7</div>
-                <h3>🎯 Nächste Schritte</h3>
-                <p>Nach erfolgreichem Setup kannst du:</p>
+                <h3>🚨 Troubleshooting - Häufige Probleme</h3>
+                
+                <h4>❌ "User ID not found"</h4>
+                <p><strong>Lösung:</strong> Public Key falsch kopiert. Gehe zu EmailJS → Account → General und kopiere den kompletten Key neu.</p>
+                
+                <h4>❌ "Template not found"</h4>
+                <p><strong>Lösung:</strong> Template ID falsch oder Template nicht gespeichert. Überprüfe die Templates-Seite und kopiere die ID aus der URL.</p>
+                
+                <h4>❌ "Service not found"</h4>
+                <p><strong>Lösung:</strong> Service ID falsch oder Service nicht richtig konfiguriert. Prüfe die Services-Seite.</p>
+                
+                <h4>❌ E-Mail kommt nicht an</h4>
+                <p><strong>Mögliche Lösungen:</strong></p>
                 <ul>
-                    <li>📝 <strong>Templates erstellen:</strong> HTML-E-Mail-Vorlagen designen</li>
-                    <li>👥 <strong>Empfänger importieren:</strong> CSV-Listen hochladen</li>
-                    <li>🚀 <strong>Kampagnen versenden:</strong> Mit dem Mail Wizard</li>
-                    <li>📊 <strong>Erfolg verfolgen:</strong> Im Verlauf-Tab</li>
+                    <li>Spam-Ordner überprüfen</li>
+                    <li>Gmail: "Weniger sichere Apps" aktivieren oder App-Passwort verwenden</li>
+                    <li>2FA deaktivieren (temporär für Tests)</li>
+                    <li>Template-Variablen nochmals exakt prüfen</li>
+                    <li>Service-Konfiguration in EmailJS überprüfen</li>
+                </ul>
+                
+                <div class="warning">
+                    <strong>💡 Debug-Tipp:</strong> Öffne die Browser-Konsole (F12) um detaillierte Fehlermeldungen zu sehen. Kopiere Fehler für Support-Anfragen.
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">8</div>
+                <h3>🚀 Nächste Schritte</h3>
+                <p>Nach erfolgreichem Setup stehen dir alle Features zur Verfügung:</p>
+                <ul>
+                    <li>📝 <strong>Templates erstellen:</strong> HTML-E-Mail-Vorlagen mit Live-Preview designen</li>
+                    <li>👥 <strong>Empfänger verwalten:</strong> CSV-Listen importieren und manuell hinzufügen</li>
+                    <li>🤹‍♂️ <strong>Mail Wizard:</strong> Geführte Kampagnen-Erstellung mit Vorschau</li>
+                    <li>📊 <strong>Kampagnen-Tracking:</strong> Versand-Status und Erfolgsraten verfolgen</li>
+                    <li>📈 <strong>Dashboard:</strong> Übersicht über alle Aktivitäten</li>
                 </ul>
                 
                 <div class="success">
-                    <strong>🚀 Ready to go!</strong> Schließe dieses Tutorial und starte deine erste E-Mail-Kampagne!
+                    <strong>🌟 Ready to rock!</strong> Schließe dieses Tutorial und starte deine erste professionelle E-Mail-Kampagne mit pigeon.run!
                 </div>
             </div>
         </div>
     </div>
-    
-    <script>
-        // Smooth scrolling für bessere UX
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
-        });
-        
-        // Keyboard shortcut: ESC zum Schließen
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                window.close() || window.history.back();
-            }
-        });
-    </script>
 </body>
 </html>
