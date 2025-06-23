@@ -20,7 +20,7 @@ window.Config = (function() {
         userId: '',
         fromName: '',
         setupCompleted: false,
-        version: '2.0'
+        version: '2.1'
     };
 
     const DEFAULT_SETTINGS = {
@@ -67,7 +67,7 @@ window.Config = (function() {
                 userId: localStorage.getItem('emailjs_user_id') || '',
                 fromName: localStorage.getItem('fromName') || '',
                 setupCompleted: localStorage.getItem('emailjs_configured') === 'true',
-                version: '2.0'
+                version: '2.1'
             };
 
             // Migrierte Config in strukturiertem Format speichern
@@ -361,7 +361,7 @@ window.Config = (function() {
     function createBackup() {
         try {
             return {
-                version: '2.0',
+                version: '2.1',
                 timestamp: new Date().toISOString(),
                 created: Utils.formatDate(new Date()),
                 emailConfig: currentConfig,
