@@ -767,7 +767,7 @@ window.Templates = (function() {
         const htmlContent = document.getElementById('htmlContent');
         
         if (!name || !name.value.trim()) {
-            alert('Bitte Template-Namen eingeben');
+            Utils.showToast('Bitte Template-Namen eingeben', 'warning');
             Utils.focusElement('templateName');
             return;
         }
@@ -850,31 +850,31 @@ window.Templates = (function() {
     function deleteTemplate() {
         const select = document.getElementById('savedTemplates');
         if (!select || !select.value) {
-            alert('Bitte Template auswählen');
+            Utils.showToast('Bitte Template auswählen', 'warning');
             return;
         }
         
         const templateName = select.value;
-        if (!confirm(`Template "${templateName}" wirklich löschen?`)) {
-            return;
-        }
-        
-        const success = Config.deleteTemplate(templateName);
-        
-        if (success) {
-            // UI zurücksetzen
-            select.value = '';
-            document.getElementById('templateName').value = '';
-            loadTemplateList();
-            
-            if (currentTemplateName === templateName) {
-                currentTemplateName = '';
+        Utils.showConfirm(`Template "${templateName}" wirklich löschen?`, () => {
+            const success = Config.deleteTemplate(templateName);
+
+            if (success) {
+                // UI zurücksetzen
+                select.value = '';
+                document.getElementById('templateName').value = '';
+                loadTemplateList();
+
+                if (currentTemplateName === templateName) {
+                    currentTemplateName = '';
+                }
+
+                Utils.showStatus('templateStatus', `Template "${templateName}" gelöscht`, 'success');
+            } else {
+                Utils.showStatus('templateStatus', 'Fehler beim Löschen!', 'error');
             }
-            
-            Utils.showStatus('templateStatus', `Template "${templateName}" gelöscht`, 'success');
-        } else {
-            Utils.showStatus('templateStatus', 'Fehler beim Löschen!', 'error');
-        }
+        });
+        return;
+
     }
 
     // ===== CHANGE TRACKING =====

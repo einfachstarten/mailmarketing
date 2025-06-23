@@ -573,7 +573,7 @@ window.Wizard = (function() {
      * @param {string} message - Fehlermeldung
      */
     function showError(message) {
-        alert(message); // TODO: Bessere Error-UI implementieren
+        Utils.showToast(message, 'error');
     }
 
     /**

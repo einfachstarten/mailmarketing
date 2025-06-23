@@ -180,6 +180,96 @@ window.Utils = (function() {
         }, delay);
     }
 
+    /**
+     * Zeigt eine Toast-Nachricht an
+     * @param {string} message - Nachricht (HTML erlaubt)
+     * @param {string} type - success, error, warning, info, confirm
+     * @param {number} duration - Anzeigezeit in ms (0 = manuell)
+     * @param {Function} callback - Callback nach Dismiss
+     * @returns {HTMLElement} Toast-Element
+     */
+    function showToast(message, type = 'info', duration, callback) {
+        const container = document.getElementById('toastContainer');
+        if (!container) {
+            console.warn('Toast container missing. Falling back to alert().');
+            alert(message);
+            if (callback) callback();
+            return null;
+        }
+
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = message;
+
+        container.appendChild(toast);
+        requestAnimationFrame(() => toast.classList.add('show'));
+
+        const auto = duration !== undefined ? duration :
+            (type === 'error' ? 8000 : type === 'warning' ? 6000 : 4000);
+
+        let hideTimeout;
+        if (auto > 0) {
+            hideTimeout = setTimeout(hideToast, auto);
+        }
+
+        toast.addEventListener('click', hideToast);
+
+        function hideToast() {
+            clearTimeout(hideTimeout);
+            toast.classList.add('hide');
+            toast.addEventListener('animationend', () => {
+                toast.remove();
+                if (callback) callback();
+            }, { once: true });
+        }
+
+        return toast;
+    }
+
+    /**
+     * Zeigt einen Bestätigungs-Toast
+     * @param {string} message - Nachricht
+     * @param {Function} onConfirm - Callback bei Bestätigung
+     * @param {Function} onCancel - Callback bei Abbruch
+     */
+    function showConfirm(message, onConfirm, onCancel) {
+        const toast = showToast(`<div>${message}</div>`, 'confirm', 0);
+        if (!toast) {
+            const result = window.confirm(message);
+            if (result) { if (onConfirm) onConfirm(); } else { if (onCancel) onCancel(); }
+            return;
+        }
+
+        const actions = document.createElement('div');
+        actions.className = 'toast-actions';
+        const yesBtn = document.createElement('button');
+        yesBtn.className = 'confirm';
+        yesBtn.textContent = 'Ja';
+        const noBtn = document.createElement('button');
+        noBtn.className = 'cancel';
+        noBtn.textContent = 'Nein';
+        actions.appendChild(yesBtn);
+        actions.appendChild(noBtn);
+        toast.appendChild(actions);
+
+        yesBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            hide(true);
+        });
+        noBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            hide(false);
+        });
+
+        function hide(result) {
+            toast.classList.add('hide');
+            toast.addEventListener('animationend', () => {
+                toast.remove();
+                if (result) { if (onConfirm) onConfirm(); } else { if (onCancel) onCancel(); }
+            }, { once: true });
+        }
+    }
+
     // ===== LOCALSTORAGE UTILITIES =====
 
     /**
@@ -456,6 +546,8 @@ window.Utils = (function() {
         
         // DOM utilities
         showStatus,
+        showToast,
+        showConfirm,
         toggleElement,
         focusElement,
         
