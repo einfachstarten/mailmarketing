@@ -265,6 +265,12 @@ window.App = (function() {
                 // Beim Wechsel zum Mail Wizard sind keine Aktionen erforderlich
                 break;
 
+            case 'campaigns':
+                if (modules.campaigns && typeof modules.campaigns.updateCampaignsList === 'function') {
+                    modules.campaigns.updateCampaignsList();
+                }
+                break;
+
             case 'history':
                 // Verlauf-Tab: zukünftig können hier Daten nachgeladen werden
                 break;
@@ -278,7 +284,7 @@ window.App = (function() {
      */
     function isValidTab(tabName) {
         // Liste der vorhandenen Tabs (muss mit index.html übereinstimmen)
-        const validTabs = ['dashboard', 'templates', 'recipients', 'mailwizard', 'history'];
+        const validTabs = ['dashboard', 'templates', 'recipients', 'mailwizard', 'campaigns', 'history'];
         return validTabs.includes(tabName);
     }
 
