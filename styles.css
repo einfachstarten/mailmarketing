@@ -461,6 +461,33 @@ small {
     color: #6c757d;
 }
 
+/* === MANUAL INPUT === */
+.manual-input-container {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.manual-input-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 15px;
+    align-items: end;
+}
+
+.manual-input-form .form-group {
+    margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+    .manual-input-form {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+}
+
 /* === RECIPIENT CONTROLS === */
 .recipient-controls {
     display: flex;

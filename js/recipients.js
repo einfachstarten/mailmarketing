@@ -40,28 +40,28 @@ window.Recipients = (function() {
      */
     function setupEventListeners() {
         // CSV File Input
-        const csvFile = document.getElementById('csvFile');
+        const csvFile = document.getElementById('csvFileInput');
         if (csvFile) {
             csvFile.addEventListener('change', loadCSV);
         }
 
         // Enter-Key Shortcuts für manuelle Eingabe
-        const manualEmail = document.getElementById('manualEmail');
+        const manualEmail = document.getElementById('manualRecipientEmail');
         if (manualEmail) {
             manualEmail.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
-                    addManual();
+                    addManualRecipient();
                 }
             });
         }
 
-        const manualName = document.getElementById('manualName');
+        const manualName = document.getElementById('manualRecipientName');
         if (manualName) {
             manualName.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
-                    Utils.focusElement('manualEmail');
+                    Utils.focusElement('manualRecipientEmail');
                 }
             });
         }
@@ -376,61 +376,48 @@ window.Recipients = (function() {
     /**
      * Fügt manuellen Empfänger hinzu
      */
-    function addManual() {
-        const nameInput = document.getElementById('manualName');
-        const emailInput = document.getElementById('manualEmail');
-        
-        if (!emailInput) {
-            console.error('Manual email input not found');
-            Utils.showStatus('recipientStatus', 'E-Mail-Eingabefeld nicht gefunden', 'error');
+    function addManualRecipient() {
+        const nameInput = document.getElementById('manualRecipientName');
+        const emailInput = document.getElementById('manualRecipientEmail');
+
+        if (!emailInput || !emailInput.value.trim()) {
+            alert('Bitte geben Sie eine E-Mail-Adresse ein.');
             return;
         }
 
-        const email = emailInput.value.trim();
         const name = nameInput ? nameInput.value.trim() : '';
-        
-        // Debug-Log für Troubleshooting
-        console.log('Adding manual recipient:', { email, name, emailLength: email.length });
-        
-        // Validierung mit besseren Fehlermeldungen
-        if (!email) {
-            Utils.showStatus('recipientStatus', 'Bitte E-Mail-Adresse eingeben', 'error');
-            Utils.focusElement('manualEmail');
+        const email = emailInput.value.trim();
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert('Bitte geben Sie eine gültige E-Mail-Adresse ein.');
             return;
         }
-        
-        if (!Utils.isValidEmail(email)) {
-            Utils.showStatus('recipientStatus', `"${email}" ist keine gültige E-Mail-Adresse`, 'error');
-            Utils.focusElement('manualEmail');
+
+        if (recipients.some(r => r.email.toLowerCase() === email.toLowerCase())) {
+            alert('Diese E-Mail-Adresse ist bereits vorhanden.');
             return;
         }
-        
-        if (isEmailExists(email)) {
-            Utils.showStatus('recipientStatus', `E-Mail-Adresse "${email}" bereits vorhanden`, 'error');
-            Utils.focusElement('manualEmail');
-            return;
-        }
-        
-        // Empfänger hinzufügen
-        recipients.push({
-            id: recipients.length,
+
+        const newRecipient = {
             name: name || Utils.getNameFromEmail(email),
             email: email,
             status: 'pending',
             source: 'manual'
-        });
-        
-        // UI zurücksetzen
-        if (nameInput) nameInput.value = '';
-        emailInput.value = '';
-        Utils.focusElement('manualName');
-        
+        };
+
+        recipients.push(newRecipient);
         updateDisplay();
         persistRecipients();
-        
-        // Erfolgs-Nachricht
-        Utils.showStatus('recipientStatus', `✅ "${email}" hinzugefügt`, 'success');
-        console.log(`Manual recipient added: ${email}`);
+
+        if (nameInput) nameInput.value = '';
+        if (emailInput) emailInput.value = '';
+
+        Utils.showStatus('recipientStatus', `Empfänger ${email} hinzugefügt`, 'success');
+    }
+
+    function addManual() {
+        addManualRecipient();
     }
 
     /**
@@ -709,6 +696,10 @@ window.Recipients = (function() {
         return [...recipients]; // Kopie zurückgeben
     }
 
+    function getAll() {
+        return getRecipients();
+    }
+
     /**
      * Gibt Empfänger-Anzahl zurück
      * @returns {number} Anzahl Empfänger
@@ -750,6 +741,7 @@ window.Recipients = (function() {
         // Import functions
         loadCSV,
         processCSVFile,
+        addManualRecipient,
         addManual,
         loadTestData,
         
@@ -767,6 +759,7 @@ window.Recipients = (function() {
         
         // Getters
         getRecipients,
+        getAll,
         getRecipientCount,
         getStats,
         getRecipientByEmail,

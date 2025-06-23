@@ -491,7 +491,7 @@ window.MailWizard = (function() {
                 break;
             case 4:
                 // Empfänger Schritt - Empfänger laden
-                loadRecipients();
+                loadRecipientsIntoWizard();
                 break;
             case 5:
                 // Anhänge Schritt - Drop-Zone initialisieren
@@ -507,10 +507,56 @@ window.MailWizard = (function() {
     /**
      * Lädt Empfänger-Liste
      */
-    function loadRecipients() {
-        const list = document.getElementById('wizardRecipientList');
-        if (list) {
-            list.innerHTML = '<p>Empfänger-System wird implementiert...</p>';
+    function loadRecipientsIntoWizard() {
+        if (!window.Recipients) {
+            console.warn('Recipients module not available');
+            return;
+        }
+
+        const allRecipients = Recipients.getAll();
+        const recipientCount = allRecipients.length;
+
+        const selectedSpan = document.querySelector('.wizard-recipient-stats .stat-number');
+        const totalSpan = document.querySelectorAll('.wizard-recipient-stats .stat-number')[1];
+
+        if (totalSpan) {
+            totalSpan.textContent = recipientCount;
+        }
+
+        const listContainer = document.getElementById('wizardRecipientList');
+        if (!listContainer) return;
+
+        if (recipientCount === 0) {
+            listContainer.innerHTML = `
+                <div class="wizard-empty-recipients">
+                    <p>Keine Empfänger verfügbar.</p>
+                    <p><a href="#" onclick="App.showTab('recipients')">Gehen Sie zum Recipients-Tab um Empfänger hinzuzufügen.</a></p>
+                </div>
+            `;
+            return;
+        }
+
+        listContainer.innerHTML = allRecipients.map((recipient, index) => `
+            <div class="wizard-recipient-item">
+                <label class="wizard-recipient-checkbox">
+                    <input type="checkbox" value="${index}" onchange="updateRecipientSelection()">
+                    <span class="checkmark"></span>
+                </label>
+                <div class="wizard-recipient-info">
+                    <div class="wizard-recipient-name">${Utils.escapeHtml(recipient.name)}</div>
+                    <div class="wizard-recipient-email">${Utils.escapeHtml(recipient.email)}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function updateRecipientSelection() {
+        const checkboxes = document.querySelectorAll('#wizardRecipientList input[type="checkbox"]');
+        const selectedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+
+        const selectedSpan = document.querySelector('.wizard-recipient-stats .stat-number');
+        if (selectedSpan) {
+            selectedSpan.textContent = selectedCount;
         }
     }
 
