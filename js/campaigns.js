@@ -109,7 +109,7 @@ window.Campaigns = (function() {
     function startCampaign(campaignId) {
         const campaign = campaigns.find(c => c.id === campaignId);
         if (!campaign) {
-            alert('Kampagne nicht gefunden');
+            Utils.showToast('Kampagne nicht gefunden', 'error');
             return;
         }
 
@@ -359,11 +359,11 @@ window.Campaigns = (function() {
         previewCampaign: (id) => console.log('Preview campaign:', id),
         editCampaign: (id) => console.log('Edit campaign:', id),
         deleteCampaign: (id) => {
-            if (confirm('Kampagne wirklich löschen?')) {
+            Utils.showConfirm('Kampagne wirklich löschen?', () => {
                 campaigns = campaigns.filter(c => c.id !== id);
                 saveCampaigns();
                 updateCampaignsList();
-            }
+            });
         },
         hideActiveCampaign: () => {
             document.getElementById('activeCampaignSection').style.display = 'none';

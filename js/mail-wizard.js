@@ -1415,18 +1415,8 @@ function generateWizardButtons() {
             // Kampagne speichern
             saveCampaignDraft(campaignData);
 
-            // Erfolgs-Feedback (EINFACH)
-            showSimpleSuccessMessage(campaignData);
-
-            // Wizard schließen nach 2 Sekunden
-            setTimeout(() => {
-                hideWizardModal();
-
-                // Zum Kampagnen-Tab wechseln
-                if (window.App && typeof App.showTab === 'function') {
-                    App.showTab('campaigns');
-                }
-            }, 2000);
+            // Erfolgs-Feedback
+            showCampaignOverview(campaignData);
 
         } catch (error) {
             console.error('Save campaign error:', error);
@@ -1499,104 +1489,40 @@ function generateWizardButtons() {
         }
 
         modal.innerHTML = `
-        <div class="wizard-modal large">
-            <div class="wizard-header">
-                <h2>🎉 Kampagne erstellt!</h2>
+        <div class="wizard-modal large success-modal">
+            <div class="wizard-header success-header">
+                <div class="success-icon">🎉</div>
+                <h2>Kampagne erfolgreich erstellt!</h2>
                 <span class="wizard-close" onclick="MailWizard.hideCampaignOverview()">&times;</span>
             </div>
-            <div class="campaign-overview-content">
-                <div class="campaign-info-section">
-                    <h3>📋 Kampagnen-Details</h3>
-                    <div class="campaign-info-grid">
-                        <div class="info-item">
-                            <label>📧 Betreff:</label>
-                            <span>${Utils.escapeHtml(campaignData.subject)}</span>
-                        </div>
-                        <div class="info-item">
-                            <label>👥 Empfänger:</label>
-                            <span>${campaignData.stats.total} ausgewählt</span>
-                        </div>
-                        <div class="info-item">
-                            <label>📅 Erstellt:</label>
-                            <span>${campaignData.createdAt.toLocaleString('de-DE')}</span>
-                        </div>
-                        <div class="info-item">
-                            <label>🏷️ Status:</label>
-                            <span class="status-badge draft">Entwurf</span>
-                        </div>
-                    </div>
+            <div class="success-content">
+                <div class="success-summary">
+                    <div class="summary-icon">📧</div>
+                    <h3>${Utils.escapeHtml(campaignData.subject)}</h3>
+                    <p>${campaignData.selectedRecipients.length} Empfänger ausgewählt</p>
                 </div>
-                <div class="campaign-recipients-section">
-                    <h3>👥 Empfänger-Liste</h3>
-                    <div class="recipients-list">
-                        ${campaignData.selectedRecipients.map(r => `
-                            <div class="recipient-item">
-                                <span class="recipient-name">${r.name || 'Unbekannt'}</span>
-                                <span class="recipient-email">${r.email}</span>
-                            </div>
-                        `).join('')}
-                    </div>
+
+                <div class="success-actions">
+                    <button class="btn btn-primary btn-large" onclick="App.showTab('campaigns')">
+                        📋 Zu Kampagnen wechseln
+                    </button>
+                    <button class="btn btn-success btn-large" onclick="Campaigns.startCampaign('${campaignData.id}')">
+                        🚀 Jetzt senden
+                    </button>
+                    <button class="btn btn-secondary" onclick="MailWizard.hideCampaignOverview()">
+                        Später senden
+                    </button>
                 </div>
-                <div class="campaign-preview-section">
-                    <h3>📧 E-Mail-Vorschau (für ${firstRecipient.name})</h3>
-                    <div class="email-preview-container">
+
+                <div class="success-preview">
+                    <h4>📧 E-Mail Vorschau:</h4>
+                    <div class="email-preview-frame">
                         <div class="email-preview-header">
                             <strong>Betreff:</strong> ${Utils.escapeHtml(personalizedSubject)}
                         </div>
                         <div class="email-preview-body">
-                            ${personalizedContent}
+                            ${personalizedContent.substring(0, 200)}...
                         </div>
-                    </div>
-                </div>
-                <div class="campaign-send-section">
-                    <h3>🚀 Versand starten</h3>
-                    <div class="send-options">
-                        <div class="form-group">
-                            <label for="campaignSendSpeed">Versand-Geschwindigkeit:</label>
-                            <select id="campaignSendSpeed" class="form-control">
-                                <option value="1000">Normal (1s Pause)</option>
-                                <option value="2000" selected>Sicher (2s Pause)</option>
-                                <option value="5000">Langsam (5s Pause)</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>
-                                <input type="checkbox" id="campaignTestMode"> 
-                                Test-Modus (nur erste 2 E-Mails)
-                            </label>
-                        </div>
-                    </div>
-                    <div class="send-actions">
-                        <button class="btn btn-success btn-large" onclick="MailWizard.startCampaignSend('${campaignData.id}')">
-                            🚀 Kampagne jetzt senden
-                        </button>
-                        <button class="btn btn-secondary" onclick="MailWizard.saveCampaignForLater('${campaignData.id}')">
-                            💾 Für später speichern
-                        </button>
-                    </div>
-                </div>
-                <div id="campaignProgress" class="campaign-progress-section" style="display: none;">
-                    <h3>📊 Versand-Fortschritt</h3>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar">
-                            <div id="campaignProgressBar" class="progress-fill" style="width: 0%"></div>
-                        </div>
-                        <div class="progress-text">
-                            <span id="campaignProgressText">Bereit zum Versand</span>
-                            <span id="campaignProgressCount">0 / ${campaignData.stats.total}</span>
-                        </div>
-                    </div>
-                    <div class="campaign-log">
-                        <h4>📝 Versand-Log</h4>
-                        <div id="campaignLogContainer" class="log-container"></div>
-                    </div>
-                    <div class="progress-actions">
-                        <button id="campaignPauseBtn" class="btn btn-warning" onclick="MailWizard.pauseCampaign()" style="display: none;">
-                            ⏸️ Pausieren
-                        </button>
-                        <button id="campaignStopBtn" class="btn btn-danger" onclick="MailWizard.stopCampaign()" style="display: none;">
-                            ⏹️ Stoppen
-                        </button>
                     </div>
                 </div>
             </div>
