@@ -805,11 +805,18 @@ small {
     max-width: 600px;
     max-height: 80vh;
     overflow: hidden;
+    position: relative;
+    z-index: 1001;
 }
 
 .wizard-modal.large {
     max-width: 900px;
     width: 90%;
+}
+
+.wizard-modal .wizard-buttons {
+    position: relative;
+    z-index: 1002;
 }
 
 .wizard-header {
@@ -900,9 +907,19 @@ small {
 .wizard-buttons {
     padding: 20px 30px;
     background: #f8f9fa;
-    display: flex;
+    display: flex !important;
     justify-content: space-between;
+    align-items: center;
     border-top: 1px solid #e9ecef;
+    position: relative;
+    z-index: 10;
+    min-height: 80px;
+}
+
+.wizard-buttons button {
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .step-intro {

@@ -275,9 +275,47 @@ window.MailWizard = (function() {
      * Startet neuen Mail-Wizard
      */
     function startWizard() {
-        resetWizardData();
+        const modal = document.getElementById('mailWizardModal');
+        if (!modal) {
+            console.error('Mail wizard modal not found');
+            return;
+        }
+
+        const progressContainer = document.getElementById('wizardProgressContainer');
+        const contentContainer = document.getElementById('wizardContentContainer');
+        const buttonContainer = document.getElementById('wizardButtonsContainer');
+
+        console.log('=== MODAL STRUCTURE CHECK ===');
+        console.log('Progress container:', !!progressContainer);
+        console.log('Content container:', !!contentContainer);
+        console.log('Button container:', !!buttonContainer);
+
+        if (!buttonContainer) {
+            console.warn('Button container missing, creating...');
+            const newButtonContainer = document.createElement('div');
+            newButtonContainer.id = 'wizardButtonsContainer';
+            newButtonContainer.className = 'wizard-buttons';
+            modal.appendChild(newButtonContainer);
+            console.log('Button container created');
+        }
+
+        modal.classList.remove('hidden');
         currentStep = 1;
-        showWizardModal();
+        wizardData = {
+            mailType: '',
+            template: '',
+            subject: '',
+            content: '',
+            attachments: [],
+            selectedRecipients: [],
+            settings: { speed: 1000, testEmail: false }
+        };
+
+        generateWizardSteps();
+        generateProgressIndicators();
+        generateWizardButtons();
+
+        console.log('Wizard started, button container check:', !!document.getElementById('wizardButtonsContainer'));
     }
 
     /**
@@ -399,8 +437,29 @@ window.MailWizard = (function() {
 
 function generateWizardButtons() {
     const container = document.getElementById('wizardButtonsContainer');
+
+    // EXTENDED DEBUGGING
+    console.log('=== BUTTON DEBUG ===');
+    console.log('Container found:', !!container);
+    console.log('Container visible:', container ? getComputedStyle(container).display : 'N/A');
+    console.log('Container HTML before:', container ? container.innerHTML : 'N/A');
+
     if (!container) {
-        console.error('wizardButtonsContainer not found! Cannot generate buttons.');
+        console.error('\u274c wizardButtonsContainer not found! Searching for alternatives...');
+
+        const modalButtons = document.querySelector('.wizard-modal .wizard-buttons');
+        const anyButtons = document.querySelector('.wizard-buttons');
+
+        console.log('Alternative modal buttons:', !!modalButtons);
+        console.log('Any wizard-buttons:', !!anyButtons);
+
+        if (modalButtons) {
+            console.log('Using alternative container');
+            modalButtons.id = 'wizardButtonsContainer';
+            generateWizardButtons(); // Retry
+            return;
+        }
+
         return;
     }
 
@@ -409,23 +468,29 @@ function generateWizardButtons() {
 
     const buttonsHTML = `
         <button type="button" id="wizardPrevBtn" class="btn btn-secondary" 
-                onclick="MailWizard.previousStep()" ${isFirstStep ? 'disabled' : ''}>
+                onclick="MailWizard.previousStep()" ${isFirstStep ? 'disabled' : ''}
+                style="display: inline-block !important; visibility: visible !important;">
             \u2190 Zur\u00fcck
         </button>
         
         <button type="button" id="wizardNextBtn" class="btn btn-primary" 
-                onclick="MailWizard.nextStep()" ${isLastStep ? 'style=\\"display:none\\"' : ''}>
+                onclick="MailWizard.nextStep()" ${isLastStep ? 'style="display:none"' : 'style="display: inline-block !important; visibility: visible !important;"'}>
             Weiter \u2192
         </button>
         
         <button type="button" id="wizardFinishBtn" class="btn btn-success" 
-                onclick="MailWizard.finishWizard()" ${!isLastStep ? 'style=\\"display:none\\"' : ''}>
+                onclick="MailWizard.finishWizard()" ${!isLastStep ? 'style="display:none"' : 'style="display: inline-block !important; visibility: visible !important;"'}>
             \ud83d\ude80 Kampagne starten
         </button>
     `;
 
     container.innerHTML = buttonsHTML;
-    console.log(`Buttons generated for step ${currentStep}, isLastStep: ${isLastStep}`); // DEBUG
+
+    // POST-GENERATION DEBUGGING
+    console.log('Container HTML after:', container.innerHTML);
+    console.log('Next button found:', !!document.getElementById('wizardNextBtn'));
+    console.log('Next button visible:', document.getElementById('wizardNextBtn') ? getComputedStyle(document.getElementById('wizardNextBtn')).display : 'N/A');
+    console.log('=== END BUTTON DEBUG ===');
 }
 
     /**
