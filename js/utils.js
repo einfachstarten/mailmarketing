@@ -57,14 +57,21 @@ window.Utils = (function() {
      * @returns {string} Generierter Name
      */
     function getNameFromEmail(email) {
-        if (!email || !isValidEmail(email)) return 'Unbekannt';
-        
-        const localPart = email.split('@')[0];
-        const nameParts = localPart.split(/[._-]+/);
-        
-        return nameParts
-            .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
-            .join(' ');
+        if (!email || !email.includes('@')) return 'Unbekannt';
+
+        try {
+            const localPart = email.split('@')[0];
+            const nameParts = localPart.split(/[._-]+/);
+
+            const processedParts = nameParts.slice(0, 2).map(part => {
+                return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+            });
+
+            return processedParts.join(' ') || 'Unbekannt';
+        } catch (error) {
+            console.error('Error generating name from email:', error);
+            return 'Unbekannt';
+        }
     }
 
     /**
