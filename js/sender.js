@@ -237,7 +237,19 @@ window.Sender = (function() {
 async function sendSingleEmail(recipient) {
     const config = currentCampaign.config;
     const template = currentCampaign.template;
-    
+
+    // Robuste Config-Auflösung mit Fallbacks
+    const emailConfig = {
+        serviceId: config.serviceId || localStorage.getItem('emailjs_service_id'),
+        templateId: config.templateId || localStorage.getItem('emailjs_template_id'),
+        fromName: config.fromName || localStorage.getItem('fromName')
+    };
+
+    // Validierung vor dem Send
+    if (!emailConfig.serviceId || !emailConfig.templateId) {
+        throw new Error(`EmailJS Konfiguration unvollständig - Service: ${emailConfig.serviceId}, Template: ${emailConfig.templateId}`);
+    }
+
     // Template personalisieren
     let personalizedSubject = Templates.personalizeContent(template.subject, recipient);
     let personalizedContent = Templates.personalizeContent(template.content, recipient);
@@ -246,25 +258,21 @@ async function sendSingleEmail(recipient) {
     if (window.Attachments && Attachments.hasAttachments()) {
         const attachmentLinks = Attachments.generateEmailAttachmentLinks();
         personalizedContent += attachmentLinks;
-        
-        console.log(`Sending email to: ${recipient.email} with ${Attachments.getAttachmentCount()} attachment link(s)`);
-    } else {
-        console.log(`Sending email to: ${recipient.email}`);
     }
 
-    // EmailJS Template-Parameter
+    // EmailJS Template-Parameter (angepasst an Standard EmailJS Template-Format)
     const templateParams = {
-        to_name: recipient.name,
-        to_email: recipient.email,
-        from_name: config.fromName,
         subject: personalizedSubject,
-        message: personalizedContent
+        message: personalizedContent,
+        to_email: recipient.email,
+        name: emailConfig.fromName,
+        email: recipient.email
     };
 
     try {
         const response = await emailjs.send(
-            config.serviceId,
-            config.templateId,
+            emailConfig.serviceId,
+            emailConfig.templateId,
             templateParams
         );
 

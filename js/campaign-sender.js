@@ -105,19 +105,25 @@ window.CampaignSender = (function() {
      * Einzelne E-Mail senden
      */
     async function sendSingleEmail(email, data) {
+        // Einheitliche Config-Auflösung
+        const serviceId = localStorage.getItem('emailjs_service_id');
+        const templateId = localStorage.getItem('emailjs_template_id');
+        const fromName = localStorage.getItem('fromName') || 'E-Mail Marketing Tool';
+
+        if (!serviceId || !templateId) {
+            throw new Error(`EmailJS Konfiguration fehlt - Service: ${serviceId}, Template: ${templateId}`);
+        }
+
         const templateParams = {
-            to_email: email,
             subject: data.subject,
             message: data.content,
-            from_name: localStorage.getItem('fromName') || 'E-Mail Marketing Tool'
+            to_email: email,
+            name: fromName,
+            email: email
         };
 
         try {
-            const response = await window.emailjs.send(
-                localStorage.getItem('emailjs_service_id'),
-                localStorage.getItem('emailjs_template_id'),
-                templateParams
-            );
+            const response = await window.emailjs.send(serviceId, templateId, templateParams);
 
             if (response.status !== 200) {
                 throw { status: response.status, text: response.text };
