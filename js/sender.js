@@ -92,6 +92,38 @@ window.Sender = (function() {
     }
 
     /**
+     * Startet Kampagne mit vorgegebenen Daten (für Mail Wizard)
+     * @param {Object} campaignData - {template, recipients}
+     */
+    function startCampaignWithData(campaignData) {
+        console.log('=== START CAMPAIGN WITH DATA ===');
+        console.log('Received campaign data:', campaignData);
+
+        try {
+            // Pre-Flight Checks
+            const validationResult = validateCampaignData(campaignData);
+            if (!validationResult.valid) {
+                Utils.showStatus('sendStatus', validationResult.message, 'error');
+                return;
+            }
+
+            // Kampagne mit vorgegebenen Daten initialisieren
+            initializeCampaignWithData(campaignData);
+
+            // UI für Versand vorbereiten
+            updateSendingUI(true);
+
+            // Versand starten
+            executeCampaign();
+
+        } catch (error) {
+            console.error('Campaign start error:', error);
+            Utils.showStatus('sendStatus', `Kampagne-Fehler: ${error.message}`, 'error');
+            stop();
+        }
+    }
+
+    /**
      * Validiert Kampagne-Start
      * @returns {Object} Validierungsergebnis
      */
@@ -166,6 +198,77 @@ window.Sender = (function() {
         Recipients.resetAllStatus('pending');
 
         console.log(`Campaign initialized: ${currentCampaign.id} with ${sendingStats.total} recipients`);
+    }
+
+    /**
+     * Initialisiert Kampagne mit vorgegebenen Daten
+     * @param {Object} campaignData - {template, recipients}
+     */
+    function initializeCampaignWithData(campaignData) {
+        console.log('=== INITIALIZE CAMPAIGN WITH DATA ===');
+
+        currentCampaign = {
+            id: generateCampaignId(),
+            recipients: campaignData.recipients,
+            template: campaignData.template,
+            config: Config.getConfig(),
+            startTime: new Date(),
+            status: 'running'
+        };
+
+        console.log('=== CAMPAIGN WITH WIZARD DATA ===');
+        console.log('Campaign ID:', currentCampaign.id);
+        console.log('Campaign Template:', currentCampaign.template);
+        console.log('Campaign Recipients:', currentCampaign.recipients);
+        console.log('Campaign Config:', currentCampaign.config);
+
+        sendingStats = {
+            sent: 0,
+            errors: 0,
+            total: campaignData.recipients.length,
+            startTime: new Date(),
+            endTime: null
+        };
+
+        campaignActive = true;
+        campaignPaused = false;
+
+        console.log(`Campaign initialized with Wizard data: ${currentCampaign.id} with ${sendingStats.total} recipients`);
+    }
+
+    /**
+     * Validiert Kampagnen-Daten vom Wizard
+     * @param {Object} campaignData - {template, recipients}
+     * @returns {Object} Validierungsergebnis
+     */
+    function validateCampaignData(campaignData) {
+        if (!campaignData) {
+            return { valid: false, message: 'Keine Kampagnen-Daten erhalten' };
+        }
+
+        if (!campaignData.template) {
+            return { valid: false, message: 'Kein Template erhalten' };
+        }
+
+        if (!campaignData.template.subject || !campaignData.template.content) {
+            return { valid: false, message: 'Template unvollständig (Betreff oder Inhalt fehlt)' };
+        }
+
+        if (!campaignData.recipients || !Array.isArray(campaignData.recipients) || campaignData.recipients.length === 0) {
+            return { valid: false, message: 'Keine Empfänger erhalten' };
+        }
+
+        // Config-Prüfung
+        if (!Config || !Config.isSetupComplete()) {
+            return { valid: false, message: 'EmailJS-Konfiguration nicht vollständig' };
+        }
+
+        // EmailJS-Prüfung
+        if (typeof emailjs === 'undefined') {
+            return { valid: false, message: 'EmailJS nicht verfügbar' };
+        }
+
+        return { valid: true, message: 'Validation successful' };
     }
 
     /**
@@ -786,6 +889,7 @@ async function sendSingleEmail(recipient) {
         
         // Campaign management
         start,
+        startCampaignWithData,
         stop,
         pause,
         resume,

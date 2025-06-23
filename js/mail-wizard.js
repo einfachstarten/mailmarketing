@@ -1382,38 +1382,105 @@ function generateWizardButtons() {
     // ===== WIZARD COMPLETION =====
 
     /**
-     * Schließt Wizard ab und überträgt Daten
+     * Schließt Wizard ab und startet Kampagne
      */
     function finishWizard() {
+        console.log('=== FINISH WIZARD DEBUG START ===');
+        console.log('Wizard Data at finish:', wizardData);
+
         try {
-            // Validierung: Mindestens ein Empfänger
-            if (wizardData.selectedRecipients.length === 0) {
-                alert('Bitte wähle mindestens einen Empfänger aus');
-                currentStep = 4; // Zurück zur Empfänger-Auswahl
-                updateWizardStep();
+            // CRITICAL: Wizard-Daten validieren
+            if (!wizardData.subject || !wizardData.content || !wizardData.selectedRecipients.length) {
+                console.error('Wizard data incomplete:', {
+                    hasSubject: !!wizardData.subject,
+                    hasContent: !!wizardData.content,
+                    recipientCount: wizardData.selectedRecipients.length
+                });
+                alert('Wizard-Daten unvollständig. Bitte alle Schritte durchlaufen.');
                 return;
             }
-            
-            // Daten in Haupt-Template-Editor übertragen
-            transferToMainEditor();
-            
-            // Wizard schließen
+
+            console.log('=== WIZARD DATA TO SENDER ===');
+            console.log('Subject:', wizardData.subject);
+            console.log('Content Preview:', wizardData.content.substring(0, 200));
+            console.log('Selected Recipients:', wizardData.selectedRecipients);
+
+            // CRITICAL: Template-Objekt für Sender erstellen
+            const wizardTemplate = {
+                subject: wizardData.subject,
+                content: wizardData.content
+            };
+
+            console.log('Template for Sender:', wizardTemplate);
+
+            // CRITICAL: Empfänger-Objekte für Sender erstellen
+            const recipientObjects = wizardData.selectedRecipients.map(email => {
+                // Suche echtes Empfänger-Objekt
+                const fullRecipient = findRecipientByEmail(email);
+                console.log(`Mapped ${email} to:`, fullRecipient);
+                return fullRecipient;
+            });
+
+            console.log('Recipient objects for Sender:', recipientObjects);
+
+            // CRITICAL: Sender-Modul prüfen
+            if (!window.Sender) {
+                console.error('Sender module not available');
+                alert('Sender-Modul nicht verfügbar');
+                return;
+            }
+
+            console.log('Sender module available:', typeof window.Sender);
+
+            // CRITICAL: Kampagne im Sender-Modul starten
+            console.log('=== STARTING SENDER CAMPAIGN ===');
+
+            // Option 1: Direkte Übergabe an Sender (preferred)
+            if (typeof window.Sender.startCampaignWithData === 'function') {
+                console.log('Using startCampaignWithData...');
+                window.Sender.startCampaignWithData({
+                    template: wizardTemplate,
+                    recipients: recipientObjects
+                });
+            }
+            // Option 2: Sender-State setzen und dann starten
+            else if (typeof window.Sender.setCampaignData === 'function') {
+                console.log('Using setCampaignData + start...');
+                window.Sender.setCampaignData(wizardTemplate, recipientObjects);
+                window.Sender.start();
+            }
+            // Option 3: Classic start (fallback)
+            else {
+                console.log('Using classic Sender.start()...');
+
+                // HACK: Template temporär in Templates-Modul setzen
+                if (window.Templates && typeof Templates.setCurrentTemplate === 'function') {
+                    Templates.setCurrentTemplate(wizardTemplate);
+                    console.log('Set template in Templates module');
+                }
+
+                // HACK: Recipients temporär in Recipients-Modul setzen
+                if (window.Recipients && typeof Recipients.setCurrentRecipients === 'function') {
+                    Recipients.setCurrentRecipients(recipientObjects);
+                    console.log('Set recipients in Recipients module');
+                }
+
+                window.Sender.start();
+            }
+
+            // Modal schließen
             hideWizardModal();
-            
-            // Nach Abschluss zum Mailwizard-Tab wechseln
-            if (window.App) {
+
+            // Zu Campaign Tab wechseln falls vorhanden
+            if (window.App && typeof App.showTab === 'function') {
                 App.showTab('mailwizard');
             }
-            
-            // Erfolgs-Nachricht
-            Utils.showStatus('sendStatus', 
-                `✅ Mail aus Wizard übernommen - ${wizardData.selectedRecipients.length} Empfänger bereit zum Versenden!`, 
-                'success'
-            );
-            
+
+            console.log('=== FINISH WIZARD DEBUG END ===');
+
         } catch (error) {
-            console.error('Error finishing wizard:', error);
-            alert('Fehler beim Übertragen der Mail-Daten: ' + error.message);
+            console.error('Finish wizard error:', error);
+            alert(`Fehler beim Starten der Kampagne: ${error.message}`);
         }
     }
 
