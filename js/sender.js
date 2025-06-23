@@ -246,29 +246,54 @@ async function sendSingleEmail(recipient) {
     const config = currentCampaign.config;
     const template = currentCampaign.template;
 
-    // Robuste Config-Auflösung mit Fallbacks
     const emailConfig = {
         serviceId: config.serviceId || localStorage.getItem('emailjs_service_id'),
         templateId: config.templateId || localStorage.getItem('emailjs_template_id'),
         fromName: config.fromName || localStorage.getItem('fromName')
     };
 
-    // Validierung vor dem Send
     if (!emailConfig.serviceId || !emailConfig.templateId) {
         throw new Error(`EmailJS Konfiguration unvollständig - Service: ${emailConfig.serviceId}, Template: ${emailConfig.templateId}`);
     }
 
-    // Template personalisieren
-    let personalizedSubject = Templates.personalizeContent(template.subject, recipient);
-    let personalizedContent = Templates.personalizeContent(template.content, recipient);
+    const templateData = {
+        subject: template?.subject || 'Kein Betreff',
+        content: template?.content || '<p>Kein Template-Inhalt verfügbar</p>'
+    };
 
-    // Attachment-Links hinzufügen falls vorhanden
+    console.log('Template data before personalization:', templateData);
+
+    let personalizedSubject = '';
+    let personalizedContent = '';
+
+    if (window.Templates && typeof Templates.personalizeContent === 'function') {
+        personalizedSubject = Templates.personalizeContent(templateData.subject, recipient);
+        personalizedContent = Templates.personalizeContent(templateData.content, recipient);
+    } else {
+        const recipientName = recipient.name || Utils.getNameFromEmail(recipient.email) || 'Liebe/r Interessent/in';
+        personalizedSubject = templateData.subject.replace(/\{\{name\}\}/g, recipientName);
+        personalizedContent = templateData.content.replace(/\{\{name\}\}/g, recipientName)
+                                                  .replace(/\{\{email\}\}/g, recipient.email || '');
+    }
+
     if (window.Attachments && Attachments.hasAttachments()) {
         const attachmentLinks = Attachments.generateEmailAttachmentLinks();
         personalizedContent += attachmentLinks;
     }
 
-    // EmailJS Template-Parameter (angepasst an Standard EmailJS Template-Format)
+    console.log('Personalization debug:', {
+        recipientName: recipient.name,
+        recipientEmail: recipient.email,
+        originalSubject: templateData.subject,
+        personalizedSubject: personalizedSubject,
+        originalContent: templateData.content.substring(0, 200),
+        personalizedContent: personalizedContent.substring(0, 200),
+        stillHasPlaceholders: {
+            subject: personalizedSubject.includes('{{'),
+            content: personalizedContent.includes('{{')
+        }
+    });
+
     const templateParams = {
         subject: personalizedSubject,
         message: personalizedContent,
@@ -276,6 +301,8 @@ async function sendSingleEmail(recipient) {
         name: emailConfig.fromName,
         email: recipient.email
     };
+
+    console.log('Final EmailJS params:', templateParams);
 
     try {
         const response = await emailjs.send(
@@ -498,13 +525,32 @@ async function sendSingleEmail(recipient) {
      * @returns {Object} Template-Objekt
      */
     function getCurrentTemplate() {
-        // Falls kein currentCampaign.template, Fallback erstellen
+        if (window.Templates && typeof Templates.getCurrentTemplate === 'function') {
+            const template = Templates.getCurrentTemplate();
+            if (template && template.subject && template.content) {
+                return template;
+            }
+        }
+
         const htmlContent = document.getElementById('htmlContent');
         const subject = document.getElementById('subject');
 
+        if (htmlContent && subject) {
+            return {
+                subject: subject.value || 'Newsletter Update',
+                content: htmlContent.value || '<p>Hallo {{name}}! Hier ist dein Newsletter.</p>'
+            };
+        }
+
         return {
-            subject: subject?.value || 'Kein Betreff',
-            content: htmlContent?.value || '<p>Kein Template-Inhalt gefunden</p>'
+            subject: 'Update: {{name}}',
+            content: `
+            <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+                <h2>Hallo {{name}}! 👋</h2>
+                <p>Hier ist dein wöchentliches Update mit den neuesten Informationen.</p>
+                <p>Viele Grüße,<br>Dein Team</p>
+            </div>
+        `
         };
     }
 

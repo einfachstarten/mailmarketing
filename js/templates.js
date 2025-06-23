@@ -666,13 +666,11 @@ window.Templates = (function() {
         if (!htmlContent || !preview) return;
 
         try {
-            const subjectValue = subject ? subject.value : '';
-            
             // Beispiel-Personalisierung
             const personalizedHTML = personalizeContent(htmlContent.value, {
                 name: 'Max Mustermann',
                 email: 'max@example.com'
-            }, subjectValue);
+            });
 
             preview.innerHTML = personalizedHTML;
             
@@ -695,34 +693,46 @@ window.Templates = (function() {
      * Personalisiert Template-Content
      * @param {string} content - Template-Content
      * @param {Object} recipient - Empfänger-Daten
-     * @param {string} subject - E-Mail-Betreff
      * @returns {string} Personalisierter Content
      */
-    function personalizeContent(content, recipient, subject = '') {
+    function personalizeContent(content, recipient) {
         if (!content) return '';
-        
-        let result = content
-            .replace(/\{\{name\}\}/g, recipient.name || 'Unbekannt')
-            .replace(/\{\{email\}\}/g, recipient.email || '')
-            .replace(/\{\{subject\}\}/g, subject);
+        if (!recipient) return content;
 
-        if (window.Attachments) {
-            const params = Attachments.getEmailTemplateParams();
-            result = result
-                .replace(/\{\{attachments\}\}/g, params.attachment_links)
-                .replace(/\{\{attachment_links\}\}/g, params.attachment_links)
-                .replace(/\{\{attachment_count\}\}/g, params.attachment_count);
+        const recipientName = recipient.name ||
+                             Utils.getNameFromEmail(recipient.email) ||
+                             'Liebe/r Interessent/in';
 
-            for (let i = 1; i <= params.attachment_count; i++) {
-                const url = params[`attachment${i}_url`] || '';
-                const name = params[`attachment${i}_name`] || '';
-                result = result
-                    .replace(new RegExp(`\\{\\{attachment${i}_url\\}\\}`, 'g'), url)
-                    .replace(new RegExp(`\\{\\{attachment${i}_name\\}\\}`, 'g'), name);
-            }
-        }
+        const now = new Date();
+        const variables = {
+            '{{name}}': recipientName,
+            '{{email}}': recipient.email || '',
+            '{{first_name}}': recipientName.split(' ')[0] || 'Liebe/r',
+            '{{last_name}}': recipientName.split(' ').slice(1).join(' ') || '',
+            '{{domain}}': recipient.email ? recipient.email.split('@')[1] : '',
+            '{{date}}': now.toLocaleDateString('de-DE'),
+            '{{time}}': now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }),
+            '{{day}}': now.toLocaleDateString('de-DE', { weekday: 'long' }),
+            '{{month}}': now.toLocaleDateString('de-DE', { month: 'long' }),
+            '{{year}}': now.getFullYear().toString()
+        };
 
-        return result;
+        let personalizedContent = content;
+
+        Object.entries(variables).forEach(([placeholder, value]) => {
+            const escapedPlaceholder = placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(escapedPlaceholder, 'g');
+            personalizedContent = personalizedContent.replace(regex, value);
+        });
+
+        console.log('Template personalization:', {
+            original: content.substring(0, 100) + '...',
+            recipient: recipient,
+            personalized: personalizedContent.substring(0, 100) + '...',
+            foundPlaceholders: Object.keys(variables).filter(placeholder => content.includes(placeholder))
+        });
+
+        return personalizedContent;
     }
 
     // ===== TEMPLATE MANAGEMENT =====
