@@ -74,16 +74,17 @@ window.CampaignSender = (function() {
             
             try {
                 updateProgress(i, recipients.length, `Sende an ${email}...`);
-                
+
                 // E-Mail senden (EmailJS)
                 const result = await sendSingleEmail(email, campaignData);
-                
+
                 sendStats.sent++;
                 logMessage(`✅ Erfolgreich gesendet an ${email}`, 'success');
-                
+
             } catch (error) {
                 sendStats.errors++;
-                logMessage(`❌ Fehler beim Senden an ${email}: ${error.message}`, 'error');
+                const errorMsg = error?.message || error?.text || error?.statusText || String(error) || 'Unbekannter Fehler';
+                logMessage(`❌ Fehler beim Senden an ${email}: ${errorMsg}`, 'error');
             }
             
             // Progress Update
@@ -104,7 +105,6 @@ window.CampaignSender = (function() {
      * Einzelne E-Mail senden
      */
     async function sendSingleEmail(email, data) {
-        // EmailJS Implementation
         const templateParams = {
             to_email: email,
             subject: data.subject,
@@ -112,11 +112,27 @@ window.CampaignSender = (function() {
             from_name: localStorage.getItem('fromName') || 'E-Mail Marketing Tool'
         };
 
-        return window.emailjs.send(
-            localStorage.getItem('emailjs_service_id'),
-            localStorage.getItem('emailjs_template_id'),
-            templateParams
-        );
+        try {
+            const response = await window.emailjs.send(
+                localStorage.getItem('emailjs_service_id'),
+                localStorage.getItem('emailjs_template_id'),
+                templateParams
+            );
+
+            if (response.status !== 200) {
+                throw { status: response.status, text: response.text };
+            }
+
+            return response;
+        } catch (error) {
+            if (error.status) {
+                throw new Error(`EmailJS HTTP ${error.status}: ${error.text || 'Server Fehler'}`);
+            } else if (error.name === 'TypeError') {
+                throw new Error('Netzwerk-Fehler oder ungültige Konfiguration');
+            }
+            const errorMsg = error?.message || error?.text || error?.statusText || String(error) || 'Unbekannter Fehler';
+            throw new Error(errorMsg);
+        }
     }
 
     /**

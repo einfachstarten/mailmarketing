@@ -213,9 +213,10 @@ window.Sender = (function() {
                 await sendSingleEmail(recipient);
                 return; // Erfolg
             } catch (error) {
-                lastError = error;
-                console.warn(`Send attempt ${attempt} failed for ${recipient.email}:`, error.message);
-                
+                const errorMsg = error?.message || error?.text || error?.statusText || String(error) || 'Unbekannter Fehler';
+                lastError = new Error(errorMsg);
+                console.warn(`Send attempt ${attempt} failed for ${recipient.email}:`, errorMsg);
+
                 // Retry-Delay (außer beim letzten Versuch)
                 if (attempt <= sendConfig.maxRetries) {
                     await Utils.delay(sendConfig.retryDelay);
@@ -260,18 +261,27 @@ async function sendSingleEmail(recipient) {
         message: personalizedContent
     };
 
-    // E-Mail senden
-    const response = await emailjs.send(
-        config.serviceId,
-        config.templateId,
-        templateParams
-    );
-    
-    if (response.status !== 200) {
-        throw new Error(`EmailJS Error: ${response.status} - ${response.text}`);
+    try {
+        const response = await emailjs.send(
+            config.serviceId,
+            config.templateId,
+            templateParams
+        );
+
+        if (response.status !== 200) {
+            throw { status: response.status, text: response.text };
+        }
+
+        return response;
+    } catch (error) {
+        if (error.status) {
+            throw new Error(`EmailJS HTTP ${error.status}: ${error.text || 'Server Fehler'}`);
+        } else if (error.name === 'TypeError') {
+            throw new Error('Netzwerk-Fehler oder ungültige Konfiguration');
+        }
+        const errorMsg = error?.message || error?.text || error?.statusText || String(error) || 'Unbekannter Fehler';
+        throw new Error(errorMsg);
     }
-    
-    return response;
 }
 
     /**
