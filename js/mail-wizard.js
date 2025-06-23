@@ -1200,23 +1200,46 @@ function generateWizardButtons() {
      */
     function updateWizardPreview() {
         const editor = document.getElementById('wizardVisualEditor');
-        const preview = document.getElementById('wizardEmailPreview'); // GEÄNDERT: war 'wizardPreview'
-        
+        const preview = document.getElementById('wizardEmailPreview');
+
         if (editor && preview) {
             let content = editor.innerHTML;
-            
-            // Personalisierung simulieren
             content = content.replace(/\{\{name\}\}/g, 'Max Mustermann');
             content = content.replace(/\{\{email\}\}/g, 'max@example.com');
-            
-            // Wizard-Content für vollständiges HTML template speichern
+
             wizardData.content = generateFullHTML(content);
-            
-            preview.innerHTML = `
-                <div style="font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; background: white; border-radius: 8px; border: 1px solid #e9ecef;">
-                    ${content}
-                </div>
-            `;
+
+            const iframe = document.createElement('iframe');
+            iframe.style.cssText = 'width:100%;height:300px;border:1px solid #e9ecef;border-radius:8px;background:white;';
+            iframe.setAttribute('sandbox', 'allow-same-origin');
+            iframe.setAttribute('srcdoc', `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <style>
+                    * { all: initial; }
+                    body {
+                        font-family: Arial, sans-serif !important;
+                        line-height: 1.6 !important;
+                        margin: 0 !important;
+                        padding: 20px !important;
+                        background: white !important;
+                        color: #333 !important;
+                        box-sizing: border-box !important;
+                    }
+                    h1,h2,h3,h4,h5,h6 { color: #333 !important; margin: 0 0 10px 0 !important; }
+                    p { margin: 0 0 15px 0 !important; }
+                    a { color: #4a90e2 !important; text-decoration: underline !important; }
+                    img { max-width: 100% !important; height: auto !important; }
+                </style>
+            </head>
+            <body>${content}</body>
+            </html>
+            `);
+
+            preview.innerHTML = '';
+            preview.appendChild(iframe);
         }
     }
 
