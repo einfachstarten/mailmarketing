@@ -279,6 +279,13 @@ window.Sender = (function() {
         
         Utils.showStatus('sendStatus', 'Kampagne gestartet...', 'success');
 
+        ProgressManager.init({
+            containerId: 'sendProgressContainer',
+            type: 'campaign',
+            total: recipients.length
+        });
+        ProgressManager.log('🚀 Kampagne gestartet');
+
         for (let i = 0; i < recipients.length && campaignActive; i++) {
             // Pause-Handling
             while (campaignPaused && campaignActive) {
@@ -307,8 +314,9 @@ window.Sender = (function() {
                 sendingStats.errors++;
             }
 
-            // Progress aktualisieren
-            updateProgress();
+            // Fortschritt aktualisieren
+            ProgressManager.update(i, recipients.length, `Sende an ${recipient.email}...`);
+            ProgressManager.log(`📧 Sende an ${recipient.email}`);
             
             // Delay vor nächster E-Mail (außer bei letzter)
             if (i < recipients.length - 1 && campaignActive) {
@@ -544,6 +552,8 @@ async function sendSingleEmail(recipient) {
 
         updateSendingUI(false);
         showCampaignResults();
+        ProgressManager.complete('🎉 Versand abgeschlossen');
+        ProgressManager.hide(5000);
         
         // State zurücksetzen
         campaignActive = false;
@@ -606,19 +616,6 @@ async function sendSingleEmail(recipient) {
     /**
      * Aktualisiert Progress-Anzeige
      */
-    function updateProgress() {
-        const progressBar = document.getElementById('progressBar');
-        const progressText = document.getElementById('progressText');
-        
-        if (!progressBar || !progressText) return;
-
-        const processed = sendingStats.sent + sendingStats.errors;
-        const progress = sendingStats.total > 0 ? (processed / sendingStats.total) * 100 : 0;
-        
-        progressBar.style.width = `${progress}%`;
-        progressText.textContent = 
-            `${processed} von ${sendingStats.total} verarbeitet (${sendingStats.sent} erfolgreich, ${sendingStats.errors} Fehler)`;
-    }
 
     /**
      * Aktualisiert Empfänger-Liste für Send-Tab
