@@ -125,7 +125,7 @@ window.Sender = (function() {
      */
     function initializeCampaign() {
         const recipients = Recipients.getRecipients();
-        
+
         currentCampaign = {
             id: generateCampaignId(),
             recipients: recipients,
@@ -134,6 +134,14 @@ window.Sender = (function() {
             startTime: new Date(),
             status: 'running'
         };
+
+        // Debug-Ausgabe für Template ID Problem
+        console.log('Campaign Config Debug:', {
+            configServiceId: currentCampaign.config.serviceId,
+            configTemplateId: currentCampaign.config.templateId,
+            localStorageTemplateId: localStorage.getItem('emailjs_template_id'),
+            hasTemplate: !!currentCampaign.template
+        });
 
         sendingStats = {
             sent: 0,
@@ -490,12 +498,13 @@ async function sendSingleEmail(recipient) {
      * @returns {Object} Template-Objekt
      */
     function getCurrentTemplate() {
-        const subject = document.getElementById('subject');
+        // Falls kein currentCampaign.template, Fallback erstellen
         const htmlContent = document.getElementById('htmlContent');
-        
+        const subject = document.getElementById('subject');
+
         return {
-            subject: subject ? subject.value : '',
-            content: htmlContent ? htmlContent.value : ''
+            subject: subject?.value || 'Kein Betreff',
+            content: htmlContent?.value || '<p>Kein Template-Inhalt gefunden</p>'
         };
     }
 

@@ -116,6 +116,12 @@
                         <h3 class="action-title">Verlauf</h3>
                         <p class="action-desc">Gesendete Kampagnen und Status einsehen</p>
                     </a>
+
+                    <a href="#" class="action-card" onclick="showSettingsModal()">
+                        <span class="action-icon">⚙️</span>
+                        <h3 class="action-title">Einstellungen</h3>
+                        <p class="action-desc">EmailJS-Konfiguration und App-Einstellungen verwalten</p>
+                    </a>
                 </div>
             </div>
         </main>
@@ -501,6 +507,91 @@
 
             <div id="wizardButtonsContainer" class="wizard-buttons">
                 <!-- Buttons werden dynamisch generiert -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="wizard-overlay hidden">
+        <div class="wizard-modal">
+            <div class="wizard-header">
+                <h2>⚙️ Einstellungen</h2>
+                <span class="wizard-close" onclick="hideSettingsModal()">&times;</span>
+            </div>
+            <div class="wizard-content">
+                <div class="settings-container">
+                    <!-- EmailJS Konfiguration -->
+                    <div class="settings-section">
+                        <h3>📧 EmailJS Konfiguration</h3>
+                        <div class="form-group">
+                            <label for="settings-serviceId">Service ID</label>
+                            <input type="text" id="settings-serviceId" class="form-control" placeholder="service_xxxxxxxxx">
+                        </div>
+                        <div class="form-group">
+                            <label for="settings-templateId">Template ID</label>
+                            <input type="text" id="settings-templateId" class="form-control" placeholder="template_xxxxxxxxx">
+                        </div>
+                        <div class="form-group">
+                            <label for="settings-userId">Public Key</label>
+                            <input type="text" id="settings-userId" class="form-control" placeholder="Dein Public Key">
+                        </div>
+                        <div class="form-group">
+                            <label for="settings-fromName">Absender Name</label>
+                            <input type="text" id="settings-fromName" class="form-control" placeholder="Max Mustermann">
+                        </div>
+                    </div>
+
+                    <!-- App-Einstellungen -->
+                    <div class="settings-section">
+                        <h3>🔧 App-Einstellungen</h3>
+                        <div class="form-group">
+                            <label for="settings-sendSpeed">Versand-Geschwindigkeit</label>
+                            <select id="settings-sendSpeed" class="form-control">
+                                <option value="500">Sehr schnell (0.5s)</option>
+                                <option value="1000">Normal (1s)</option>
+                                <option value="2000">Langsam (2s)</option>
+                                <option value="5000">Sehr langsam (5s)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="settings-autoSave"> Templates automatisch speichern
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Status-Info -->
+                    <div class="settings-section">
+                        <h3>📊 Status-Information</h3>
+                        <div class="settings-info">
+                            <div class="info-item">
+                                <span>Setup-Status:</span>
+                                <span id="settings-setupStatus">Wird geladen...</span>
+                            </div>
+                            <div class="info-item">
+                                <span>Empfänger:</span>
+                                <span id="settings-recipientCount">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span>Templates:</span>
+                                <span id="settings-templateCount">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="settingsStatus"></div>
+            </div>
+            <div class="wizard-buttons">
+                <button type="button" class="btn btn-secondary" onclick="hideSettingsModal()">
+                    Abbrechen
+                </button>
+                <button type="button" class="btn btn-primary" onclick="saveSettings()">
+                    Speichern
+                </button>
+                <button type="button" class="btn btn-danger" onclick="resetSettings()">
+                    Alle Daten löschen
+                </button>
             </div>
         </div>
     </div>
