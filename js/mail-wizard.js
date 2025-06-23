@@ -1581,43 +1581,24 @@ function generateWizardButtons() {
     }
 
     async function sendCampaignEmails(campaignData, recipients, sendSpeed) {
-        let sent = 0;
-        let errors = 0;
-        const startTime = Date.now();
-
+        ProgressManager.init({ containerId: "campaignProgress", type: "campaign", total: recipients.length });
+        ProgressManager.log("🚀 Kampagne gestartet");
         for (let i = 0; i < recipients.length; i++) {
             const recipient = recipients[i];
-
             try {
-                updateCampaignProgress(i + 1, recipients.length, `Sende an ${recipient.email}`);
+                ProgressManager.update(i, recipients.length, `Sende an ${recipient.email}...`);
+                ProgressManager.log(`📨 Sende an ${recipient.email}`);
                 await sendPersonalizedEmail(campaignData, recipient);
-                sent++;
-                logToCampaign(`✅ Gesendet an ${recipient.name} (${recipient.email})`);
+                ProgressManager.log(`✅ Erfolgreich: ${recipient.email}`, 'success');
             } catch (error) {
-                errors++;
-                logToCampaign(`❌ Fehler bei ${recipient.email}: ${error.message}`, 'error');
+                ProgressManager.log(`❌ Fehler: ${recipient.email} - ${error.message}`, 'error');
             }
-
             if (i < recipients.length - 1) {
                 await new Promise(resolve => setTimeout(resolve, sendSpeed));
             }
         }
-
-        const duration = Math.round((Date.now() - startTime) / 1000);
-        updateCampaignProgress(recipients.length, recipients.length, 'Versand abgeschlossen');
-
-        logToCampaign(`🎉 Kampagne abgeschlossen: ${sent} gesendet, ${errors} Fehler in ${duration}s`);
-
-        const sendBtn = document.querySelector('.btn.btn-success.btn-large');
-        if (sendBtn) {
-            sendBtn.disabled = false;
-            sendBtn.textContent = '✅ Versand abgeschlossen';
-            sendBtn.classList.remove('btn-success');
-            sendBtn.classList.add('btn-info');
-        }
-
-        document.getElementById('campaignPauseBtn').style.display = 'none';
-        document.getElementById('campaignStopBtn').style.display = 'none';
+        ProgressManager.complete("🎉 Kampagne abgeschlossen!");
+        ProgressManager.hide(5000);
     }
 
     async function sendPersonalizedEmail(campaignData, recipient) {
@@ -1652,24 +1633,6 @@ function generateWizardButtons() {
         return response;
     }
 
-    function updateCampaignProgress(current, total, message) {
-        const progressBar = document.getElementById('campaignProgressBar');
-        const progressText = document.getElementById('campaignProgressText');
-        const progressCount = document.getElementById('campaignProgressCount');
-
-        if (progressBar) {
-            const percentage = (current / total) * 100;
-            progressBar.style.width = percentage + '%';
-        }
-
-        if (progressText) {
-            progressText.textContent = message;
-        }
-
-        if (progressCount) {
-            progressCount.textContent = `${current} / ${total}`;
-        }
-    }
 
     function logToCampaign(message, type = 'info') {
         const logContainer = document.getElementById('campaignLogContainer');

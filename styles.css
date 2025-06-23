@@ -3453,3 +3453,118 @@ small {
     50% { transform: translateY(-10px); }
 }
 
+/* === UNIFIED PROGRESS SYSTEM === */
+.unified-progress-container {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    transition: opacity 0.3s ease;
+}
+
+.unified-progress-bar-container {
+    margin-bottom: 16px;
+}
+
+.unified-progress-track {
+    width: 100%;
+    height: 24px;
+    background: #e9ecef;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.unified-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #28a745, #20c997, #17a2b8);
+    border-radius: 12px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.unified-progress-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255,255,255,0.4), 
+        transparent);
+    animation: progressShine 2s ease-in-out infinite;
+}
+
+.unified-progress-bar.progress-complete {
+    background: linear-gradient(90deg, #28a745, #20c997);
+    animation: progressPulse 0.8s ease-in-out;
+}
+
+.unified-progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.unified-progress-text {
+    flex: 1;
+}
+
+.unified-progress-count {
+    font-family: 'Courier New', monospace;
+    background: #e9ecef;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.unified-progress-log-container {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    background: white;
+}
+
+.unified-progress-log {
+    padding: 12px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.unified-log-entry {
+    padding: 2px 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.unified-log-entry:last-child {
+    border-bottom: none;
+}
+
+.unified-log-time {
+    color: #6c757d;
+    margin-right: 8px;
+}
+
+.unified-log-info { color: #17a2b8; }
+.unified-log-success { color: #28a745; }
+.unified-log-warning { color: #ffc107; }
+.unified-log-error { color: #dc3545; }
+
+@keyframes progressShine {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+@keyframes progressPulse {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(1.1); }
+}

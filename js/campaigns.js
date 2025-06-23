@@ -220,25 +220,24 @@ window.Campaigns = (function() {
             // UI für Versand vorbereiten
             document.getElementById('activeCampaignProgress').style.display = 'block';
             document.getElementById('startSendBtn').disabled = true;
-            
-            logToActiveCampaign(`🚀 Kampagne gestartet: ${recipients.length} E-Mails`);
 
-            // Versand durchführen (DIESELBE Logik wie Mail Wizard)
-            let sent = 0;
-            let errors = 0;
-            const startTime = Date.now();
+            ProgressManager.init({
+                containerId: 'activeCampaignProgress',
+                type: 'campaign',
+                total: recipients.length
+            });
+            ProgressManager.log('🚀 Kampagne gestartet');
 
             for (let i = 0; i < recipients.length; i++) {
                 const recipient = recipients[i];
 
                 try {
-                    updateActiveCampaignProgress(i + 1, recipients.length, `Sende an ${recipient.email}`);
+                    ProgressManager.update(i, recipients.length, `Sende an ${recipient.email}...`);
+                    ProgressManager.log(`📧 Sende an ${recipient.email}`);
                     await sendPersonalizedEmail(campaign, recipient);
-                    sent++;
-                    logToActiveCampaign(`✅ Gesendet an ${recipient.name} (${recipient.email})`);
+                    ProgressManager.log(`✅ Erfolgreich: ${recipient.email}`, 'success');
                 } catch (error) {
-                    errors++;
-                    logToActiveCampaign(`❌ Fehler bei ${recipient.email}: ${error.message}`, 'error');
+                    ProgressManager.log(`❌ Fehler: ${recipient.email} - ${error.message}`, 'error');
                 }
 
                 if (i < recipients.length - 1) {
@@ -246,9 +245,10 @@ window.Campaigns = (function() {
                 }
             }
 
-            // Versand abgeschlossen
+            ProgressManager.complete('🎉 Kampagne abgeschlossen!');
+            ProgressManager.hide(5000);
+
             const duration = Math.round((Date.now() - startTime) / 1000);
-            updateActiveCampaignProgress(recipients.length, recipients.length, 'Versand abgeschlossen');
             logToActiveCampaign(`🎉 Kampagne abgeschlossen: ${sent} gesendet, ${errors} Fehler in ${duration}s`);
 
             // Kampagne-Status updaten
@@ -297,24 +297,6 @@ window.Campaigns = (function() {
         logContainer.scrollTop = logContainer.scrollHeight;
     }
 
-    function updateActiveCampaignProgress(current, total, message) {
-        const progressBar = document.getElementById('activeCampaignProgressBar');
-        const progressText = document.getElementById('activeCampaignProgressText');
-        const progressCount = document.getElementById('activeCampaignProgressCount');
-
-        if (progressBar) {
-            const percentage = (current / total) * 100;
-            progressBar.style.width = percentage + '%';
-        }
-
-        if (progressText) {
-            progressText.textContent = message;
-        }
-
-        if (progressCount) {
-            progressCount.textContent = `${current} / ${total}`;
-        }
-    }
 
     // Verwende dieselbe sendPersonalizedEmail Funktion wie Mail Wizard
     async function sendPersonalizedEmail(campaign, recipient) {
