@@ -890,67 +890,67 @@ function generateWizardButtons() {
      */
     async function sendTestEmail() {
         if (wizardData.selectedRecipients.length === 0) {
-            alert('Bitte zuerst Empfänger auswählen');
+            Utils.showToast('Bitte zuerst Empfänger auswählen', 'warning');
             return;
         }
 
         const testRecipient = findRecipientByEmail(wizardData.selectedRecipients[0]);
 
-        if (!confirm(`Test-E-Mail an ${testRecipient.name} (${testRecipient.email}) senden?`)) {
-            return;
-        }
+        Utils.showConfirm(
+            `Test-E-Mail an ${testRecipient.name} (${testRecipient.email}) senden?`,
+            async () => {
+                try {
+                    const testCampaign = {
+                        config: window.Config ? Config.getConfig() : {
+                            serviceId: localStorage.getItem('emailjs_service_id'),
+                            templateId: localStorage.getItem('emailjs_template_id'),
+                            fromName: localStorage.getItem('fromName')
+                        },
+                        template: {
+                            subject: wizardData.subject,
+                            content: wizardData.content
+                        }
+                    };
+                    console.log('=== TEST EMAIL DEBUG ===');
+                    console.log('Test Campaign:', testCampaign);
+                    console.log('Test Recipient:', testRecipient);
 
-        try {
-            const testCampaign = {
-                config: window.Config ? Config.getConfig() : {
-                    serviceId: localStorage.getItem('emailjs_service_id'),
-                    templateId: localStorage.getItem('emailjs_template_id'),
-                    fromName: localStorage.getItem('fromName')
-                },
-                template: {
-                    subject: wizardData.subject,
-                    content: wizardData.content
+                    let personalizedSubject = testCampaign.template.subject;
+                    let personalizedContent = testCampaign.template.content;
+
+                    if (window.Templates && typeof Templates.personalizeContent === 'function') {
+                        personalizedSubject = Templates.personalizeContent(personalizedSubject, testRecipient);
+                        personalizedContent = Templates.personalizeContent(personalizedContent, testRecipient);
+                    }
+
+                    const templateParams = {
+                        subject: personalizedSubject,
+                        message: personalizedContent,
+                        to_email: testRecipient.email,
+                        name: testCampaign.config.fromName,
+                        email: testRecipient.email
+                    };
+
+                    console.log('Test Email Params:', templateParams);
+
+                    const response = await emailjs.send(
+                        testCampaign.config.serviceId,
+                        testCampaign.config.templateId,
+                        templateParams
+                    );
+
+                    if (response.status === 200) {
+                        Utils.showToast(`✅ Test-E-Mail erfolgreich an ${testRecipient.email} gesendet!`, 'success');
+                    } else {
+                        throw new Error(`EmailJS Status: ${response.status}`);
+                    }
+
+                } catch (error) {
+                    console.error('Test email failed:', error);
+                    Utils.showToast(`❌ Test-E-Mail fehlgeschlagen: ${error.message}`, 'error');
                 }
-            };
-
-            console.log('=== TEST EMAIL DEBUG ===');
-            console.log('Test Campaign:', testCampaign);
-            console.log('Test Recipient:', testRecipient);
-
-            let personalizedSubject = testCampaign.template.subject;
-            let personalizedContent = testCampaign.template.content;
-
-            if (window.Templates && typeof Templates.personalizeContent === 'function') {
-                personalizedSubject = Templates.personalizeContent(personalizedSubject, testRecipient);
-                personalizedContent = Templates.personalizeContent(personalizedContent, testRecipient);
             }
-
-            const templateParams = {
-                subject: personalizedSubject,
-                message: personalizedContent,
-                to_email: testRecipient.email,
-                name: testCampaign.config.fromName,
-                email: testRecipient.email
-            };
-
-            console.log('Test Email Params:', templateParams);
-
-            const response = await emailjs.send(
-                testCampaign.config.serviceId,
-                testCampaign.config.templateId,
-                templateParams
-            );
-
-            if (response.status === 200) {
-                alert(`✅ Test-E-Mail erfolgreich an ${testRecipient.email} gesendet!`);
-            } else {
-                throw new Error(`EmailJS Status: ${response.status}`);
-            }
-
-        } catch (error) {
-            console.error('Test email failed:', error);
-            alert(`❌ Test-E-Mail fehlgeschlagen: ${error.message}`);
-        }
+        );
     }
 
     // ===== STEP VALIDATION =====
@@ -962,13 +962,13 @@ function generateWizardButtons() {
         switch (currentStep) {
             case 1:
                 if (!wizardData.mailType) {
-                    alert('Bitte wähle einen Mail-Typ aus');
+                    Utils.showToast('Bitte wähle einen Mail-Typ aus', 'warning');
                     return false;
                 }
                 break;
             case 2:
                 if (!wizardData.template) {
-                    alert('Bitte wähle ein Template aus');
+                    Utils.showToast('Bitte wähle ein Template aus', 'warning');
                     return false;
                 }
                 break;
@@ -978,13 +978,13 @@ function generateWizardButtons() {
                 const visualEditor = document.getElementById('wizardVisualEditor');
 
                 if (!subjectInput?.value?.trim()) {
-                    alert('Bitte gib einen Betreff ein');
+                    Utils.showToast('Bitte gib einen Betreff ein', 'warning');
                     if (subjectInput) subjectInput.focus();
                     return false;
                 }
 
                 if (!visualEditor?.innerHTML?.trim() || visualEditor.innerHTML === '') {
-                    alert('Bitte füge E-Mail-Inhalt hinzu');
+                    Utils.showToast('Bitte füge E-Mail-Inhalt hinzu', 'warning');
                     if (visualEditor) visualEditor.focus();
                     return false;
                 }
@@ -999,7 +999,7 @@ function generateWizardButtons() {
             case 4:
                 console.log('Validating recipients:', wizardData.selectedRecipients); // DEBUG
                 if (!wizardData.selectedRecipients || wizardData.selectedRecipients.length === 0) {
-                    alert('Bitte wähle mindestens einen Empfänger aus');
+                    Utils.showToast('Bitte wähle mindestens einen Empfänger aus', 'warning');
                     return false;
                 }
                 break;
@@ -1606,7 +1606,7 @@ function generateWizardButtons() {
         try {
             // Validierung
             if (!wizardData.subject || !wizardData.content || !wizardData.selectedRecipients.length) {
-                alert('Wizard-Daten unvollständig. Bitte alle Schritte durchlaufen.');
+                Utils.showToast('Wizard-Daten unvollständig. Bitte alle Schritte durchlaufen.', 'error');
                 return;
             }
 
@@ -1652,7 +1652,7 @@ function generateWizardButtons() {
             }
         } catch (error) {
             console.error('Save campaign error:', error);
-            alert(`Fehler beim Speichern der Kampagne: ${error.message}`);
+            Utils.showToast(`Fehler beim Speichern der Kampagne: ${error.message}`, 'error');
         }
     }
 
