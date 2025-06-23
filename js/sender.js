@@ -246,6 +246,7 @@ async function sendSingleEmail(recipient) {
     const config = currentCampaign.config;
     const template = currentCampaign.template;
 
+    // Robuste Config-Auflösung
     const emailConfig = {
         serviceId: config.serviceId || localStorage.getItem('emailjs_service_id'),
         templateId: config.templateId || localStorage.getItem('emailjs_template_id'),
@@ -261,38 +262,60 @@ async function sendSingleEmail(recipient) {
         content: template?.content || '<p>Kein Template-Inhalt verfügbar</p>'
     };
 
-    console.log('Template data before personalization:', templateData);
+    // CRITICAL DEBUG: Recipient-Daten prüfen
+    console.log('=== PERSONALIZATION DEBUG ===');
+    console.log('Recipient Object:', recipient);
+    console.log('Template Data:', templateData);
+    console.log('Templates Module Available:', !!window.Templates);
+    console.log('personalizeContent Function:', typeof window.Templates?.personalizeContent);
 
-    let personalizedSubject = '';
-    let personalizedContent = '';
+    // ROBUSTE PERSONALISIERUNG mit Namespace-Fix
+    let personalizedSubject = templateData.subject;
+    let personalizedContent = templateData.content;
 
     if (window.Templates && typeof Templates.personalizeContent === 'function') {
+        console.log('Using Templates.personalizeContent...');
         personalizedSubject = Templates.personalizeContent(templateData.subject, recipient);
         personalizedContent = Templates.personalizeContent(templateData.content, recipient);
     } else {
-        const recipientName = recipient.name || Utils.getNameFromEmail(recipient.email) || 'Liebe/r Interessent/in';
+        console.log('Using fallback personalization...');
+        const recipientName = recipient.name ||
+                             (recipient.email ? Utils.getNameFromEmail(recipient.email) : null) ||
+                             'Liebe/r Interessent/in';
+
         personalizedSubject = templateData.subject.replace(/\{\{name\}\}/g, recipientName);
         personalizedContent = templateData.content.replace(/\{\{name\}\}/g, recipientName)
                                                   .replace(/\{\{email\}\}/g, recipient.email || '');
+    }
+
+    const subjectStillHasPlaceholders = personalizedSubject.includes('{{name}}');
+    const contentStillHasPlaceholders = personalizedContent.includes('{{name}}');
+
+    console.log('Personalization Results:', {
+        originalSubject: templateData.subject,
+        personalizedSubject: personalizedSubject,
+        subjectStillHasPlaceholders: subjectStillHasPlaceholders,
+        originalContentPreview: templateData.content.substring(0, 100),
+        personalizedContentPreview: personalizedContent.substring(0, 100),
+        contentStillHasPlaceholders: contentStillHasPlaceholders
+    });
+
+    if (subjectStillHasPlaceholders || contentStillHasPlaceholders) {
+        console.warn('⚠️ Personalization failed, applying force replacement...');
+        const forceName = recipient.name ||
+                         (recipient.email ? recipient.email.split('@')[0].replace(/[._]/g, ' ') : '') ||
+                         'Liebe/r Interessent/in';
+
+        personalizedSubject = personalizedSubject.replace(/\{\{name\}\}/g, forceName);
+        personalizedContent = personalizedContent.replace(/\{\{name\}\}/g, forceName);
+
+        console.log('Force replacement applied with name:', forceName);
     }
 
     if (window.Attachments && Attachments.hasAttachments()) {
         const attachmentLinks = Attachments.generateEmailAttachmentLinks();
         personalizedContent += attachmentLinks;
     }
-
-    console.log('Personalization debug:', {
-        recipientName: recipient.name,
-        recipientEmail: recipient.email,
-        originalSubject: templateData.subject,
-        personalizedSubject: personalizedSubject,
-        originalContent: templateData.content.substring(0, 200),
-        personalizedContent: personalizedContent.substring(0, 200),
-        stillHasPlaceholders: {
-            subject: personalizedSubject.includes('{{'),
-            content: personalizedContent.includes('{{')
-        }
-    });
 
     const templateParams = {
         subject: personalizedSubject,
@@ -302,7 +325,14 @@ async function sendSingleEmail(recipient) {
         email: recipient.email
     };
 
-    console.log('Final EmailJS params:', templateParams);
+    console.log('Final EmailJS Parameters:', {
+        subject: templateParams.subject,
+        messagePreview: templateParams.message.substring(0, 200),
+        to_email: templateParams.to_email,
+        name: templateParams.name,
+        email: templateParams.email
+    });
+    console.log('=== END PERSONALIZATION DEBUG ===');
 
     try {
         const response = await emailjs.send(
