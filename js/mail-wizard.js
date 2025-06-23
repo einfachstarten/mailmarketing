@@ -745,7 +745,35 @@ window.MailWizard = (function() {
     function updateRecipientDisplay() {
         const container = document.getElementById('wizardRecipientList');
         if (!container) return;
-        
+
+        const recipientCount = allRecipients.length;
+        if (recipientCount === 0) {
+            container.innerHTML = `
+        <div class="wizard-empty-recipients" style="
+            text-align: center; 
+            padding: 40px 20px;
+            color: #6c757d;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px dashed #dee2e6;
+        ">
+            <div style="font-size: 48px; margin-bottom: 16px;">👥</div>
+            <h4 style="margin-bottom: 8px; color: #495057;">Keine Empfänger verfügbar</h4>
+            <p style="margin-bottom: 16px;">Fügen Sie zuerst Empfänger hinzu um eine Kampagne zu starten.</p>
+            <button onclick="App.showTab('recipients')" style="
+                background: #4a90e2; 
+                color: white; 
+                border: none; 
+                padding: 10px 20px; 
+                border-radius: 6px; 
+                cursor: pointer;
+                font-weight: 500;
+            ">📧 Empfänger hinzufügen</button>
+        </div>
+    `;
+            return;
+        }
+
         if (filteredRecipients.length === 0) {
             container.innerHTML = '<p class="placeholder">Keine Empfänger gefunden</p>';
             return;
