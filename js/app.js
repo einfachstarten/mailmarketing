@@ -104,6 +104,13 @@ window.App = (function() {
             console.log('✓ MailWizard module loaded');
         }
 
+        // Campaigns-Modul initialisieren
+        if (window.Campaigns) {
+            Campaigns.init();
+            modules.campaigns = window.Campaigns;
+            console.log('✓ Campaigns module loaded');
+        }
+
         // Weitere Module werden hier initialisiert wenn verfügbar
         const moduleList = ['Wizard', 'Templates', 'Recipients', 'Sender', 'Attachments'];
                 
