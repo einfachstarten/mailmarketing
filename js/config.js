@@ -55,9 +55,26 @@ window.Config = (function() {
      * Lädt die Konfiguration aus LocalStorage
      */
     function loadConfig() {
+        // Strukturierte Config laden
         const config = Utils.loadFromStorage(STORAGE_KEYS.EMAIL_CONFIG, DEFAULT_CONFIG);
         currentConfig = { ...DEFAULT_CONFIG, ...config };
-        
+
+        // CRITICAL: Falls strukturierte Config leer, aus localStorage migrieren
+        if (!currentConfig.serviceId && localStorage.getItem('emailjs_service_id')) {
+            currentConfig = {
+                serviceId: localStorage.getItem('emailjs_service_id') || '',
+                templateId: localStorage.getItem('emailjs_template_id') || '',
+                userId: localStorage.getItem('emailjs_user_id') || '',
+                fromName: localStorage.getItem('fromName') || '',
+                setupCompleted: localStorage.getItem('emailjs_configured') === 'true',
+                version: '2.0'
+            };
+
+            // Migrierte Config in strukturiertem Format speichern
+            Utils.saveToStorage(STORAGE_KEYS.EMAIL_CONFIG, currentConfig);
+            console.log('Migrated config from localStorage to structured format');
+        }
+
         // UI-Felder aktualisieren wenn vorhanden
         updateConfigUI();
     }
