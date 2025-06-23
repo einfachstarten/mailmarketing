@@ -6,7 +6,7 @@ function generateVersion() {
         const dateStr = now.toISOString().slice(0, 19).replace('T', ' ');
         const timestamp = Math.floor(now.getTime() / 1000);
         const buildNumber = timestamp.toString().slice(-6);
-        const version = `2.1.${buildNumber}`;
+        const version = `2.0.${buildNumber}`;
         const fullVersion = `${version} (${dateStr})`;
         
         const versionData = {
@@ -71,7 +71,7 @@ if (document.readyState === 'loading') {
         
     } catch (error) {
         console.error('Error generating version:', error);
-        const fallbackVersion = '2.1.0';
+        const fallbackVersion = '2.0.0';
         const fallbackDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
         const fallback = `${fallbackVersion} (${fallbackDate})`;
         fs.writeFileSync('version.txt', fallback);
