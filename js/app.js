@@ -266,8 +266,13 @@ window.App = (function() {
                 break;
 
             case 'campaigns':
-                if (modules.campaigns && typeof modules.campaigns.updateCampaignsList === 'function') {
-                    modules.campaigns.updateCampaignsList();
+                if (modules.campaigns) {
+                    if (typeof modules.campaigns.checkForNewCampaigns === 'function') {
+                        modules.campaigns.checkForNewCampaigns();
+                    }
+                    if (typeof modules.campaigns.updateCampaignsList === 'function') {
+                        modules.campaigns.updateCampaignsList();
+                    }
                 }
                 break;
 

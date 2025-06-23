@@ -35,6 +35,23 @@ window.Campaigns = (function() {
     }
 
     /**
+     * Prüft, ob neue Kampagnen vorliegen und aktualisiert ggf.
+     */
+    function checkForNewCampaigns() {
+        try {
+            const stored = JSON.parse(localStorage.getItem('campaignDrafts') || '[]');
+            const storedIds = stored.map(c => c.id).join(',');
+            const currentIds = campaigns.map(c => c.id).join(',');
+            if (storedIds !== currentIds) {
+                campaigns = stored;
+                updateCampaignsList();
+            }
+        } catch (error) {
+            console.error('Error checking campaigns:', error);
+        }
+    }
+
+    /**
      * Aktualisiert Kampagnen-Liste
      */
     function updateCampaignsList() {
@@ -354,6 +371,7 @@ window.Campaigns = (function() {
         refreshList: () => {
             loadCampaigns();
             updateCampaignsList();
-        }
+        },
+        checkForNewCampaigns
     };
 })();

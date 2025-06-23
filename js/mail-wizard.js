@@ -299,21 +299,9 @@ window.MailWizard = (function() {
             console.log('Button container created');
         }
 
+        resetWizardState();
         modal.classList.remove('hidden');
-        currentStep = 1;
-        wizardData = {
-            mailType: '',
-            template: '',
-            subject: '',
-            content: '',
-            attachments: [],
-            selectedRecipients: [],
-            settings: { speed: 1000, testEmail: false }
-        };
-
-        generateWizardSteps();
-        generateProgressIndicators();
-        generateWizardButtons();
+        generateWizardHTML();
 
         console.log('Wizard started, button container check:', !!document.getElementById('wizardButtonsContainer'));
     }
@@ -321,7 +309,7 @@ window.MailWizard = (function() {
     /**
      * Setzt Wizard-Daten zurück
      */
-    function resetWizardData() {
+function resetWizardData() {
         wizardData = {
             mailType: '',
             template: '',
@@ -342,6 +330,7 @@ window.MailWizard = (function() {
     function showWizardModal() {
         const modal = document.getElementById('mailWizardModal');
         if (modal) {
+            resetWizardState();
             modal.classList.remove('hidden');
             generateWizardHTML();
             updateWizardStep();
@@ -462,6 +451,20 @@ function generateStep6() {
 }
 
     /**
+     * Setzt gesamten Wizard-Zustand zurück
+     */
+    function resetWizardState() {
+        currentStep = 1;
+        resetWizardData();
+        const progress = document.getElementById('wizardProgressContainer');
+        const content = document.getElementById('wizardContentContainer');
+        const buttons = document.getElementById('wizardButtonsContainer');
+        if (progress) progress.innerHTML = '';
+        if (content) content.innerHTML = '';
+        if (buttons) buttons.innerHTML = '';
+    }
+
+    /**
      * Generiert Wizard-Buttons
 */
 
@@ -531,6 +534,7 @@ function generateWizardButtons() {
         if (modal) {
             modal.classList.add('hidden');
         }
+        resetWizardState();
     }
 
     // ===== STEP NAVIGATION =====
@@ -1415,9 +1419,25 @@ function generateWizardButtons() {
             // Kampagne speichern
             saveCampaignDraft(campaignData);
 
-            // Erfolgs-Feedback
-            showCampaignOverview(campaignData);
+            // Wizard schließen und zurücksetzen
+            resetWizardState();
+            hideWizardModal();
 
+            // Kampagnenliste aktualisieren und zum Tab wechseln
+            if (window.Campaigns && typeof Campaigns.loadCampaigns === 'function') {
+                Campaigns.loadCampaigns();
+                if (typeof Campaigns.updateCampaignsList === 'function') {
+                    Campaigns.updateCampaignsList();
+                }
+            }
+            if (window.App && typeof App.showTab === 'function') {
+                App.showTab('campaigns');
+            }
+
+            // Optionales Toast-Feedback
+            if (window.Utils && typeof Utils.showToast === 'function') {
+                Utils.showToast('Kampagne gespeichert', 'success');
+            }
         } catch (error) {
             console.error('Save campaign error:', error);
             alert(`Fehler beim Speichern der Kampagne: ${error.message}`);
@@ -1536,6 +1556,7 @@ function generateWizardButtons() {
         if (modal) {
             modal.classList.add('hidden');
         }
+        resetWizardState();
     }
 
     /**
