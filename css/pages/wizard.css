@@ -1,0 +1,1010 @@
+/* === SETUP WIZARD === */
+.wizard-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.wizard-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow: hidden;
+}
+
+/* Generic modal container used for wizards */
+.wizard-modal {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow: hidden;
+    position: relative;
+    z-index: 1001;
+}
+
+.wizard-modal.large {
+    max-width: 900px;
+    width: 90%;
+}
+
+/* Success Modal Styles */
+.success-modal {
+    max-width: 700px;
+    animation: successPulse 0.6s ease-out;
+}
+
+.success-header {
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    text-align: center;
+    padding: 30px 20px;
+}
+
+.success-icon {
+    font-size: 48px;
+    margin-bottom: 10px;
+    animation: bounce 1s ease infinite;
+}
+
+.success-content {
+    padding: 30px;
+}
+
+.success-summary {
+    text-align: center;
+    padding: 20px;
+    background: #f8fffa;
+    border-radius: 12px;
+    border: 2px solid #27ae60;
+    margin-bottom: 30px;
+}
+
+.summary-icon {
+    font-size: 32px;
+    margin-bottom: 15px;
+}
+
+.success-actions {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.email-preview-frame {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+}
+
+.email-preview-header {
+    background: #f8f9fa;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e9ecef;
+    font-size: 14px;
+}
+
+.email-preview-body {
+    padding: 16px;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.wizard-modal .wizard-buttons {
+    position: relative;
+    z-index: 1002;
+}
+
+.wizard-header {
+    background: linear-gradient(135deg, #4a90e2, #357abd);
+    color: white;
+    padding: 25px;
+    text-align: center;
+    position: relative;
+}
+
+.wizard-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.wizard-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+.wizard-header h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.wizard-progress {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    padding: 0;
+}
+
+.wizard-breadcrumb {
+    margin-top: 10px;
+    font-weight: bold;
+    color: white;
+}
+
+.progress-step {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-step:last-child .step-line {
+    display: none;
+}
+
+.wizard-content {
+    padding: 20px;
+    min-height: 350px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.wizard-back-link {
+    display: block;
+    margin-bottom: 15px;
+    color: #357abd;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.wizard-step {
+    display: none;
+}
+
+.wizard-step.active {
+    display: block;
+}
+
+.wizard-buttons {
+    padding: 20px 30px;
+    background: #f8f9fa;
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #e9ecef;
+    position: relative;
+    z-index: 10;
+    min-height: 80px;
+}
+
+.wizard-buttons button {
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.step-intro {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.step-intro h3 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+
+.step-intro p {
+    color: #7f8c8d;
+    line-height: 1.6;
+}
+
+.test-result {
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+    font-weight: 500;
+}
+
+.spinner {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #4a90e2;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* === MAIL WIZARD STYLES === */
+
+/* === WIZARD ATTACHMENT STYLES === */
+.attachment-drop-zone {
+    border: 2px dashed #667eea;
+    border-radius: 12px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #f8f9ff;
+    margin-bottom: 20px;
+}
+
+.attachment-drop-zone:hover {
+    border-color: #5a6fd8;
+    background: #f0f4ff;
+    transform: translateY(-2px);
+}
+
+.attachment-drop-zone.dragover {
+    border-color: #4c63d2;
+    background: #e8f0ff;
+    border-style: solid;
+}
+
+.wizard-attachment-stats {
+    background: #e8f5e8;
+    border: 1px solid #27ae60;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+}
+
+.wizard-attachment-stats h4 {
+    margin: 0;
+    color: #27ae60;
+    font-size: 16px;
+}
+
+.wizard-attachment-items {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.wizard-attachment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.wizard-attachment-item:hover {
+    border-color: #667eea;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.attachment-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.attachment-name {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 14px;
+}
+
+.attachment-size {
+    font-size: 12px;
+    color: #6c757d;
+    font-family: 'Courier New', monospace;
+}
+
+.attachment-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+    min-height: 32px;
+}
+
+/* Mail Wizard Modal */
+.mail-wizard-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 900px;
+    max-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.wizard-header h1 {
+    margin: 0 0 8px 0;
+    font-size: 24px;
+}
+
+/* === WIZARD PROGRESS FIX === */
+.wizard-step-circle {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(255,255,255,0.4);
+}
+
+.wizard-step-circle.active {
+    background: rgba(255,255,255,1);
+    color: #4a90e2;
+    border-color: white;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.wizard-step-circle.completed {
+    background: #27ae60;
+    color: white;
+    border-color: #27ae60;
+}
+
+.step-line {
+    width: 60px;
+    height: 3px;
+    background: rgba(255,255,255,0.3);
+    margin: 0 8px;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.step-line.completed {
+    background: rgba(255,255,255,0.8);
+}
+
+.wizard-step-content {
+    display: none;
+}
+
+.wizard-step-content.active {
+    display: block;
+}
+
+.step-title {
+    font-size: 20px;
+    margin-bottom: 6px;
+    color: #2c3e50;
+}
+
+.step-subtitle {
+    color: #7f8c8d;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+/* Step 1: Mail Types */
+.wizard-mail-types {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.wizard-mail-type-card {
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+    min-height: 160px;
+}
+
+.wizard-mail-type-card:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+
+.wizard-mail-type-card.selected {
+    border-color: #667eea;
+    background: #f8f9ff;
+    box-shadow: 0 0 0 1px rgba(102, 126, 234, 0.2);
+}
+
+.mail-type-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.wizard-mail-type-card h3 {
+    margin: 0 0 6px 0;
+    color: #2c3e50;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.wizard-mail-type-card p {
+    color: #6c757d;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.wizard-mail-type-card ul {
+    text-align: left;
+    font-size: 12px;
+    color: #6c757d;
+    margin: 0;
+    padding-left: 16px;
+    line-height: 1.3;
+}
+
+.wizard-mail-type-card li {
+    margin-bottom: 2px;
+}
+
+/* Step 2: Templates */
+.wizard-template-library {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.wizard-template-card {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-height: 140px;
+}
+
+.wizard-template-card:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+
+.wizard-template-card.selected {
+    border-color: #667eea;
+    background: #f8f9ff;
+    box-shadow: 0 0 0 1px rgba(102, 126, 234, 0.2);
+}
+
+.wizard-template-preview {
+    height: 80px;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: #667eea;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.wizard-template-info {
+    padding: 12px;
+}
+
+.wizard-template-name {
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #2c3e50;
+    font-size: 14px;
+}
+
+.wizard-template-description {
+    font-size: 12px;
+    color: #6c757d;
+    line-height: 1.3;
+}
+
+/* Step 3: Editor */
+.wizard-toolbar {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.toolbar-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.variable-tag {
+    display: inline-block;
+    background: #e3f2fd;
+    border: 1px solid #90caf9;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
+    color: #1565c0;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.variable-tag:hover {
+    background: #bbdefb;
+}
+
+.wizard-editor-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    height: 400px;
+}
+
+.wizard-editor-panel {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.wizard-editor-toolbar {
+    background: #f8f9fa;
+    padding: 8px 12px;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.toolbar-btn {
+    padding: 4px 8px;
+    border: 1px solid #dee2e6;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.toolbar-btn:hover {
+    background: #e9ecef;
+}
+
+.wizard-editor-content {
+    flex: 1;
+    overflow: hidden;
+}
+
+.wizard-visual-editor {
+    width: 100%;
+    height: 100%;
+    padding: 16px;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    line-height: 1.6;
+    overflow-y: auto;
+}
+
+.wizard-preview {
+    height: 100%;
+    overflow-y: auto;
+    padding: 16px;
+    background: #f8f9fa;
+}
+
+/* === WIZARD EMPFÄNGER-AUSWAHL === */
+.wizard-recipient-selector {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+
+.wizard-recipient-stats {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+    justify-content: center;
+}
+
+.wizard-recipient-stats .stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #4a90e2;
+    margin-bottom: 5px;
+    transition: all 0.3s ease;
+}
+
+.wizard-recipient-stats .recipient-stat-card {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    min-width: 140px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.wizard-recipient-stats .recipient-stat-card:hover {
+    border-color: #4a90e2;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(74, 144, 226, 0.15);
+}
+
+.wizard-recipient-stats .recipient-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #4a90e2, #667eea);
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.wizard-recipient-controls {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+}
+
+.wizard-recipient-controls button {
+    background: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.wizard-recipient-controls button:hover {
+    background: #357abd;
+    transform: translateY(-1px);
+}
+
+.wizard-recipient-list-container {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.wizard-recipient-search {
+    padding: 12px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.wizard-recipient-search input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.wizard-recipient-list {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+.wizard-recipient-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 8px;
+    background: white;
+}
+
+.wizard-recipient-item:hover {
+    background: #f8f9fa;
+    border-color: #4a90e2;
+}
+
+.wizard-recipient-item.selected {
+    background: #e3f2fd;
+    border-color: #2196f3;
+}
+
+.wizard-recipient-checkbox {
+    margin-right: 12px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.wizard-recipient-info {
+    flex: 1;
+    pointer-events: none;
+}
+
+.wizard-recipient-name {
+    font-weight: 500;
+    color: #2c3e50;
+    margin-bottom: 2px;
+}
+
+.wizard-recipient-email {
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.wizard-recipient-pagination {
+    background: #f8f9fa;
+    padding: 8px 12px;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.wizard-selected-recipients {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 16px;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.wizard-selected-list {
+    font-size: 14px;
+}
+
+.wizard-selected-item {
+    padding: 4px 0;
+    color: #495057;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.wizard-selected-item:last-child {
+    border-bottom: none;
+}
+
+.wizard-recipient-summary {
+    margin-top: 24px;
+}
+
+/* Step 4: Attachments */
+.wizard-attachment-manager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.wizard-attachment-section h3 {
+    margin-bottom: 16px;
+    color: #2c3e50;
+}
+
+.wizard-attachment-list {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 16px;
+    min-height: 200px;
+    margin-bottom: 16px;
+}
+
+.wizard-attachment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+
+.wizard-attachment-item:last-child {
+    margin-bottom: 0;
+}
+
+.wizard-btn-small {
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.wizard-btn-small:hover {
+    background: #5a6fd8;
+}
+
+/* Step 5: Review */
+.wizard-review-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+}
+
+.wizard-summary {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.wizard-summary-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.wizard-summary-item:last-child {
+    border-bottom: none;
+}
+
+.wizard-mobile-preview-container {
+    display: flex;
+    justify-content: center;
+}
+
+.wizard-mobile-frame {
+    max-width: 300px;
+    border: 8px solid #333;
+    border-radius: 20px;
+    background: #333;
+    padding: 8px;
+}
+
+.wizard-mobile-content {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 14px;
+    line-height: 1.4;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.wizard-send-settings {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.wizard-tip {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.wizard-tip p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* Navigation */
+.wizard-navigation {
+    background: #f8f9fa;
+    padding: 20px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #e9ecef;
+}
+
+.wizard-nav-right {
+    display: flex;
+    gap: 12px;
+}
+
+/* === RESPONSIVE ATTACHMENT STYLES === */
+@media (max-width: 768px) {
+    .attachment-drop-zone {
+        padding: 20px;
+        min-height: 100px;
+    }
+    
+    .drop-zone-icon {
+        font-size: 24px;
+    }
+    
+    .attachment-item {
+        padding: 10px;
+    }
+    
+    .attachment-info {
+        gap: 8px;
+    }
+    
+    .attachment-stats {
+        flex-direction: column;
+        gap: 4px;
+        text-align: center;
+    }
+}
