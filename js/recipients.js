@@ -140,6 +140,22 @@ window.Recipients = (function() {
 
     // ===== CSV IMPORT =====
 
+    // Erweiterte PapaParse Konfiguration
+    const parseConfig = {
+        header: true,
+        dynamicTyping: true,
+        skipEmptyLines: true,
+        delimitersToGuess: [',', ';', '\t', '|'],
+        transformHeader: (header) => header.trim(),
+        complete: (results) => {
+            // Robuste Verarbeitung mit besserer Validierung
+            processCSVResults(results);
+        },
+        error: (error) => {
+            showImportError(`CSV-Parsing Fehler: ${error.message}`);
+        }
+    };
+
     /**
      * Lädt CSV-Datei und importiert Empfänger
      */
@@ -174,16 +190,7 @@ window.Recipients = (function() {
             return;
         }
 
-        Papa.parse(file, {
-            complete: handleCSVParseComplete,
-            header: false,
-            skipEmptyLines: true,
-            delimiter: ',',
-            quotes: true,
-            delimitersToGuess: [',', '\t', '|', ';'],
-            dynamicTyping: false,
-            error: handleCSVParseError
-        });
+        Papa.parse(file, parseConfig);
     }
 
     /**
@@ -231,6 +238,47 @@ window.Recipients = (function() {
     }
 
     /**
+     * Neue Verarbeitung der PapaParse Ergebnisse
+     * @param {Object} results - Papa Parse Ergebnisse
+     */
+    function processCSVResults(results) {
+        console.log('CSV Parse Results:', results);
+
+        if (!results.data || results.data.length === 0) {
+            showImportError('CSV-Datei ist leer');
+            return;
+        }
+
+        const processedData = processCSVData(results.data);
+        const newRecipients = processedData.recipients;
+        importErrors = processedData.errors;
+
+        if (newRecipients.length === 0) {
+            showImportError('Keine gültigen E-Mail-Adressen gefunden');
+            showImportErrors();
+            return;
+        }
+
+        const addedCount = addNewRecipients(newRecipients);
+
+        lastImportStats = {
+            total: results.data.length,
+            processed: newRecipients.length,
+            added: addedCount,
+            duplicates: newRecipients.length - addedCount,
+            errors: importErrors.length
+        };
+
+        updateDisplay();
+        showImportResults();
+
+        const fileInput = document.getElementById('csvFile');
+        const dropInput = document.getElementById('csvFileInput');
+        if (fileInput) fileInput.value = '';
+        if (dropInput) dropInput.value = '';
+    }
+
+    /**
      * Verarbeitet CSV-Rohdaten
      * @param {Array} rawData - Rohe CSV-Daten
      * @returns {Object} Verarbeitete Daten und Fehler
@@ -266,8 +314,9 @@ window.Recipients = (function() {
      * @returns {Object} Verarbeitungsresultat
      */
     function processCSVRow(row, rowIndex) {
+        const cells = Array.isArray(row) ? row : Object.values(row || {});
         // Leere Zeilen überspringen
-        if (!row || row.length === 0 || (row.length === 1 && !row[0]?.trim())) {
+        if (!cells || cells.length === 0 || (cells.length === 1 && !String(cells[0]).trim())) {
             return { success: false, error: null };
         }
 
@@ -275,14 +324,14 @@ window.Recipients = (function() {
         let email = '';
         
         // CSV-Format erkennen
-        if (row.length === 1) {
+        if (cells.length === 1) {
             // Nur E-Mail
-            email = (row[0] || '').trim();
+            email = String(cells[0] || '').trim();
             name = Utils.getNameFromEmail(email);
-        } else if (row.length >= 2) {
+        } else if (cells.length >= 2) {
             // Name und E-Mail (oder E-Mail und Name)
-            const col1 = (row[0] || '').trim();
-            const col2 = (row[1] || '').trim();
+            const col1 = String(cells[0] || '').trim();
+            const col2 = String(cells[1] || '').trim();
             
             // Intelligente Spalten-Erkennung
             if (Utils.isValidEmail(col1) && !Utils.isValidEmail(col2)) {
@@ -684,6 +733,14 @@ window.Recipients = (function() {
             `\n... und ${importErrors.length - maxShow} weitere Fehler` : '';
         
         alert(`Import-Fehler:\n\n${errorList}${additional}`);
+    }
+
+    /**
+     * Zeigt einen einzelnen Import-Fehler an
+     * @param {string} message - Fehlermeldung
+     */
+    function showImportError(message) {
+        Utils.showStatus('recipientStatus', message, 'error');
     }
 
     // ===== GETTERS & INFO =====
