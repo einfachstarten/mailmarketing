@@ -1382,107 +1382,374 @@ function generateWizardButtons() {
     // ===== WIZARD COMPLETION =====
 
     /**
-     * Schließt Wizard ab und startet Kampagne
+     * Schließt Wizard ab und speichert Kampagne (sendet noch NICHT)
      */
     function finishWizard() {
-        console.log('=== FINISH WIZARD DEBUG START ===');
-        console.log('Wizard Data at finish:', wizardData);
+        console.log('=== SAVE CAMPAIGN DEBUG START ===');
+        console.log('Wizard Data:', wizardData);
 
         try {
-            // CRITICAL: Wizard-Daten validieren
+            // Validierung
             if (!wizardData.subject || !wizardData.content || !wizardData.selectedRecipients.length) {
-                console.error('Wizard data incomplete:', {
-                    hasSubject: !!wizardData.subject,
-                    hasContent: !!wizardData.content,
-                    recipientCount: wizardData.selectedRecipients.length
-                });
                 alert('Wizard-Daten unvollständig. Bitte alle Schritte durchlaufen.');
                 return;
             }
 
-            console.log('=== WIZARD DATA TO SENDER ===');
-            console.log('Subject:', wizardData.subject);
-            console.log('Content Preview:', wizardData.content.substring(0, 200));
-            console.log('Selected Recipients:', wizardData.selectedRecipients);
-
-            // CRITICAL: Template-Objekt für Sender erstellen
-            const wizardTemplate = {
+            // Kampagnen-Objekt erstellen
+            const campaignData = {
+                id: generateCampaignId(),
+                name: `Kampagne vom ${new Date().toLocaleDateString('de-DE')}`,
                 subject: wizardData.subject,
-                content: wizardData.content
+                content: wizardData.content,
+                selectedRecipients: wizardData.selectedRecipients.map(email => findRecipientByEmail(email)),
+                createdAt: new Date(),
+                status: 'draft',
+                stats: {
+                    total: wizardData.selectedRecipients.length,
+                    sent: 0,
+                    errors: 0
+                }
             };
 
-            console.log('Template for Sender:', wizardTemplate);
+            console.log('Campaign created:', campaignData);
 
-            // CRITICAL: Empfänger-Objekte für Sender erstellen
-            const recipientObjects = wizardData.selectedRecipients.map(email => {
-                // Suche echtes Empfänger-Objekt
-                const fullRecipient = findRecipientByEmail(email);
-                console.log(`Mapped ${email} to:`, fullRecipient);
-                return fullRecipient;
-            });
-
-            console.log('Recipient objects for Sender:', recipientObjects);
-
-            // CRITICAL: Sender-Modul prüfen
-            if (!window.Sender) {
-                console.error('Sender module not available');
-                alert('Sender-Modul nicht verfügbar');
-                return;
-            }
-
-            console.log('Sender module available:', typeof window.Sender);
-
-            // CRITICAL: Kampagne im Sender-Modul starten
-            console.log('=== STARTING SENDER CAMPAIGN ===');
-
-            // Option 1: Direkte Übergabe an Sender (preferred)
-            if (typeof window.Sender.startCampaignWithData === 'function') {
-                console.log('Using startCampaignWithData...');
-                window.Sender.startCampaignWithData({
-                    template: wizardTemplate,
-                    recipients: recipientObjects
-                });
-            }
-            // Option 2: Sender-State setzen und dann starten
-            else if (typeof window.Sender.setCampaignData === 'function') {
-                console.log('Using setCampaignData + start...');
-                window.Sender.setCampaignData(wizardTemplate, recipientObjects);
-                window.Sender.start();
-            }
-            // Option 3: Classic start (fallback)
-            else {
-                console.log('Using classic Sender.start()...');
-
-                // HACK: Template temporär in Templates-Modul setzen
-                if (window.Templates && typeof Templates.setCurrentTemplate === 'function') {
-                    Templates.setCurrentTemplate(wizardTemplate);
-                    console.log('Set template in Templates module');
-                }
-
-                // HACK: Recipients temporär in Recipients-Modul setzen
-                if (window.Recipients && typeof Recipients.setCurrentRecipients === 'function') {
-                    Recipients.setCurrentRecipients(recipientObjects);
-                    console.log('Set recipients in Recipients module');
-                }
-
-                window.Sender.start();
-            }
+            // Kampagne "speichern" (in Memory/LocalStorage)
+            saveCampaignDraft(campaignData);
 
             // Modal schließen
             hideWizardModal();
 
-            // Zu Campaign Tab wechseln falls vorhanden
-            if (window.App && typeof App.showTab === 'function') {
-                App.showTab('mailwizard');
-            }
+            // Zu Campaign-Übersicht wechseln
+            showCampaignOverview(campaignData);
 
-            console.log('=== FINISH WIZARD DEBUG END ===');
+            console.log('=== SAVE CAMPAIGN DEBUG END ===');
 
         } catch (error) {
-            console.error('Finish wizard error:', error);
-            alert(`Fehler beim Starten der Kampagne: ${error.message}`);
+            console.error('Save campaign error:', error);
+            alert(`Fehler beim Speichern der Kampagne: ${error.message}`);
         }
     }
+
+    /**
+     * Generiert eindeutige Kampagnen-ID
+     */
+    function generateCampaignId() {
+        return 'campaign_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+
+    /**
+     * Speichert Kampagnen-Entwurf
+     */
+    function saveCampaignDraft(campaignData) {
+        try {
+            const drafts = JSON.parse(localStorage.getItem('campaignDrafts') || '[]');
+            drafts.push(campaignData);
+            localStorage.setItem('campaignDrafts', JSON.stringify(drafts));
+            console.log('Campaign draft saved to localStorage');
+        } catch (error) {
+            console.error('Error saving campaign draft:', error);
+        }
+    }
+
+    /**
+     * Zeigt schöne Kampagnen-Übersicht nach Wizard
+     */
+    function showCampaignOverview(campaignData) {
+        const modal = document.getElementById('mailWizardModal');
+        if (!modal) return;
+
+        const firstRecipient = campaignData.selectedRecipients[0];
+
+        let personalizedSubject = campaignData.subject;
+        let personalizedContent = campaignData.content;
+
+        if (window.Templates && typeof Templates.personalizeContent === 'function') {
+            personalizedSubject = Templates.personalizeContent(campaignData.subject, firstRecipient);
+            personalizedContent = Templates.personalizeContent(campaignData.content, firstRecipient);
+        }
+
+        modal.innerHTML = `
+        <div class="wizard-modal large">
+            <div class="wizard-header">
+                <h2>🎉 Kampagne erstellt!</h2>
+                <span class="wizard-close" onclick="MailWizard.hideCampaignOverview()">&times;</span>
+            </div>
+            <div class="campaign-overview-content">
+                <div class="campaign-info-section">
+                    <h3>📋 Kampagnen-Details</h3>
+                    <div class="campaign-info-grid">
+                        <div class="info-item">
+                            <label>📧 Betreff:</label>
+                            <span>${Utils.escapeHtml(campaignData.subject)}</span>
+                        </div>
+                        <div class="info-item">
+                            <label>👥 Empfänger:</label>
+                            <span>${campaignData.stats.total} ausgewählt</span>
+                        </div>
+                        <div class="info-item">
+                            <label>📅 Erstellt:</label>
+                            <span>${campaignData.createdAt.toLocaleString('de-DE')}</span>
+                        </div>
+                        <div class="info-item">
+                            <label>🏷️ Status:</label>
+                            <span class="status-badge draft">Entwurf</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="campaign-recipients-section">
+                    <h3>👥 Empfänger-Liste</h3>
+                    <div class="recipients-list">
+                        ${campaignData.selectedRecipients.map(r => `
+                            <div class="recipient-item">
+                                <span class="recipient-name">${r.name || 'Unbekannt'}</span>
+                                <span class="recipient-email">${r.email}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                <div class="campaign-preview-section">
+                    <h3>📧 E-Mail-Vorschau (für ${firstRecipient.name})</h3>
+                    <div class="email-preview-container">
+                        <div class="email-preview-header">
+                            <strong>Betreff:</strong> ${Utils.escapeHtml(personalizedSubject)}
+                        </div>
+                        <div class="email-preview-body">
+                            ${personalizedContent}
+                        </div>
+                    </div>
+                </div>
+                <div class="campaign-send-section">
+                    <h3>🚀 Versand starten</h3>
+                    <div class="send-options">
+                        <div class="form-group">
+                            <label for="campaignSendSpeed">Versand-Geschwindigkeit:</label>
+                            <select id="campaignSendSpeed" class="form-control">
+                                <option value="1000">Normal (1s Pause)</option>
+                                <option value="2000" selected>Sicher (2s Pause)</option>
+                                <option value="5000">Langsam (5s Pause)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="campaignTestMode"> 
+                                Test-Modus (nur erste 2 E-Mails)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="send-actions">
+                        <button class="btn btn-success btn-large" onclick="MailWizard.startCampaignSend('${campaignData.id}')">
+                            🚀 Kampagne jetzt senden
+                        </button>
+                        <button class="btn btn-secondary" onclick="MailWizard.saveCampaignForLater('${campaignData.id}')">
+                            💾 Für später speichern
+                        </button>
+                    </div>
+                </div>
+                <div id="campaignProgress" class="campaign-progress-section" style="display: none;">
+                    <h3>📊 Versand-Fortschritt</h3>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar">
+                            <div id="campaignProgressBar" class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span id="campaignProgressText">Bereit zum Versand</span>
+                            <span id="campaignProgressCount">0 / ${campaignData.stats.total}</span>
+                        </div>
+                    </div>
+                    <div class="campaign-log">
+                        <h4>📝 Versand-Log</h4>
+                        <div id="campaignLogContainer" class="log-container"></div>
+                    </div>
+                    <div class="progress-actions">
+                        <button id="campaignPauseBtn" class="btn btn-warning" onclick="MailWizard.pauseCampaign()" style="display: none;">
+                            ⏸️ Pausieren
+                        </button>
+                        <button id="campaignStopBtn" class="btn btn-danger" onclick="MailWizard.stopCampaign()" style="display: none;">
+                            ⏹️ Stoppen
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+
+        modal.classList.remove('hidden');
+    }
+
+    function hideCampaignOverview() {
+        const modal = document.getElementById('mailWizardModal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+
+    /**
+     * Startet Kampagnen-Versand mit UI-Feedback
+     */
+    async function startCampaignSend(campaignId) {
+        console.log('=== START CAMPAIGN SEND ===', campaignId);
+
+        try {
+            const campaignData = loadCampaignDraft(campaignId);
+            if (!campaignData) {
+                alert('Kampagne nicht gefunden');
+                return;
+            }
+
+            const sendSpeed = parseInt(document.getElementById('campaignSendSpeed')?.value) || 2000;
+            const testMode = document.getElementById('campaignTestMode')?.checked || false;
+
+            let recipients = [...campaignData.selectedRecipients];
+            if (testMode) {
+                recipients = recipients.slice(0, 2);
+                logToCampaign(`🧪 Test-Modus: Sende nur an ${recipients.length} Empfänger`);
+            }
+
+            document.getElementById('campaignProgress').style.display = 'block';
+            document.getElementById('campaignPauseBtn').style.display = 'inline-block';
+            document.getElementById('campaignStopBtn').style.display = 'inline-block';
+
+            const sendBtn = document.querySelector('.btn.btn-success.btn-large');
+            if (sendBtn) {
+                sendBtn.disabled = true;
+                sendBtn.textContent = '📤 Wird gesendet...';
+            }
+
+            logToCampaign(`🚀 Kampagne gestartet: ${recipients.length} E-Mails`);
+
+            await sendCampaignEmails(campaignData, recipients, sendSpeed);
+
+        } catch (error) {
+            console.error('Campaign send error:', error);
+            logToCampaign(`❌ Fehler: ${error.message}`, 'error');
+        }
+    }
+
+    async function sendCampaignEmails(campaignData, recipients, sendSpeed) {
+        let sent = 0;
+        let errors = 0;
+        const startTime = Date.now();
+
+        for (let i = 0; i < recipients.length; i++) {
+            const recipient = recipients[i];
+
+            try {
+                updateCampaignProgress(i + 1, recipients.length, `Sende an ${recipient.email}`);
+                await sendPersonalizedEmail(campaignData, recipient);
+                sent++;
+                logToCampaign(`✅ Gesendet an ${recipient.name} (${recipient.email})`);
+            } catch (error) {
+                errors++;
+                logToCampaign(`❌ Fehler bei ${recipient.email}: ${error.message}`, 'error');
+            }
+
+            if (i < recipients.length - 1) {
+                await new Promise(resolve => setTimeout(resolve, sendSpeed));
+            }
+        }
+
+        const duration = Math.round((Date.now() - startTime) / 1000);
+        updateCampaignProgress(recipients.length, recipients.length, 'Versand abgeschlossen');
+
+        logToCampaign(`🎉 Kampagne abgeschlossen: ${sent} gesendet, ${errors} Fehler in ${duration}s`);
+
+        const sendBtn = document.querySelector('.btn.btn-success.btn-large');
+        if (sendBtn) {
+            sendBtn.disabled = false;
+            sendBtn.textContent = '✅ Versand abgeschlossen';
+            sendBtn.classList.remove('btn-success');
+            sendBtn.classList.add('btn-info');
+        }
+
+        document.getElementById('campaignPauseBtn').style.display = 'none';
+        document.getElementById('campaignStopBtn').style.display = 'none';
+    }
+
+    async function sendPersonalizedEmail(campaignData, recipient) {
+        let personalizedSubject = campaignData.subject;
+        let personalizedContent = campaignData.content;
+
+        if (window.Templates && typeof Templates.personalizeContent === 'function') {
+            personalizedSubject = Templates.personalizeContent(campaignData.subject, recipient);
+            personalizedContent = Templates.personalizeContent(campaignData.content, recipient);
+        }
+
+        const config = window.Config ? Config.getConfig() : {
+            serviceId: localStorage.getItem('emailjs_service_id'),
+            templateId: localStorage.getItem('emailjs_template_id'),
+            fromName: localStorage.getItem('fromName')
+        };
+
+        const templateParams = {
+            subject: personalizedSubject,
+            message: personalizedContent,
+            to_email: recipient.email,
+            name: config.fromName,
+            email: recipient.email
+        };
+
+        const response = await emailjs.send(config.serviceId, config.templateId, templateParams);
+
+        if (response.status !== 200) {
+            throw new Error(`EmailJS Status: ${response.status}`);
+        }
+
+        return response;
+    }
+
+    function updateCampaignProgress(current, total, message) {
+        const progressBar = document.getElementById('campaignProgressBar');
+        const progressText = document.getElementById('campaignProgressText');
+        const progressCount = document.getElementById('campaignProgressCount');
+
+        if (progressBar) {
+            const percentage = (current / total) * 100;
+            progressBar.style.width = percentage + '%';
+        }
+
+        if (progressText) {
+            progressText.textContent = message;
+        }
+
+        if (progressCount) {
+            progressCount.textContent = `${current} / ${total}`;
+        }
+    }
+
+    function logToCampaign(message, type = 'info') {
+        const logContainer = document.getElementById('campaignLogContainer');
+        if (!logContainer) return;
+
+        const timestamp = new Date().toLocaleTimeString('de-DE');
+        const logEntry = document.createElement('div');
+        logEntry.className = `log-entry log-${type}`;
+        logEntry.innerHTML = `<span class="log-time">[${timestamp}]</span> ${message}`;
+
+        logContainer.appendChild(logEntry);
+        logContainer.scrollTop = logContainer.scrollHeight;
+    }
+
+    function loadCampaignDraft(campaignId) {
+        try {
+            const drafts = JSON.parse(localStorage.getItem('campaignDrafts') || '[]');
+            return drafts.find(c => c.id === campaignId);
+        } catch (error) {
+            console.error('Error loading campaign draft:', error);
+            return null;
+        }
+    }
+
+    function saveCampaignForLater() {
+        hideCampaignOverview();
+    }
+
+    function pauseCampaign() {
+        logToCampaign('⏸️ Pausieren aktuell nicht implementiert');
+    }
+
+    function stopCampaign() {
+        logToCampaign('⏹️ Stoppen aktuell nicht implementiert');
+    }
+
 
     /**
      * Überträgt Wizard-Daten zum Haupt-Editor
@@ -1581,7 +1848,13 @@ function generateWizardButtons() {
 
         // Completion
         finishWizard,
-        
+        showCampaignOverview,
+        hideCampaignOverview,
+        startCampaignSend,
+        saveCampaignForLater,
+        pauseCampaign,
+        stopCampaign,
+
         // Utilities
         getMailTypeLabel,
         getTemplateLabel
