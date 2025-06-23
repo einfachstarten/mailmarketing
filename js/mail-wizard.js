@@ -1323,3 +1323,49 @@ function generateWizardButtons() {
         getTemplateLabel
     };
 })();
+
+// DEBUGGING TOOL: Inspect modal dimensions in the browser console
+function debugModalLayout() {
+    const modal = document.querySelector('.wizard-modal');
+    const content = document.querySelector('.wizard-content');
+    const buttons = document.querySelector('.wizard-buttons');
+
+    console.log('=== MODAL LAYOUT DEBUG ===');
+    console.log('Viewport height:', window.innerHeight);
+    console.log('Viewport width:', window.innerWidth);
+
+    if (modal) {
+        const rect = modal.getBoundingClientRect();
+        console.log('Modal dimensions:', {
+            width: rect.width,
+            height: rect.height,
+            top: rect.top,
+            bottom: rect.bottom,
+            isInViewport: rect.bottom <= window.innerHeight
+        });
+    }
+
+    if (content) {
+        const rect = content.getBoundingClientRect();
+        console.log('Content dimensions:', {
+            height: rect.height,
+            maxHeight: getComputedStyle(content).maxHeight,
+            overflow: getComputedStyle(content).overflow
+        });
+    }
+
+    if (buttons) {
+        const rect = buttons.getBoundingClientRect();
+        console.log('Buttons dimensions:', {
+            height: rect.height,
+            top: rect.top,
+            bottom: rect.bottom,
+            isVisible: rect.top < window.innerHeight && rect.bottom > 0,
+            display: getComputedStyle(buttons).display,
+            position: getComputedStyle(buttons).position
+        });
+    }
+
+    console.log('=== END MODAL DEBUG ===');
+}
+
