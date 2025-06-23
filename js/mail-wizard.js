@@ -1025,42 +1025,113 @@ function generateWizardButtons() {
     // ===== STEP 2: TEMPLATE =====
 
     /**
+     * Lädt gespeicherte Templates aus localStorage
+     */
+    function loadSavedTemplates() {
+        try {
+            const emailTemplates = JSON.parse(localStorage.getItem('emailTemplates') || '{}');
+            return Object.entries(emailTemplates).map(([key, template]) => ({
+                key: key,
+                name: template.name || key,
+                subject: template.subject || '',
+                content: template.content || '',
+                created: template.created || '',
+                lastModified: template.lastModified || ''
+            }));
+        } catch (error) {
+            console.error('Error loading saved templates:', error);
+            return [];
+        }
+    }
+
+    /**
      * Lädt Template-Bibliothek
      */
     function loadTemplateLibrary() {
         const container = document.getElementById('wizardTemplateLibrary');
         const typeLabel = document.getElementById('selected-mail-type');
-        
+
         if (!container) return;
 
         if (typeLabel) {
             typeLabel.textContent = getMailTypeLabel(wizardData.mailType);
         }
 
-        const templates = TEMPLATE_LIBRARY[wizardData.mailType] || {};
-        
-        container.innerHTML = Object.entries(templates).map(([key, template]) => `
-            <div class="wizard-template-card" onclick="MailWizard.selectTemplate('${key}')">
-                <div class="wizard-template-preview">${template.icon}</div>
-                <div class="wizard-template-info">
-                    <div class="wizard-template-name">${template.name}</div>
-                    <div class="wizard-template-description">${template.description}</div>
+        // Hardcodierte Templates
+        const hardcodedTemplates = TEMPLATE_LIBRARY[wizardData.mailType] || {};
+
+        // Gespeicherte Templates laden
+        const savedTemplates = loadSavedTemplates();
+
+        let templatesHTML = '';
+
+        // Section 1: Hardcodierte Templates
+        if (Object.keys(hardcodedTemplates).length > 0) {
+            templatesHTML += '<div class="template-section"><h4>\ud83d\udccb Vordefinierte Templates</h4><div class="wizard-template-grid">';
+            templatesHTML += Object.entries(hardcodedTemplates).map(([key, template]) => `
+                <div class="wizard-template-card" onclick="MailWizard.selectTemplate('hardcoded_${key}')" data-type="hardcoded" data-key="${key}">
+                    <div class="wizard-template-preview">${template.icon}</div>
+                    <div class="wizard-template-info">
+                        <div class="wizard-template-name">${template.name}</div>
+                        <div class="wizard-template-description">${template.description}</div>
+                        <div class="template-source">Vordefiniert</div>
+                    </div>
                 </div>
-            </div>
-        `).join('');
+            `).join('');
+            templatesHTML += '</div></div>';
+        }
+
+        // Section 2: Gespeicherte Templates
+        if (savedTemplates.length > 0) {
+            templatesHTML += '<div class="template-section"><h4>\ud83d\udcbe Gespeicherte Templates</h4><div class="wizard-template-grid">';
+            templatesHTML += savedTemplates.map(template => `
+                <div class="wizard-template-card" onclick="MailWizard.selectTemplate('saved_${template.key}')" data-type="saved" data-key="${template.key}">
+                    <div class="wizard-template-preview">\ud83d\udcc4</div>
+                    <div class="wizard-template-info">
+                        <div class="wizard-template-name">${template.name}</div>
+                        <div class="wizard-template-description">${template.subject || 'Kein Betreff'}</div>
+                        <div class="template-source">Erstellt: ${template.created || 'Unbekannt'}</div>
+                    </div>
+                </div>
+            `).join('');
+            templatesHTML += '</div></div>';
+        }
+
+        // Empty State
+        if (Object.keys(hardcodedTemplates).length === 0 && savedTemplates.length === 0) {
+            templatesHTML = '<div class="empty-templates"><p>\ud83c\udfa8 Keine Templates verf\u00fcgbar</p></div>';
+        }
+
+        container.innerHTML = templatesHTML;
     }
 
     /**
      * Wählt Template aus
      */
     function selectTemplate(templateKey) {
-        const template = TEMPLATE_LIBRARY[wizardData.mailType][templateKey];
+        console.log('Selecting template:', templateKey);
+        let template = null;
+
+        if (templateKey.startsWith('hardcoded_')) {
+            const key = templateKey.replace('hardcoded_', '');
+            template = TEMPLATE_LIBRARY[wizardData.mailType][key];
+            if (template) {
+                wizardData.template = templateKey;
+                wizardData.subject = template.subject;
+                wizardData.content = template.html;
+            }
+        } else if (templateKey.startsWith('saved_')) {
+            const key = templateKey.replace('saved_', '');
+            const savedTemplates = JSON.parse(localStorage.getItem('emailTemplates') || '{}');
+            template = savedTemplates[key];
+            if (template) {
+                wizardData.template = templateKey;
+                wizardData.subject = template.subject || '';
+                wizardData.content = template.content || '';
+            }
+        }
+
         if (template) {
-            wizardData.template = templateKey;
-            wizardData.subject = template.subject;
-            wizardData.content = template.html;
-            
-            // Visual Update
             document.querySelectorAll('.wizard-template-card').forEach(card => {
                 card.classList.remove('selected');
             });
@@ -1864,8 +1935,22 @@ function generateWizardButtons() {
     }
 
     function getTemplateLabel(templateKey) {
-        const template = TEMPLATE_LIBRARY[wizardData.mailType]?.[templateKey];
-        return template ? template.name : templateKey;
+        if (!templateKey) return 'Kein Template';
+
+        if (templateKey.startsWith('hardcoded_')) {
+            const key = templateKey.replace('hardcoded_', '');
+            const template = TEMPLATE_LIBRARY[wizardData.mailType]?.[key];
+            return template ? template.name : templateKey;
+        }
+
+        if (templateKey.startsWith('saved_')) {
+            const key = templateKey.replace('saved_', '');
+            const savedTemplates = JSON.parse(localStorage.getItem('emailTemplates') || '{}');
+            const template = savedTemplates[key];
+            return template ? template.name : templateKey;
+        }
+
+        return templateKey;
     }
 
     // ===== EDITOR FUNCTIONS =====
@@ -1938,7 +2023,8 @@ function generateWizardButtons() {
 
         // Utilities
         getMailTypeLabel,
-        getTemplateLabel
+        getTemplateLabel,
+        loadSavedTemplates
     };
 })();
 
