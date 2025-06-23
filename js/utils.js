@@ -124,24 +124,29 @@ window.Utils = (function() {
      * @param {string} type - Typ: 'success', 'error', 'info'
      * @param {number} timeout - Auto-Hide nach Millisekunden (0 = kein Auto-Hide)
      */
-    function showStatus(elementId, message, type = 'info', timeout = 5000) {
+    function showStatus(elementId, message, type = 'info') {
+        console.log(`Status [${type}] for ${elementId}:`, message);
+
         const element = document.getElementById(elementId);
         if (!element) {
-            console.warn(`Status element not found: ${elementId}`);
+            console.warn(`Status element not found: ${elementId} - using console log only`);
+            // Fallback: Console-only status
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
+            console.log(`${prefix} ${message}`);
             return;
         }
 
-        const alertClass = type === 'success' ? 'success' : 
-                          type === 'error' ? 'error' : 'info-box';
-        
-        element.innerHTML = `<div class="alert ${alertClass}">${message}</div>`;
-        
-        if (timeout > 0) {
+        element.textContent = message;
+        element.className = `status ${type}`;
+
+        // Auto-clear nach 5 Sekunden für success/info
+        if (type === 'success' || type === 'info') {
             setTimeout(() => {
-                if (element.innerHTML.includes(message)) {
-                    element.innerHTML = '';
+                if (element.textContent === message) {
+                    element.textContent = '';
+                    element.className = 'status';
                 }
-            }, timeout);
+            }, 5000);
         }
     }
 
