@@ -395,16 +395,38 @@ window.MailWizard = (function() {
 
     /**
      * Generiert Wizard-Buttons
-     */
-    function generateWizardButtons() {
-        const container = document.getElementById('wizardButtonsContainer');
-        if (!container) return;
+*/
 
-        const isFirstStep = currentStep === 1;
-        const isLastStep = currentStep === 6;
-
-        container.innerHTML = `\n        <button type="button" id="wizardPrevBtn" class="btn btn-secondary" \n                onclick="MailWizard.previousStep()" ${isFirstStep ? 'disabled' : ''}>\n            ← Zurück\n        </button>\n        \n        <button type="button" id="wizardNextBtn" class="btn btn-primary" \n                onclick="MailWizard.nextStep()" ${isLastStep ? 'style="display:none"' : ''}>\n            Weiter →\n        </button>\n        \n        <button type="button" id="wizardFinishBtn" class="btn btn-success" \n                onclick="MailWizard.finishWizard()" ${!isLastStep ? 'style="display:none"' : ''}>\n            🚀 Kampagne starten\n        </button>\n    `;
+function generateWizardButtons() {
+    const container = document.getElementById('wizardButtonsContainer');
+    if (!container) {
+        console.error('wizardButtonsContainer not found! Cannot generate buttons.');
+        return;
     }
+
+    const isFirstStep = currentStep === 1;
+    const isLastStep = currentStep === 6;
+
+    const buttonsHTML = `
+        <button type="button" id="wizardPrevBtn" class="btn btn-secondary" 
+                onclick="MailWizard.previousStep()" ${isFirstStep ? 'disabled' : ''}>
+            \u2190 Zur\u00fcck
+        </button>
+        
+        <button type="button" id="wizardNextBtn" class="btn btn-primary" 
+                onclick="MailWizard.nextStep()" ${isLastStep ? 'style=\\"display:none\\"' : ''}>
+            Weiter \u2192
+        </button>
+        
+        <button type="button" id="wizardFinishBtn" class="btn btn-success" 
+                onclick="MailWizard.finishWizard()" ${!isLastStep ? 'style=\\"display:none\\"' : ''}>
+            \ud83d\ude80 Kampagne starten
+        </button>
+    `;
+
+    container.innerHTML = buttonsHTML;
+    console.log(`Buttons generated for step ${currentStep}, isLastStep: ${isLastStep}`); // DEBUG
+}
 
     /**
      * Versteckt Wizard-Modal
@@ -486,8 +508,11 @@ window.MailWizard = (function() {
                 loadTemplateLibrary();
                 break;
             case 3:
-                // Editor Schritt - Editor initialisieren
-                initializeEditor();
+                // CRITICAL FIX: Editor-Schritt - Editor initialisieren
+                setTimeout(() => {
+                    initializeEditor();
+                    generateWizardButtons(); // Explizit Buttons neu generieren
+                }, 100);
                 break;
             case 4:
                 // Empfänger Schritt - Empfänger laden
@@ -552,10 +577,28 @@ window.MailWizard = (function() {
                 }
                 break;
             case 3:
-                if (!wizardData.subject.trim()) {
+                // NEUER VALIDATION-CHECK für Editor
+                const subjectInput = document.getElementById('wizardSubject');
+                const visualEditor = document.getElementById('wizardVisualEditor');
+
+                if (!subjectInput?.value?.trim()) {
                     alert('Bitte gib einen Betreff ein');
+                    if (subjectInput) subjectInput.focus();
                     return false;
                 }
+
+                if (!visualEditor?.innerHTML?.trim() || visualEditor.innerHTML === '') {
+                    alert('Bitte füge E-Mail-Inhalt hinzu');
+                    if (visualEditor) visualEditor.focus();
+                    return false;
+                }
+
+                // Daten in wizardData speichern
+                wizardData.subject = subjectInput.value;
+                const editorContent = visualEditor.innerHTML;
+                wizardData.content = generateFullHTML(editorContent);
+
+                console.log('Step 3 validation passed:', { subject: wizardData.subject, hasContent: !!wizardData.content }); // DEBUG
                 break;
             case 4:
                 console.log('Validating recipients:', wizardData.selectedRecipients); // DEBUG
@@ -635,26 +678,53 @@ window.MailWizard = (function() {
      * Initialisiert Editor
      */
     function initializeEditor() {
+        console.log('Initializing editor for step 3'); // DEBUG
+
         const subjectInput = document.getElementById('wizardSubject');
         const visualEditor = document.getElementById('wizardVisualEditor');
-        
+
         if (subjectInput) {
-            subjectInput.value = wizardData.subject;
+            subjectInput.value = wizardData.subject || '';
             subjectInput.addEventListener('input', (e) => {
                 wizardData.subject = e.target.value;
+                console.log('Subject updated:', wizardData.subject); // DEBUG
             });
+        } else {
+            console.error('wizardSubject input not found!'); // DEBUG
         }
-        
+
         if (visualEditor) {
-            // HTML zu Text für WYSIWYG-Editor konvertieren
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = wizardData.content;
-            const bodyContent = tempDiv.querySelector('body > div') || tempDiv;
-            
-            visualEditor.innerHTML = bodyContent.innerHTML || wizardData.content;
-            visualEditor.addEventListener('input', updateWizardPreview);
-            
-            updateWizardPreview();
+            // Template-Content laden wenn verfügbar
+            if (wizardData.content) {
+                // HTML zu editierbaren Content konvertieren
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = wizardData.content;
+
+                // Body-Content extrahieren falls HTML-Template
+                const bodyDiv = tempDiv.querySelector('body > div');
+                let editorContent = bodyDiv ? bodyDiv.innerHTML : wizardData.content;
+
+                // Falls immer noch komplexes HTML, vereinfachen
+                if (editorContent.includes('<!DOCTYPE') || editorContent.includes('<html>')) {
+                    editorContent = 'Hallo {{name}}! \uD83D\uDC4B\n\nHier ist dein w\u00f6chentliches Update mit den wichtigsten Neuigkeiten.\n\nUpdate-Inhalt...';
+                }
+
+                visualEditor.innerHTML = editorContent;
+            } else {
+                // Fallback Content
+                visualEditor.innerHTML = 'Hallo {{name}}! \uD83D\uDC4B\n\nIhr E-Mail-Inhalt hier...';
+            }
+
+            // Event Listener f\u00fcr Live-Updates
+            visualEditor.addEventListener('input', () => {
+                console.log('Editor content changed'); // DEBUG
+                updateWizardPreview();
+            });
+
+            // Initial Preview Update
+            setTimeout(updateWizardPreview, 100);
+        } else {
+            console.error('wizardVisualEditor not found!'); // DEBUG
         }
     }
 
@@ -663,7 +733,7 @@ window.MailWizard = (function() {
      */
     function updateWizardPreview() {
         const editor = document.getElementById('wizardVisualEditor');
-        const preview = document.getElementById('wizardPreview');
+        const preview = document.getElementById('wizardEmailPreview'); // GEÄNDERT: war 'wizardPreview'
         
         if (editor && preview) {
             let content = editor.innerHTML;
@@ -676,7 +746,7 @@ window.MailWizard = (function() {
             wizardData.content = generateFullHTML(content);
             
             preview.innerHTML = `
-                <div style="font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; background: white; border-radius: 8px;">
+                <div style="font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; background: white; border-radius: 8px; border: 1px solid #e9ecef;">
                     ${content}
                 </div>
             `;
@@ -687,28 +757,19 @@ window.MailWizard = (function() {
      * Generiert vollständiges HTML
      */
     function generateFullHTML(content) {
-        const template = TEMPLATE_LIBRARY[wizardData.mailType][wizardData.template];
-        if (template) {
-            // Template-HTML nehmen und Body-Content ersetzen
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(template.html, 'text/html');
-            const bodyDiv = doc.querySelector('body > div');
-            
-            if (bodyDiv) {
-                bodyDiv.innerHTML = content;
-                return doc.documentElement.outerHTML;
-            }
-        }
-        
-        // Fallback: Einfaches HTML
+        // Einfaches HTML-Template für E-Mail
         return `<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>${wizardData.subject}</title>
+    <title>${wizardData.subject || 'E-Mail'}</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; background-color: #f4f4f4; }
+        .email-container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; }
+    </style>
 </head>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; background-color: #f4f4f4;">
-    <div style="max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px;">
+<body>
+    <div class="email-container">
         ${content}
     </div>
 </body>
