@@ -1063,3 +1063,34 @@
         text-align: center;
     }
 }
+
+.tutorial-link {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.tutorial-link .btn {
+    font-size: 14px;
+    padding: 8px 16px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-info {
+    background: #17a2b8;
+    color: white;
+    border: 1px solid #17a2b8;
+    border-radius: 6px;
+    transition: all 0.3s;
+}
+
+.btn-info:hover {
+    background: #138496;
+    border-color: #138496;
+    transform: translateY(-1px);
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 13px;
+}
