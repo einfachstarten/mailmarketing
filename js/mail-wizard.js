@@ -1004,23 +1004,30 @@ function generateWizardButtons() {
     function updateRecipientPagination() {
         const paginationContainer = document.getElementById('wizardRecipientPagination');
         const pageInfo = document.getElementById('wizardRecipientPageInfo');
-        
+
+        // NULL-Check hinzufügen
+        if (!paginationContainer) {
+            console.warn('Pagination container not found');
+            return;
+        }
+
         const totalPages = Math.ceil(filteredRecipients.length / recipientsPerPage);
-        
+
         if (totalPages <= 1) {
             paginationContainer.style.display = 'none';
             return;
         }
-        
+
         paginationContainer.style.display = 'flex';
         if (pageInfo) {
             pageInfo.textContent = `Seite ${recipientPage} von ${totalPages}`;
         }
-        
+
         // Button states
         const prevBtn = paginationContainer.querySelector('button:first-child');
         const nextBtn = paginationContainer.querySelector('button:last-child');
-        
+
+        // Weitere NULL-Checks für alle DOM-Elemente
         if (prevBtn) prevBtn.disabled = recipientPage === 1;
         if (nextBtn) nextBtn.disabled = recipientPage === totalPages;
     }
