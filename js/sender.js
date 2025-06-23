@@ -614,8 +614,85 @@ async function sendSingleEmail(recipient) {
     }
 
     /**
-     * Aktualisiert Progress-Anzeige
+     * Aktualisiert Progress-Anzeige (FEHLENDE FUNKTION)
+     * @param {number} current - Aktueller Fortschritt
+     * @param {number} total - Gesamt-Anzahl
+     * @param {string} message - Status-Message
      */
+    function updateProgress(current = 0, total = 0, message = '') {
+        try {
+            // Eingabe-Validierung
+            if (typeof current !== 'number' || typeof total !== 'number') {
+                console.warn('updateProgress: Invalid parameters', { current, total });
+                return;
+            }
+
+            const percentage = total > 0 ? Math.min(100, Math.max(0, Math.round((current / total) * 100))) : 0;
+
+            // ProgressManager verwenden falls verfügbar
+            if (window.ProgressManager && typeof ProgressManager.update === 'function') {
+                ProgressManager.update(current, total, message);
+                console.log(`✓ Progress via ProgressManager: ${current}/${total} (${percentage}%)`);
+                return;
+            }
+
+            // Fallback: Direkte DOM Updates für alle möglichen Progress-Elemente
+            const progressElements = [
+                { id: 'sendProgressBar', type: 'bar' },
+                { id: 'progressBar', type: 'bar' },
+                { id: 'campaignProgressBar', type: 'bar' },
+                { id: 'progressText', type: 'text' },
+                { id: 'sendProgressText', type: 'text' },
+                { id: 'progressStats', type: 'stats' },
+                { id: 'sendProgressStats', type: 'stats' }
+            ];
+
+            progressElements.forEach(({ id, type }) => {
+                const element = document.getElementById(id);
+                if (!element) return;
+
+                switch (type) {
+                    case 'bar':
+                        element.style.width = percentage + '%';
+                        element.setAttribute('aria-valuenow', percentage);
+                        break;
+                    case 'text':
+                        element.textContent = message || `Fortschritt: ${percentage}% (${current}/${total})`;
+                        break;
+                    case 'stats':
+                        element.textContent = `${current} / ${total}`;
+                        break;
+                }
+            });
+
+            // CSS Selector Fallbacks
+            document.querySelectorAll('.progress-bar, .unified-progress-bar').forEach(bar => {
+                bar.style.width = percentage + '%';
+            });
+
+            document.querySelectorAll('.progress-text').forEach(text => {
+                text.textContent = message || `${current} von ${total} verarbeitet`;
+            });
+
+            // Custom Event für andere Module
+            window.dispatchEvent(new CustomEvent('senderProgressUpdate', {
+                detail: { current, total, percentage, message }
+            }));
+
+            // Update Sending Stats
+            if (sendingStats) {
+                sendingStats.processed = current;
+                sendingStats.total = total;
+            }
+
+            console.log(`📊 Progress Update: ${current}/${total} (${percentage}%) - ${message}`);
+
+        } catch (error) {
+            console.error('updateProgress error:', error);
+            // Minimal Fallback
+            console.log(`Progress Fallback: ${current}/${total}`);
+        }
+    }
 
     /**
      * Aktualisiert Empfänger-Liste für Send-Tab
