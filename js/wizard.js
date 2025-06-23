@@ -488,16 +488,14 @@ window.Wizard = (function() {
             setupCompleted: true
         };
 
-        // Config speichern
+        // Config über offizielle API speichern (macht auch localStorage-Sync)
         const success = Config.saveConfig(config);
-        
+
         if (success) {
-            // WICHTIG: Setup-Status für Landing Page setzen
+            // Zusätzliche Setup-Status-Marker für Landing Page
             localStorage.setItem('emailjs_configured', 'true');
-            localStorage.setItem('emailjs_service_id', config.serviceId);
-            localStorage.setItem('fromName', config.fromName);
-            
-            // Hauptkonfiguration auch aktualisieren
+
+            // Hauptkonfiguration UI auch aktualisieren
             updateMainConfigUI(config);
             console.log('Wizard config saved successfully');
         }

@@ -108,18 +108,25 @@ window.Config = (function() {
             // Config speichern
             currentConfig = { ...currentConfig, ...config };
             const success = Utils.saveToStorage(STORAGE_KEYS.EMAIL_CONFIG, currentConfig);
-            
+
             if (success) {
+                // CRITICAL FIX: Legacy-Kompatibilität sicherstellen
+                localStorage.setItem('emailjs_service_id', currentConfig.serviceId);
+                localStorage.setItem('emailjs_template_id', currentConfig.templateId);
+                localStorage.setItem('emailjs_user_id', currentConfig.userId);
+                localStorage.setItem('fromName', currentConfig.fromName);
+                localStorage.setItem('emailjs_configured', 'true');
+
                 // EmailJS re-initialisieren
                 if (currentConfig.userId && window.emailjs) {
                     emailjs.init(currentConfig.userId);
                 }
-                
+
                 Utils.showStatus('configStatus', 'Konfiguration gespeichert!', 'success');
-                
+
                 // Setup-Prompt verstecken falls sichtbar
                 Utils.toggleElement('setupPrompt', false);
-                
+
                 return true;
             } else {
                 Utils.showStatus('configStatus', 'Fehler beim Speichern!', 'error');
