@@ -151,13 +151,41 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         .url-link::before {
             content: '\ud83d\udd17';
             position: absolute;
             top: 8px;
             right: 12px;
             font-size: 1.2rem;
+        }
+
+        .url-button {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin: 15px 0;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .url-button:hover {
+            background: linear-gradient(135deg, #357abd 0%, #2968a3 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(74, 144, 226, 0.3);
+        }
+
+        .url-button:before {
+            content: '🔗';
+            margin-right: 8px;
         }
         
         .code-block {
@@ -376,7 +404,9 @@
                 <h3>🔑 EmailJS Account erstellen</h3>
                 <p>Gehe zu dieser URL und erstelle einen neuen Account:</p>
                 
-                <div class="url-link">https://dashboard.emailjs.com/sign-up</div>
+                <a href="https://dashboard.emailjs.com/sign-up" target="_blank" class="url-button">
+                    EmailJS Account erstellen
+                </a>
                 
                 <p>Registriere dich mit deiner E-Mail-Adresse. Der kostenlose Plan erlaubt 200 E-Mails pro Monat - perfekt zum Testen.</p>
             </div>
@@ -406,7 +436,9 @@
                 <h3>📄 E-Mail Template erstellen</h3>
                 <p>Gehe zu Templates:</p>
                 
-                <div class="url-link">https://dashboard.emailjs.com/admin/templates</div>
+                <a href="https://dashboard.emailjs.com/admin/templates" target="_blank" class="url-button">
+                    Templates verwalten
+                </a>
                 
                 <p>Klicke "Create New Template" und konfiguriere <strong>exakt</strong> diese Felder:</p>
                 
@@ -458,7 +490,9 @@
                 <h3>🆔 Template ID finden</h3>
                 <p>Nach dem Speichern findest du die Template ID hier:</p>
                 
-                <div class="url-link">https://dashboard.emailjs.com/admin/templates/[deine-template-id]/settings</div>
+                <a href="https://dashboard.emailjs.com/admin/templates/[deine-template-id]/settings" target="_blank" class="url-button">
+                    Template Einstellungen
+                </a>
                 
                 <p>Die Template ID steht in der URL und beginnt mit "template_".</p>
                 
@@ -470,7 +504,9 @@
                 <h3>🔐 Public Key finden</h3>
                 <p>Gehe zu deinen Account-Einstellungen:</p>
                 
-                <div class="url-link">https://dashboard.emailjs.com/admin/account</div>
+                <a href="https://dashboard.emailjs.com/admin/account" target="_blank" class="url-button">
+                    Account Einstellungen
+                </a>
                 
                 <p>Im <strong>"General"</strong> Tab findest du den <span class="highlight">Public Key</span>:</p>
                 
