@@ -1426,30 +1426,35 @@ small {
 .wizard-recipient-item {
     display: flex;
     align-items: center;
-    padding: 8px 12px;
+    padding: 12px;
+    border: 1px solid #e9ecef;
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s;
-    margin-bottom: 4px;
+    margin-bottom: 8px;
+    background: white;
 }
 
 .wizard-recipient-item:hover {
     background: #f8f9fa;
+    border-color: #4a90e2;
 }
 
 .wizard-recipient-item.selected {
     background: #e3f2fd;
-    border: 1px solid #90caf9;
+    border-color: #2196f3;
 }
 
 .wizard-recipient-checkbox {
     margin-right: 12px;
     width: 16px;
     height: 16px;
+    cursor: pointer;
 }
 
 .wizard-recipient-info {
     flex: 1;
+    pointer-events: none;
 }
 
 .wizard-recipient-name {
@@ -1459,7 +1464,7 @@ small {
 }
 
 .wizard-recipient-email {
-    font-size: 12px;
+    font-size: 14px;
     color: #6c757d;
 }
 
