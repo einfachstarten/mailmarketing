@@ -875,9 +875,9 @@ small {
 }
 
 .wizard-content {
-    padding: 30px;
-    min-height: 400px;
-    max-height: 50vh;
+    padding: 20px;
+    min-height: 350px;
+    max-height: 60vh;
     overflow-y: auto;
 }
 
@@ -907,7 +907,7 @@ small {
 
 .step-intro {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .step-intro h3 {
@@ -1191,75 +1191,84 @@ small {
 }
 
 .step-title {
-    font-size: 24px;
-    margin-bottom: 8px;
+    font-size: 20px;
+    margin-bottom: 6px;
     color: #2c3e50;
 }
 
 .step-subtitle {
     color: #7f8c8d;
-    margin-bottom: 32px;
+    margin-bottom: 20px;
+    font-size: 14px;
 }
 
 /* Step 1: Mail Types */
 .wizard-mail-types {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
 }
 
 .wizard-mail-type-card {
     border: 2px solid #e9ecef;
-    border-radius: 12px;
-    padding: 24px;
+    border-radius: 10px;
+    padding: 16px;
     cursor: pointer;
     transition: all 0.3s;
     text-align: center;
+    min-height: 160px;
 }
 
 .wizard-mail-type-card:hover {
     border-color: #667eea;
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
 }
 
 .wizard-mail-type-card.selected {
     border-color: #667eea;
     background: #f8f9ff;
+    box-shadow: 0 0 0 1px rgba(102, 126, 234, 0.2);
 }
 
 .mail-type-icon {
-    font-size: 48px;
-    margin-bottom: 16px;
+    font-size: 32px;
+    margin-bottom: 12px;
+    display: block;
 }
 
 .wizard-mail-type-card h3 {
-    margin: 0 0 8px 0;
+    margin: 0 0 6px 0;
     color: #2c3e50;
+    font-size: 16px;
+    font-weight: 600;
 }
 
 .wizard-mail-type-card p {
     color: #6c757d;
-    margin-bottom: 16px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.4;
 }
 
 .wizard-mail-type-card ul {
     text-align: left;
-    font-size: 14px;
+    font-size: 12px;
     color: #6c757d;
     margin: 0;
-    padding-left: 20px;
+    padding-left: 16px;
+    line-height: 1.3;
 }
 
 .wizard-mail-type-card li {
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 /* Step 2: Templates */
 .wizard-template-library {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
 }
 
 .wizard-template-card {
@@ -1268,41 +1277,47 @@ small {
     overflow: hidden;
     cursor: pointer;
     transition: all 0.3s;
+    min-height: 140px;
 }
 
 .wizard-template-card:hover {
     border-color: #667eea;
     transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
 }
 
 .wizard-template-card.selected {
     border-color: #667eea;
-    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+    background: #f8f9ff;
+    box-shadow: 0 0 0 1px rgba(102, 126, 234, 0.2);
 }
 
 .wizard-template-preview {
-    height: 150px;
+    height: 80px;
     background: #f8f9fa;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 48px;
-    color: #dee2e6;
+    font-size: 32px;
+    color: #667eea;
+    border-bottom: 1px solid #e9ecef;
 }
 
 .wizard-template-info {
-    padding: 16px;
+    padding: 12px;
 }
 
 .wizard-template-name {
-    font-weight: bold;
+    font-weight: 600;
     margin-bottom: 4px;
     color: #2c3e50;
+    font-size: 14px;
 }
 
 .wizard-template-description {
-    font-size: 14px;
+    font-size: 12px;
     color: #6c757d;
+    line-height: 1.3;
 }
 
 /* Step 3: Editor */
@@ -1828,8 +1843,8 @@ small {
         font-size: 24px;
     }
 
-    .wizard-modal,
-    .mail-wizard-container {
+    .mail-wizard-container,
+    .wizard-modal.large {
         width: 95%;
         max-height: 95vh;
         margin: 10px;
@@ -1863,7 +1878,8 @@ small {
     }
 
     .wizard-content {
-        padding: 20px;
+        padding: 15px;
+        max-height: 70vh;
     }
 
     .wizard-buttons, .wizard-navigation {
@@ -1886,10 +1902,59 @@ small {
         grid-template-columns: 1fr;
     }
     
-    .wizard-mail-types {
-        grid-template-columns: 1fr;
+    .step-intro {
+        margin-bottom: 15px;
     }
-    
+}
+
+@media (max-width: 900px) {
+    .wizard-mail-types,
+    .wizard-template-library {
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 12px;
+    }
+
+    .wizard-mail-type-card,
+    .wizard-template-card {
+        padding: 12px;
+        min-height: 140px;
+    }
+
+    .mail-type-icon,
+    .wizard-template-preview {
+        font-size: 28px;
+    }
+}
+
+@media (max-width: 600px) {
+    .wizard-mail-types,
+    .wizard-template-library {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .wizard-mail-type-card,
+    .wizard-template-card {
+        padding: 10px;
+        min-height: 120px;
+    }
+
+    .wizard-mail-type-card h3 {
+        font-size: 14px;
+    }
+
+    .wizard-mail-type-card p,
+    .wizard-template-description {
+        font-size: 11px;
+    }
+
+    .wizard-mail-type-card ul {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 400px) {
+    .wizard-mail-types,
     .wizard-template-library {
         grid-template-columns: 1fr;
     }
