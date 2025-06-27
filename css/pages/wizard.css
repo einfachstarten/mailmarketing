@@ -1112,3 +1112,175 @@
     border: none;
     background: white;
 }
+/* === STEP 3 EDITOR LAYOUT === */
+.wizard-editor-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    min-height: 500px;
+}
+
+.editor-panel {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.preview-panel {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.preview-panel h4 {
+    margin: 0 0 16px 0;
+    color: #2c3e50;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Visual Editor */
+.wizard-visual-editor {
+    min-height: 250px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 16px;
+    background: white;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    transition: border-color 0.3s ease;
+    overflow-y: auto;
+    resize: vertical;
+}
+
+.wizard-visual-editor:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.wizard-visual-editor:empty::before {
+    content: attr(placeholder);
+    color: #999;
+    font-style: italic;
+}
+
+/* Editor Toolbar */
+.editor-toolbar {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 8px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+}
+
+.btn-editor {
+    padding: 6px 12px;
+    border: 1px solid #d1d5db;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s ease;
+    color: #374151;
+}
+
+.btn-editor:hover {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+/* Preview Controls */
+.preview-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding: 8px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.form-control-sm {
+    padding: 4px 8px;
+    font-size: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    background: white;
+}
+
+/* Preview Container */
+.wizard-email-preview-container {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    background: white;
+    min-height: 300px;
+    position: relative;
+    overflow: hidden;
+}
+
+.wizard-email-preview-container.mobile-view {
+    max-width: 375px;
+    margin: 0 auto;
+}
+
+.wizard-email-preview-container iframe {
+    width: 100%;
+    height: 300px;
+    border: none;
+    background: white;
+    border-radius: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .wizard-editor-container {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .preview-panel {
+        order: -1;
+    }
+    
+    .wizard-visual-editor {
+        min-height: 200px;
+    }
+}
+
+/* Loading State */
+.wizard-email-preview-container.loading::before {
+    content: "Vorschau wird geladen...";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.wizard-email-preview-container.loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) translateY(20px);
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e9ecef;
+    border-top-color: #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: translate(-50%, -50%) translateY(20px) rotate(360deg); }
+}
