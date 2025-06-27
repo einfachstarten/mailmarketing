@@ -70,22 +70,18 @@ window.HelpSystem = (function() {
 
         // KOMPLIZIERT: Mail Wizard Steps
         'wizard-step-1-mailtype': {
-            title: '📝 Mail-Typ auswählen',
+            title: 'Mail-Typ',
             content: `
                 <div class="help-content">
-                    <p>Wähle den passenden Typ für deine E-Mail:</p>
-                    <ul>
-                        <li><strong>Newsletter:</strong> Regelmäßige Updates</li>
-                        <li><strong>Ankündigung:</strong> Wichtige Neuigkeiten</li>
-                        <li><strong>Update:</strong> Persönliche Nachrichten</li>
-                        <li><strong>Individuell:</strong> Eigenes Design</li>
-                    </ul>
+                    <p>Wähle je nach Zweck:</p>
                     <div class="help-tip">
-                        💡 Der Typ bestimmt verfügbare Templates
+                        • <strong>Newsletter:</strong> Regelmäßige Updates<br>
+                        • <strong>Ankündigung:</strong> Wichtige News<br>
+                        • <strong>Individuell:</strong> Eigenes Design
                     </div>
                 </div>
             `,
-            placement: 'top',
+            placement: 'bottom',
             trigger: 'hover'
         },
 
@@ -125,6 +121,28 @@ window.HelpSystem = (function() {
             `,
             placement: 'left',
             trigger: 'focus'
+        },
+
+        'wizard-subject-help': {
+            title: 'Betreff-Tipps',
+            content: `
+                <div class="help-content">
+                    <p>Nutze Platzhalter wie <code>{{name}}</code> für Personalisierung.</p>
+                </div>
+            `,
+            placement: 'bottom',
+            trigger: 'hover'
+        },
+
+        'wizard-content-help': {
+            title: 'Inhalt bearbeiten',
+            content: `
+                <div class="help-content">
+                    <p>Verwende HTML oder Text. Platzhalter wie {{name}} werden beim Versand ersetzt.</p>
+                </div>
+            `,
+            placement: 'bottom',
+            trigger: 'hover'
         },
 
         'wizard-step-4-recipients': {
@@ -299,12 +317,27 @@ Anna Schmidt,anna@example.com
         if (!helpId || !HELP_CONTENT[helpId]) return;
 
         const config = HELP_CONTENT[helpId];
-        
-        // Event Listeners basierend auf Trigger
+        let hoverTimer;
+
         switch (config.trigger) {
             case 'hover':
-                element.addEventListener('mouseenter', () => showTooltip(element, helpId));
-                element.addEventListener('mouseleave', () => hideTooltip());
+                element.addEventListener('mouseenter', () => {
+                    clearTimeout(hoverTimer);
+                    hoverTimer = setTimeout(() => {
+                        showTooltip(element, helpId);
+                    }, 300);
+                });
+
+                element.addEventListener('mouseleave', () => {
+                    clearTimeout(hoverTimer);
+                    if (activeTooltip) {
+                        setTimeout(() => {
+                            if (!activeTooltip?.matches(':hover')) {
+                                hideTooltip();
+                            }
+                        }, 100);
+                    }
+                });
                 break;
             case 'focus':
                 element.addEventListener('focus', () => showTooltip(element, helpId));
@@ -318,14 +351,12 @@ Anna Schmidt,anna@example.com
                 break;
         }
 
-        // Visual indicator hinzufügen
         if (!element.querySelector('.help-indicator')) {
             const indicator = document.createElement('span');
             indicator.className = 'help-indicator';
             indicator.innerHTML = '?';
-            indicator.title = 'Hilfe verfügbar';
-            
-            // Positioning based on element type
+            indicator.title = 'Hilfe anzeigen';
+
             if (element.tagName === 'LABEL') {
                 element.appendChild(indicator);
             } else {
@@ -340,34 +371,37 @@ Anna Schmidt,anna@example.com
      */
     function showTooltip(element, helpId) {
         clearTimeout(tooltipTimeout);
-        hideTooltip(); // Alten Tooltip verstecken
+        hideTooltip();
 
         const config = HELP_CONTENT[helpId];
         const container = document.getElementById('helpTooltipContainer');
 
         const tooltip = document.createElement('div');
         tooltip.className = 'help-tooltip';
+        tooltip.dataset.placement = config.placement;
         tooltip.innerHTML = `
-            <div class="help-tooltip-header">
-                <h4>${config.title}</h4>
-                <button class="help-tooltip-close" onclick="HelpSystem.hideTooltip()">&times;</button>
-            </div>
             <div class="help-tooltip-body">
+                <div class="tooltip-title">${config.title}</div>
                 ${config.content}
             </div>
         `;
 
         container.appendChild(tooltip);
-        
-        // Positioning
-        positionTooltip(tooltip, element, config.placement);
-        
-        // Animation
+
         requestAnimationFrame(() => {
-            tooltip.classList.add('show');
+            positionTooltip(tooltip, element, config.placement);
+            setTimeout(() => {
+                tooltip.classList.add('show');
+            }, 10);
         });
 
         activeTooltip = tooltip;
+
+        if (config.trigger === 'hover') {
+            tooltipTimeout = setTimeout(() => {
+                hideTooltip();
+            }, 5000);
+        }
     }
 
     /**
