@@ -397,43 +397,67 @@ function resetWizardData() {
      */
     function generateStep3() {
         return `
-        <div id="mail-wizard-step-3" class="wizard-step-content">
-            <div class="step-intro">
-                <h3 class="step-title">✏️ Inhalt bearbeiten</h3>
-                <p class="step-subtitle">Betreff und E-Mail-Inhalt anpassen</p>
-            </div>
-            
-            <div class="wizard-editor-container">
-                <div class="editor-panel">
-                    <div class="form-group">
-                        <label for="wizardSubject">
-                            Betreff *
-                            <span class="help-indicator" data-help="wizard-subject-help">?</span>
-                        </label>
-                        <input type="text" id="wizardSubject" class="form-control" \
-                               placeholder="E-Mail Betreff eingeben...">
+    <div id="mail-wizard-step-3" class="wizard-step-content">
+        <div class="step-intro">
+            <h3 class="step-title">✏️ Inhalt bearbeiten</h3>
+            <p class="step-subtitle">Betreff und E-Mail-Inhalt anpassen</p>
+        </div>
+
+        <div class="wizard-editor-container">
+            <div class="editor-panel">
+                <div class="form-group">
+                    <label for="wizardSubject">
+                        Betreff *
+                        <span class="help-indicator" data-help="wizard-subject-help">?</span>
+                    </label>
+                    <input type="text" id="wizardSubject" class="form-control"
+                           placeholder="E-Mail Betreff eingeben...">
+                </div>
+
+                <div class="form-group">
+                    <label for="wizardVisualEditor">
+                        E-Mail Inhalt
+                        <span class="help-indicator" data-help="wizard-content-help">?</span>
+                    </label>
+                    <div id="wizardVisualEditor" class="wizard-visual-editor"
+                         contenteditable="true"
+                         placeholder="Hier deinen E-Mail-Inhalt eingeben...">
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="wizardVisualEditor">
-                            E-Mail Inhalt
-                            <span class="help-indicator" data-help="wizard-content-help">?</span>
-                        </label>
-                        <div id="wizardVisualEditor" class="wizard-visual-editor" \
-                             contenteditable="true" \
-                             placeholder="Hier deinen E-Mail-Inhalt eingeben...">
-                        </div>
+
+                    <div class="editor-toolbar">
+                        <button type="button" class="btn-editor" onclick="MailWizard.formatText('bold')" title="Fett">
+                            <strong>B</strong>
+                        </button>
+                        <button type="button" class="btn-editor" onclick="MailWizard.formatText('italic')" title="Kursiv">
+                            <em>I</em>
+                        </button>
+                        <button type="button" class="btn-editor" onclick="MailWizard.insertPersonalization('name')" title="Name einfügen">
+                            {{name}}
+                        </button>
+                        <button type="button" class="btn-editor" onclick="MailWizard.insertPersonalization('email')" title="E-Mail einfügen">
+                            {{email}}
+                        </button>
                     </div>
                 </div>
-                
-                <div class="preview-panel">
-                    <h4>📱 Live-Vorschau</h4>
-                    <div id="wizardEmailPreview" class="wizard-email-preview">
-                        <!-- Live Preview wird hier angezeigt -->
-                    </div>
+            </div>
+
+            <div class="preview-panel">
+                <h4>📱 Live-Vorschau</h4>
+                <div class="preview-controls">
+                    <button type="button" class="btn btn-sm" onclick="MailWizard.refreshPreview()">
+                        🔄 Aktualisieren
+                    </button>
+                    <select id="previewDevice" class="form-control-sm" onchange="MailWizard.switchPreviewDevice()">
+                        <option value="desktop">💻 Desktop</option>
+                        <option value="mobile">📱 Mobile</option>
+                    </select>
+                </div>
+                <div id="wizardEmailPreviewStep3" class="wizard-email-preview-container">
+                    <!-- Live Preview wird hier angezeigt -->
                 </div>
             </div>
         </div>
+    </div>
     `;
     }
 
@@ -1184,53 +1208,67 @@ function generateWizardButtons() {
      * Initialisiert Editor
      */
     function initializeEditor() {
+        console.log('Initializing Step 3 Editor...');
+    
         const subjectInput = document.getElementById('wizardSubject');
         const visualEditor = document.getElementById('wizardVisualEditor');
-        const previewContainer = document.getElementById('wizardEmailPreview');
-
-        if (!previewContainer) {
-            console.warn('Preview container missing, creating...');
-            const newPreviewContainer = document.createElement('div');
-            newPreviewContainer.id = 'wizardEmailPreview';
-            newPreviewContainer.className = 'wizard-email-preview';
-            const editorContainer = document.querySelector('.wizard-editor-container');
-            if (editorContainer) {
-                editorContainer.appendChild(newPreviewContainer);
-            }
-        }
-
-        if (subjectInput) {
-            subjectInput.value = wizardData.subject || '';
-            subjectInput.addEventListener('input', (e) => {
-                wizardData.subject = e.target.value;
-                updateWizardPreview();
+        const previewContainer = document.getElementById('wizardEmailPreviewStep3');
+    
+        // Prüfe ob Elemente vorhanden sind
+        if (!subjectInput || !visualEditor || !previewContainer) {
+            console.error('Editor elements missing:', {
+                subject: !!subjectInput,
+                editor: !!visualEditor,
+                preview: !!previewContainer
             });
+            return;
         }
-
-        if (visualEditor) {
-            if (wizardData.content) {
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = wizardData.content;
-                const bodyDiv = tempDiv.querySelector('body > div');
-                let editorContent = bodyDiv ? bodyDiv.innerHTML : wizardData.content;
-
-                if (editorContent.includes('<!DOCTYPE') || editorContent.includes('<html>')) {
-                    editorContent = 'Hallo {{name}}! \uD83D\uDC4B\n\nHier ist dein w\u00f6chentliches Update...\n\nViele Gr\u00fc\u00dfe!';
-                }
-
-                visualEditor.innerHTML = editorContent;
-            } else {
-                visualEditor.innerHTML = 'Hallo {{name}}! \uD83D\uDC4B\n\nIhr E-Mail-Inhalt hier...';
-            }
-
-            visualEditor.addEventListener('input', () => {
-                updateWizardPreview();
-            });
-
-            setTimeout(() => {
-                updateWizardPreview();
-            }, 100);
+    
+        // Initialisiere Betreff
+        if (wizardData.subject) {
+            subjectInput.value = wizardData.subject;
         }
+    
+        subjectInput.addEventListener('input', (e) => {
+            wizardData.subject = e.target.value;
+            console.log('Subject updated:', wizardData.subject);
+        });
+    
+        // Initialisiere Editor-Inhalt
+        if (wizardData.content) {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = wizardData.content;
+            const bodyDiv = tempDiv.querySelector('body .container, body > div');
+            const editorContent = bodyDiv ? bodyDiv.innerHTML : wizardData.content;
+    
+            visualEditor.innerHTML = editorContent;
+        } else {
+            visualEditor.innerHTML = `
+                <p>Hallo {{name}}! 👋</p>
+                <p>Hier ist dein wöchentliches Update...</p>
+                <p>Viele Grüße!</p>
+            `;
+        }
+    
+        // Event-Listener für Editor
+        visualEditor.addEventListener('input', () => {
+            console.log('Editor content changed');
+            updateWizardPreview();
+        });
+    
+        visualEditor.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const text = e.clipboardData.getData('text/plain');
+            document.execCommand('insertText', false, text);
+            updateWizardPreview();
+        });
+    
+        // Initiale Vorschau generieren
+        setTimeout(() => {
+            updateWizardPreview();
+        }, 200);
+    
+        console.log('✅ Step 3 Editor initialized successfully');
     }
 
     /**
@@ -1238,47 +1276,98 @@ function generateWizardButtons() {
      */
     function updateWizardPreview() {
         const editor = document.getElementById('wizardVisualEditor');
-        const preview = document.getElementById('wizardEmailPreview');
+        const preview = document.getElementById('wizardEmailPreviewStep3');
 
-        if (editor && preview) {
-            let content = editor.innerHTML;
-            content = content.replace(/\{\{name\}\}/g, 'Max Mustermann');
-            content = content.replace(/\{\{email\}\}/g, 'max@example.com');
-
-            wizardData.content = generateFullHTML(content);
-
-            const iframe = document.createElement('iframe');
-            iframe.style.cssText = 'width:100%;height:300px;border:1px solid #e9ecef;border-radius:8px;background:white;';
-            iframe.setAttribute('sandbox', 'allow-same-origin');
-            iframe.setAttribute('srcdoc', `
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <style>
-                    * { all: initial; }
-                    body {
-                        font-family: Arial, sans-serif !important;
-                        line-height: 1.6 !important;
-                        margin: 0 !important;
-                        padding: 20px !important;
-                        background: white !important;
-                        color: #333 !important;
-                        box-sizing: border-box !important;
-                    }
-                    h1,h2,h3,h4,h5,h6 { color: #333 !important; margin: 0 0 10px 0 !important; }
-                    p { margin: 0 0 15px 0 !important; }
-                    a { color: #4a90e2 !important; text-decoration: underline !important; }
-                    img { max-width: 100% !important; height: auto !important; }
-                </style>
-            </head>
-            <body>${content}</body>
-            </html>
-            `);
-
-            preview.innerHTML = '';
-            preview.appendChild(iframe);
+        if (!editor || !preview) {
+            console.warn('Editor or preview container missing');
+            return;
         }
+
+        let content = editor.innerHTML;
+
+        // Personalisierung für Vorschau
+        content = content.replace(/\{\{name\}\}/g, 'Max Mustermann');
+        content = content.replace(/\{\{email\}\}/g, 'max@example.com');
+        content = content.replace(/\{\{company\}\}/g, 'Musterunternehmen GmbH');
+
+        // Wizard-Daten aktualisieren
+        wizardData.content = generateFullHTML(content);
+
+        // Loading-State anzeigen
+        preview.classList.add('loading');
+
+        const fullHTML = `
+        <!DOCTYPE html>
+        <html lang="de">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>E-Mail Vorschau</title>
+            <style>
+                * { box-sizing: border-box; }
+                body {
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif !important;
+                    line-height: 1.6 !important;
+                    margin: 0 !important;
+                    padding: 20px !important;
+                    background: #ffffff !important;
+                    color: #333333 !important;
+                    font-size: 14px !important;
+                }
+                h1, h2, h3, h4, h5, h6 {
+                    color: #2c3e50 !important;
+                    margin: 0 0 16px 0 !important;
+                    font-weight: 600 !important;
+                }
+                p {
+                    margin: 0 0 16px 0 !important;
+                    line-height: 1.6 !important;
+                }
+                a {
+                    color: #667eea !important;
+                    text-decoration: none !important;
+                }
+                a:hover {
+                    text-decoration: underline !important;
+                }
+                ul, ol {
+                    margin: 0 0 16px 0 !important;
+                    padding-left: 20px !important;
+                }
+                li {
+                    margin-bottom: 8px !important;
+                }
+                img {
+                    max-width: 100% !important;
+                    height: auto !important;
+                }
+                .container {
+                    max-width: 600px !important;
+                    margin: 0 auto !important;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                ${content}
+            </div>
+        </body>
+        </html>
+        `;
+
+        setTimeout(() => {
+            preview.innerHTML = '';
+            const iframe = document.createElement('iframe');
+            iframe.style.cssText = 'width: 100%; height: 300px; border: none; border-radius: 8px;';
+            iframe.setAttribute('sandbox', 'allow-same-origin');
+            iframe.setAttribute('srcdoc', fullHTML);
+
+            iframe.onload = () => {
+                preview.classList.remove('loading');
+            };
+
+            preview.appendChild(iframe);
+        }, 100);
     }
 
     /**
@@ -2040,6 +2129,44 @@ function generateWizardButtons() {
         }
     }
 
+    /**
+     * Fügt Personalisierung ein
+     */
+    function insertPersonalization(type) {
+        const editor = document.getElementById('wizardVisualEditor');
+        if (editor) {
+            const selection = window.getSelection();
+            const range = selection.getRangeAt(0);
+            const placeholder = document.createTextNode(`{{${type}}}`);
+            range.insertNode(placeholder);
+            updateWizardPreview();
+        }
+    }
+
+    /**
+     * Aktualisiert Vorschau manuell
+     */
+    function refreshPreview() {
+        updateWizardPreview();
+        Utils.showToast('Vorschau aktualisiert', 'success');
+    }
+
+    /**
+     * Wechselt Vorschau-Gerät
+     */
+    function switchPreviewDevice() {
+        const select = document.getElementById('previewDevice');
+        const container = document.getElementById('wizardEmailPreviewStep3');
+
+        if (select && container) {
+            if (select.value === 'mobile') {
+                container.classList.add('mobile-view');
+            } else {
+                container.classList.remove('mobile-view');
+            }
+        }
+    }
+
     // ===== PUBLIC API =====
     return {
         // Core functions
@@ -2067,6 +2194,9 @@ function generateWizardButtons() {
         // Editor functions
         formatText,
         insertVariable,
+        insertPersonalization,
+        refreshPreview,
+        switchPreviewDevice,
         updateWizardPreview,
 
         // Preview & Testing
