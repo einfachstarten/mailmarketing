@@ -396,8 +396,47 @@ function resetWizardData() {
      * Generiert Schritt 3: Editor
      */
     function generateStep3() {
-        return `\n        <div id="mail-wizard-step-3" class="wizard-step-content">\n            <div class="step-intro">\n                <h3 class="step-title">✏️ Inhalt bearbeiten</h3>\n                <p class="step-subtitle">Betreff und E-Mail-Inhalt anpassen</p>\n            </div>\n            \n            <div class="wizard-editor-container">\n                <div class="form-group">\n                    <label for="wizardSubject">Betreff *</label>\n                    <input type="text" id="wizardSubject" class="form-control" placeholder="E-Mail Betreff eingeben...">\n                    <small class="form-hint">Verwende {{name}} für Personalisierung</small>\n                </div>\n                \n                <div class="wizard-editor-toolbar">\n                    <button type="button" onclick="MailWizard.formatText('bold')" title="Fett">\n                        <strong>B</strong>\n                    </button>\n                    <button type="button" onclick="MailWizard.formatText('italic')" title="Kursiv">\n                        <em>I</em>\n                    </button>\n                    <button type="button" onclick="MailWizard.insertVariable('{{name}}')" title="Name einfügen">\n                        {{name}}\n                    </button>\n                </div>\n                \n                <div class="form-group">\n                    <label for="wizardVisualEditor">E-Mail Inhalt</label>\n                    <div id="wizardVisualEditor" class="wizard-visual-editor" contenteditable="true">\n                        <!-- Inhalt wird dynamisch geladen -->\n                    </div>\n                </div>\n                \n                <div class="wizard-preview">\n                    <h4>Live Vorschau:</h4>\n                    <div id="wizardEmailPreview" class="email-preview">\n                        <!-- Vorschau wird dynamisch generiert -->\n                    </div>\n                </div>\n            </div>\n        </div>\n    `;
+        return `
+        <div id="mail-wizard-step-3" class="wizard-step-content">
+            <div class="step-intro">
+                <h3 class="step-title">✏️ Inhalt bearbeiten</h3>
+                <p class="step-subtitle">Betreff und E-Mail-Inhalt anpassen</p>
+            </div>
+            
+            <div class="wizard-editor-container">
+                <div class="editor-panel">
+                    <div class="form-group">
+                        <label for="wizardSubject">
+                            Betreff *
+                            <span class="help-indicator" data-help="wizard-subject-help">?</span>
+                        </label>
+                        <input type="text" id="wizardSubject" class="form-control" \
+                               placeholder="E-Mail Betreff eingeben...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="wizardVisualEditor">
+                            E-Mail Inhalt
+                            <span class="help-indicator" data-help="wizard-content-help">?</span>
+                        </label>
+                        <div id="wizardVisualEditor" class="wizard-visual-editor" \
+                             contenteditable="true" \
+                             placeholder="Hier deinen E-Mail-Inhalt eingeben...">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="preview-panel">
+                    <h4>📱 Live-Vorschau</h4>
+                    <div id="wizardEmailPreview" class="wizard-email-preview">
+                        <!-- Live Preview wird hier angezeigt -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
     }
+
 
     /**
      * Generiert Schritt 4: Empfänger
@@ -1145,53 +1184,52 @@ function generateWizardButtons() {
      * Initialisiert Editor
      */
     function initializeEditor() {
-        console.log('Initializing editor for step 3'); // DEBUG
-
         const subjectInput = document.getElementById('wizardSubject');
         const visualEditor = document.getElementById('wizardVisualEditor');
+        const previewContainer = document.getElementById('wizardEmailPreview');
+
+        if (!previewContainer) {
+            console.warn('Preview container missing, creating...');
+            const newPreviewContainer = document.createElement('div');
+            newPreviewContainer.id = 'wizardEmailPreview';
+            newPreviewContainer.className = 'wizard-email-preview';
+            const editorContainer = document.querySelector('.wizard-editor-container');
+            if (editorContainer) {
+                editorContainer.appendChild(newPreviewContainer);
+            }
+        }
 
         if (subjectInput) {
             subjectInput.value = wizardData.subject || '';
             subjectInput.addEventListener('input', (e) => {
                 wizardData.subject = e.target.value;
-                console.log('Subject updated:', wizardData.subject); // DEBUG
+                updateWizardPreview();
             });
-        } else {
-            console.error('wizardSubject input not found!'); // DEBUG
         }
 
         if (visualEditor) {
-            // Template-Content laden wenn verfügbar
             if (wizardData.content) {
-                // HTML zu editierbaren Content konvertieren
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = wizardData.content;
-
-                // Body-Content extrahieren falls HTML-Template
                 const bodyDiv = tempDiv.querySelector('body > div');
                 let editorContent = bodyDiv ? bodyDiv.innerHTML : wizardData.content;
 
-                // Falls immer noch komplexes HTML, vereinfachen
                 if (editorContent.includes('<!DOCTYPE') || editorContent.includes('<html>')) {
-                    editorContent = 'Hallo {{name}}! \uD83D\uDC4B\n\nHier ist dein w\u00f6chentliches Update mit den wichtigsten Neuigkeiten.\n\nUpdate-Inhalt...';
+                    editorContent = 'Hallo {{name}}! \uD83D\uDC4B\n\nHier ist dein w\u00f6chentliches Update...\n\nViele Gr\u00fc\u00dfe!';
                 }
 
                 visualEditor.innerHTML = editorContent;
             } else {
-                // Fallback Content
                 visualEditor.innerHTML = 'Hallo {{name}}! \uD83D\uDC4B\n\nIhr E-Mail-Inhalt hier...';
             }
 
-            // Event Listener f\u00fcr Live-Updates
             visualEditor.addEventListener('input', () => {
-                console.log('Editor content changed'); // DEBUG
                 updateWizardPreview();
             });
 
-            // Initial Preview Update
-            setTimeout(updateWizardPreview, 100);
-        } else {
-            console.error('wizardVisualEditor not found!'); // DEBUG
+            setTimeout(() => {
+                updateWizardPreview();
+            }, 100);
         }
     }
 
