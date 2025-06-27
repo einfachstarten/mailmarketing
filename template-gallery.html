@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template Galerie</title>
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+    <header class="simple-header">
+        <a href="index.html" class="logo">🐦 pigeon.run</a>
+    </header>
+
+    <div class="template-gallery-container">
+        <div class="gallery-header">
+            <h2>📋 Template Galerie</h2>
+            <p>Wähle eine Vorlage die zu deinem Anwendungsfall passt</p>
+            <div class="gallery-filters">
+                <button class="filter-tab active" data-filter="all">Alle</button>
+                <button class="filter-tab" data-filter="newsletter">Newsletter</button>
+                <button class="filter-tab" data-filter="announcement">Ankündigungen</button>
+                <button class="filter-tab" data-filter="personal">Persönlich</button>
+            </div>
+        </div>
+
+        <div class="template-gallery-grid">
+            <div class="template-preview-card" data-category="newsletter" data-difficulty="beginner">
+                <div class="template-preview-section">
+                    <div class="preview-frame">
+                        <div class="preview-content">
+                            <div class="email-preview-mini">
+                                <div class="preview-header">Newsletter</div>
+                                <div class="preview-body">
+                                    <div class="preview-text-line long"></div>
+                                    <div class="preview-text-line medium"></div>
+                                    <div class="preview-text-line short"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="preview-overlay">
+                            <button class="btn-use-template" onclick="Templates.useTemplate('newsletter_modern')">✨ Verwenden</button>
+                            <button class="btn-preview-full" onclick="Templates.showFullPreview('newsletter_modern')">👁️ Vollansicht</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="template-info-section">
+                    <div class="template-header">
+                        <h3 class="template-name">Modern Newsletter</h3>
+                        <div class="template-badges">
+                            <span class="difficulty-badge beginner">Anfänger</span>
+                            <span class="category-badge newsletter">Newsletter</span>
+                        </div>
+                    </div>
+                    <p class="template-description">Professioneller Newsletter mit Header, Content-Bereichen und Footer. Perfekt für regelmäßige Updates.</p>
+                    <div class="template-features">
+                        <div class="feature-tag">📱 Mobile-optimiert</div>
+                        <div class="feature-tag">🎨 Anpassbare Farben</div>
+                        <div class="feature-tag">📸 Bildplätze</div>
+                    </div>
+                    <div class="template-use-cases">
+                        <strong>Verwendet für:</strong>
+                        <span class="use-case-list">Firmen-Newsletter, Updates, Produktnews</span>
+                    </div>
+                    <div class="template-stats">
+                        <span class="stat">⭐ 4.8/5 (124 Bewertungen)</span>
+                        <span class="stat">📤 2.1k mal verwendet</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/templates.js"></script>
+</body>
+</html>

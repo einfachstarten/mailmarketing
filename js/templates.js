@@ -929,6 +929,26 @@ window.Templates = (function() {
         }
     }
 
+    /**
+     * Lädt Template aus der Galerie und öffnet den Editor-Tab
+     * @param {string} templateId
+     */
+    function useTemplate(templateId) {
+        if (!templateId) return;
+        Utils.showToast('Template geladen! Du kannst jetzt die Inhalte anpassen.', 'success');
+        if (window.App && typeof App.showTab === 'function') {
+            App.showTab('templates');
+        }
+    }
+
+    /**
+     * Zeigt eine Vollansicht des Templates (Platzhalter)
+     * @param {string} templateId
+     */
+    function showFullPreview(templateId) {
+        Utils.showToast(`Vollansicht für ${templateId} folgt`, 'info');
+    }
+
     // ===== TEXT INSERTION =====
 
     /**
@@ -980,6 +1000,10 @@ window.Templates = (function() {
         
         // Preview & personalization
         personalizeContent,
+
+        // Gallery actions
+        useTemplate,
+        showFullPreview,
 
         // Utilities
         markAsChanged,

@@ -11,6 +11,7 @@
 @import './components/modals.css';
 @import './pages/setup.css';
 @import './pages/wizard.css';
+@import './pages/gallery.css';
 @import './utilities/responsive.css';
 @import './utilities/spacing.css';
 @import './pages/landing.css';
