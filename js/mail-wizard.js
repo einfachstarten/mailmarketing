@@ -354,6 +354,22 @@ function updateProgress() {
                             <button type="button" class="btn-editor action-btn" onclick="MailWizard.clearEditor()" title="Alles löschen">🗑️ Löschen</button>
                             <button type="button" class="btn-editor action-btn" onclick="MailWizard.insertTemplate()" title="Template einfügen">📋 Template</button>
                         </div>
+                        <div class="toolbar-section">
+                            <button type="button" class="btn-editor attachment-btn" onclick="MailWizard.showAttachmentMenu()" id="attachmentMenuBtn">
+                                📎 Anhänge (<span id="attachmentCount">0</span>)
+                            </button>
+                            <button type="button" class="btn-editor variable-btn" onclick="MailWizard.insertAttachmentList()">
+                                📋 Alle Anhänge einfügen
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="attachmentDropdownMenu" class="attachment-dropdown hidden">
+                        <div class="dropdown-header">📎 Verfügbare Anhänge</div>
+                        <div id="attachmentMenuList" class="attachment-menu-list"></div>
+                        <div class="dropdown-footer">
+                            <small>💡 Tipp: Anhänge werden automatisch an jede E-Mail angehängt</small>
+                        </div>
                     </div>
 
                     <div id="wizardVisualEditor" class="wizard-visual-editor"
@@ -1338,6 +1354,14 @@ function showStep(stepNumber) {
                 }
             }
         });
+
+        // Attachment Menu initial aktualisieren
+        updateAttachmentMenu();
+
+        // Bei Attachment-Änderungen Menu aktualisieren
+        if (window.Attachments) {
+            document.addEventListener('attachmentsUpdated', updateAttachmentMenu);
+        }
 
         updateEditorStats();
         setTimeout(() => updateWizardPreview(), 300);
@@ -2356,6 +2380,93 @@ function showStep(stepNumber) {
         }
     }
 
+    // Attachment Menu anzeigen/verstecken
+    function showAttachmentMenu() {
+        const menu = document.getElementById('attachmentDropdownMenu');
+        const btn = document.getElementById('attachmentMenuBtn');
+
+        if (!menu || !btn) return;
+
+        if (menu.classList.contains('hidden')) {
+            updateAttachmentMenu();
+            menu.classList.remove('hidden');
+            btn.classList.add('active');
+
+            setTimeout(() => {
+                document.addEventListener('click', closeAttachmentMenuOnClickOutside);
+            }, 100);
+        } else {
+            menu.classList.add('hidden');
+            btn.classList.remove('active');
+            document.removeEventListener('click', closeAttachmentMenuOnClickOutside);
+        }
+    }
+
+    function closeAttachmentMenuOnClickOutside(event) {
+        const menu = document.getElementById('attachmentDropdownMenu');
+        const btn = document.getElementById('attachmentMenuBtn');
+
+        if (!menu || !btn) return;
+
+        if (!menu.contains(event.target) && !btn.contains(event.target)) {
+            menu.classList.add('hidden');
+            btn.classList.remove('active');
+            document.removeEventListener('click', closeAttachmentMenuOnClickOutside);
+        }
+    }
+
+    // Attachment Menu aktualisieren
+    function updateAttachmentMenu() {
+        const container = document.getElementById('attachmentMenuList');
+        const countSpan = document.getElementById('attachmentCount');
+
+        if (!container || !window.Attachments) return;
+
+        const attachments = Attachments.getAttachments();
+
+        if (countSpan) {
+            countSpan.textContent = attachments.length;
+        }
+
+        if (attachments.length === 0) {
+            container.innerHTML = `
+                <div class="attachment-menu-empty">
+                    <p>Keine Anhänge vorhanden</p>
+                    <button onclick="MailWizard.jumpToStep(5)" class="btn-small">→ Zu Step 5 (Anhänge)</button>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = attachments.map(att => `
+            <div class="attachment-menu-item" onclick="MailWizard.insertSingleAttachment('${att.id}')">
+                <span class="attachment-icon">📄</span>
+                <div class="attachment-info">
+                    <div class="attachment-name">${Utils.escapeHtml(att.name)}</div>
+                    <div class="attachment-size">${Utils.formatFileSize(att.size)}</div>
+                </div>
+                <span class="insert-icon">+</span>
+            </div>
+        `).join('');
+    }
+
+    // Einzelnen Attachment-Link einfügen
+    function insertSingleAttachment(attachmentId) {
+        if (window.Attachments) {
+            Attachments.insertAttachmentLink(attachmentId);
+            showAttachmentMenu();
+            Utils.showToast('Attachment-Link eingefügt', 'success');
+        }
+    }
+
+    // Alle Attachment-Links einfügen
+    function insertAttachmentList() {
+        if (window.Attachments) {
+            Attachments.insertAttachmentList();
+            Utils.showToast('Alle Attachment-Links eingefügt', 'success');
+        }
+    }
+
     /**
      * Generiert vollständiges E-Mail-HTML
      */
@@ -2412,6 +2523,10 @@ function showStep(stepNumber) {
         insertPersonalization,
         clearEditor,
         insertTemplate,
+        showAttachmentMenu,
+        insertSingleAttachment,
+        insertAttachmentList,
+        updateAttachmentMenu,
         updateEditorStats,
         refreshPreview,
         switchPreviewDevice,
