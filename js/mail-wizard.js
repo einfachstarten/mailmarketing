@@ -2375,6 +2375,28 @@ function generateWizardButtons() {
         }
     }
 
+    /**
+     * Generiert vollständiges E-Mail-HTML
+     */
+    function generateCompleteEmailHTML(content, subject = '') {
+        return `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>${subject || 'E-Mail'}</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; background-color: #f4f4f4; }
+        .email-container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        ${content}
+    </div>
+</body>
+</html>`;
+    }
+
     // ===== PUBLIC API =====
     return {
         // Core functions
