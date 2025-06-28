@@ -2328,6 +2328,73 @@ function showStep(stepNumber) {
     }
 
     /**
+     * Fügt Text an der Cursor-Position in den Mail Wizard Editor ein
+     * @param {string} text - einzufügender Text
+     */
+    function insertTextIntoEditor(text) {
+        const editor = document.getElementById('wizardVisualEditor');
+        if (!editor) {
+            console.error('Wizard editor not found');
+            return false;
+        }
+
+        // Focus setzen falls nicht fokussiert
+        if (document.activeElement !== editor) {
+            editor.focus();
+        }
+
+        try {
+            // Moderne Browser: execCommand
+            if (document.execCommand) {
+                const success = document.execCommand('insertHTML', false, text);
+                if (success) {
+                    updateWizardPreview();
+                    updateEditorStats();
+                    return true;
+                }
+            }
+
+            // Fallback: Selection API
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+
+                // Prüfen ob Cursor im Editor ist
+                if (editor.contains(range.commonAncestorContainer)) {
+                    range.deleteContents();
+                    const textNode = document.createTextNode(text);
+                    range.insertNode(textNode);
+
+                    // Cursor nach dem eingefügten Text positionieren
+                    range.setStartAfter(textNode);
+                    range.setEndAfter(textNode);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+
+                    updateWizardPreview();
+                    updateEditorStats();
+                    return true;
+                }
+            }
+
+            // Letzter Fallback: Ans Ende anhängen
+            const br = document.createElement('br');
+            const span = document.createElement('span');
+            span.innerHTML = text;
+            editor.appendChild(br);
+            editor.appendChild(span);
+
+            updateWizardPreview();
+            updateEditorStats();
+            return true;
+
+        } catch (error) {
+            console.error('Error inserting text into editor:', error);
+            return false;
+        }
+    }
+
+    /**
      * Aktualisiert Editor-Statistiken
      */
     function updateEditorStats() {
@@ -2450,21 +2517,73 @@ function showStep(stepNumber) {
         `).join('');
     }
 
-    // Einzelnen Attachment-Link einfügen
+    // Einzelnen Attachment-Link einfügen - NEUE VERSION
     function insertSingleAttachment(attachmentId) {
-        if (window.Attachments) {
-            Attachments.insertAttachmentLink(attachmentId);
+        if (!window.Attachments) {
+            Utils.showToast('Attachments-Modul nicht verfügbar', 'error');
+            return;
+        }
+
+        const attachments = Attachments.getAttachments();
+        const attachment = attachments.find(att => att.id === attachmentId);
+
+        if (!attachment) {
+            Utils.showToast('Attachment nicht gefunden', 'error');
+            return;
+        }
+
+        const linkHTML = `📎 <a href="${attachment.url}" target="_blank">${Utils.escapeHtml(attachment.name)}</a> (${Utils.formatFileSize(attachment.size)}) `;
+
+        const success = insertTextIntoEditor(linkHTML);
+
+        if (success) {
             showAttachmentMenu();
             Utils.showToast('Attachment-Link eingefügt', 'success');
+        } else {
+            Utils.showToast('Fehler beim Einfügen des Links', 'error');
         }
     }
 
-    // Alle Attachment-Links einfügen
+    // Alle Attachment-Links einfügen - NEUE VERSION
     function insertAttachmentList() {
-        if (window.Attachments) {
-            Attachments.insertAttachmentList();
-            Utils.showToast('Alle Attachment-Links eingefügt', 'success');
+        if (!window.Attachments) {
+            Utils.showToast('Attachments-Modul nicht verfügbar', 'error');
+            return;
         }
+
+        const attachments = Attachments.getAttachments();
+
+        if (attachments.length === 0) {
+            Utils.showToast('Keine Anhänge vorhanden', 'warning');
+            return;
+        }
+
+        // Attachment-Links manuell generieren statt Template-Variable
+        const attachmentLinksHTML = generateAttachmentLinksHTML();
+
+        const success = insertTextIntoEditor(attachmentLinksHTML);
+
+        if (success) {
+            Utils.showToast(`${attachments.length} Attachment-Links eingefügt`, 'success');
+        } else {
+            Utils.showToast('Fehler beim Einfügen der Links', 'error');
+        }
+    }
+
+    /**
+     * Generiert HTML für Attachment-Links
+     */
+    function generateAttachmentLinksHTML() {
+        if (!window.Attachments) return '';
+
+        const attachments = Attachments.getAttachments();
+        if (attachments.length === 0) return '';
+
+        const linksList = attachments.map(att =>
+            `📎 <a href="${att.url}" target="_blank">${Utils.escapeHtml(att.name)}</a> (${Utils.formatFileSize(att.size)})`
+        ).join('<br>');
+
+        return `<br><br><strong>📎 Anhänge:</strong><br>${linksList}<br>`;
     }
 
     /**
@@ -2526,6 +2645,8 @@ function showStep(stepNumber) {
         showAttachmentMenu,
         insertSingleAttachment,
         insertAttachmentList,
+        insertTextIntoEditor,
+        generateAttachmentLinksHTML,
         updateAttachmentMenu,
         updateEditorStats,
         refreshPreview,
