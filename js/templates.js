@@ -76,6 +76,7 @@ window.Templates = (function() {
             Utils.safeCall(updatePreview, 'Initial preview update');
         }, 100);
         
+        console.log('✓ Templates module initialized');
     }
 
     /**
@@ -142,6 +143,7 @@ window.Templates = (function() {
         }
         
         updatePreview();
+        console.log(`Switched to ${mode} editor mode`);
     }
 
     /**
@@ -694,6 +696,9 @@ window.Templates = (function() {
      * @returns {string} Personalisierter Content
      */
     function personalizeContent(content, recipient) {
+        console.log('=== personalizeContent DEBUG START ===');
+        console.log('Input content:', content?.substring(0, 100));
+        console.log('Input recipient:', recipient);
 
         if (!content) {
             console.warn('No content provided to personalizeContent');
@@ -709,6 +714,7 @@ window.Templates = (function() {
                              (recipient.email && Utils ? Utils.getNameFromEmail(recipient.email) : '') ||
                              'Liebe/r Interessent/in';
 
+        console.log('Determined recipient name:', recipientName);
 
         const now = new Date();
         const variables = {
@@ -724,6 +730,7 @@ window.Templates = (function() {
             '{{year}}': now.getFullYear().toString()
         };
 
+        console.log('Replacement variables:', variables);
 
         let personalizedContent = content;
         let replacementsMade = 0;
@@ -737,9 +744,14 @@ window.Templates = (function() {
                 personalizedContent = personalizedContent.replace(regex, value);
                 replacementsMade += beforeCount;
 
+                console.log(`Replaced ${beforeCount}x "${placeholder}" with "${value}"`);
             }
         });
 
+        console.log('Total replacements made:', replacementsMade);
+        console.log('Final content preview:', personalizedContent.substring(0, 100));
+        console.log('Still contains placeholders:', personalizedContent.includes('{{'));
+        console.log('=== personalizeContent DEBUG END ===');
 
         return personalizedContent;
     }
@@ -829,6 +841,7 @@ window.Templates = (function() {
         }
         
         markAsSaved();
+        console.log(`Template loaded: ${select.value}`);
     }
 
     /**

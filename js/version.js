@@ -34,6 +34,7 @@ function insertVersionedCSS() {
 function initVersion() {
     displayVersion();
     insertVersionedCSS();
+    console.log('App Version:', window.APP_VERSION.version);
 }
 
 if (document.readyState === 'loading') {

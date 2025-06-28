@@ -266,6 +266,7 @@ window.MailWizard = (function() {
      * Initialisiert das MailWizard-Modul
      */
     function init() {
+        console.log('✓ MailWizard module initialized');
     }
 
     // ===== WIZARD MANAGEMENT =====
@@ -284,6 +285,10 @@ window.MailWizard = (function() {
         const contentContainer = document.getElementById('wizardContentContainer');
         const buttonContainer = document.getElementById('wizardButtonsContainer');
 
+        console.log('=== MODAL STRUCTURE CHECK ===');
+        console.log('Progress container:', !!progressContainer);
+        console.log('Content container:', !!contentContainer);
+        console.log('Button container:', !!buttonContainer);
 
         if (!buttonContainer) {
             console.warn('Button container missing, creating...');
@@ -291,12 +296,14 @@ window.MailWizard = (function() {
             newButtonContainer.id = 'wizardButtonsContainer';
             newButtonContainer.className = 'wizard-buttons';
             modal.appendChild(newButtonContainer);
+            console.log('Button container created');
         }
 
         resetWizardState();
         modal.classList.remove('hidden');
         generateWizardHTML();
 
+        console.log('Wizard started, button container check:', !!document.getElementById('wizardButtonsContainer'));
     }
 
     /**
@@ -529,6 +536,10 @@ function generateWizardButtons() {
     const container = document.getElementById('wizardButtonsContainer');
 
     // EXTENDED DEBUGGING
+    console.log('=== BUTTON DEBUG ===');
+    console.log('Container found:', !!container);
+    console.log('Container visible:', container ? getComputedStyle(container).display : 'N/A');
+    console.log('Container HTML before:', container ? container.innerHTML : 'N/A');
 
     if (!container) {
         console.error('\u274c wizardButtonsContainer not found! Searching for alternatives...');
@@ -536,8 +547,11 @@ function generateWizardButtons() {
         const modalButtons = document.querySelector('.wizard-modal .wizard-buttons');
         const anyButtons = document.querySelector('.wizard-buttons');
 
+        console.log('Alternative modal buttons:', !!modalButtons);
+        console.log('Any wizard-buttons:', !!anyButtons);
 
         if (modalButtons) {
+            console.log('Using alternative container');
             modalButtons.id = 'wizardButtonsContainer';
             generateWizardButtons(); // Retry
             return;
@@ -570,6 +584,10 @@ function generateWizardButtons() {
     container.innerHTML = buttonsHTML;
 
     // POST-GENERATION DEBUGGING
+    console.log('Container HTML after:', container.innerHTML);
+    console.log('Next button found:', !!document.getElementById('wizardNextBtn'));
+    console.log('Next button visible:', document.getElementById('wizardNextBtn') ? getComputedStyle(document.getElementById('wizardNextBtn')).display : 'N/A');
+    console.log('=== END BUTTON DEBUG ===');
 }
 
     /**
@@ -668,6 +686,7 @@ function generateWizardButtons() {
      * Aktualisiert Wizard-Anzeige
      */
     function updateWizardStep() {
+        console.log('Updating wizard step to:', currentStep);
 
         // Progress Update
         generateProgressIndicators();
@@ -738,6 +757,7 @@ function generateWizardButtons() {
      * Initialisiert Anhänge-System
      */
     function initializeAttachments() {
+        console.log('Initializing wizard attachments integration...');
 
         // Warte bis DOM ready
         setTimeout(() => {
@@ -768,6 +788,7 @@ function generateWizardButtons() {
 
         updateWizardAttachmentDisplay();
 
+        console.log('✓ Attachment integration setup complete');
     }
 
     async function handleWizardFileSelect(files) {
@@ -911,14 +932,20 @@ function generateWizardButtons() {
             findRecipientByEmail(wizardData.selectedRecipients[0]) :
             { name: 'Max Mustermann', email: 'test@example.com' };
 
+        console.log('=== PREVIEW PERSONALIZATION DEBUG ===');
+        console.log('Test Recipient:', testRecipient);
+        console.log('Wizard Subject:', wizardData.subject);
+        console.log('Wizard Content:', wizardData.content?.substring(0, 200));
 
         let personalizedSubject = wizardData.subject || 'Kein Betreff';
         let personalizedContent = wizardData.content || '<p>Kein Inhalt</p>';
 
         if (window.Templates && typeof Templates.personalizeContent === 'function') {
+            console.log('Using Templates.personalizeContent...');
             personalizedSubject = Templates.personalizeContent(personalizedSubject, testRecipient);
             personalizedContent = Templates.personalizeContent(personalizedContent, testRecipient);
         } else {
+            console.log('Templates module not available, using fallback...');
             const recipientName = testRecipient.name ||
                                  (testRecipient.email ? testRecipient.email.split('@')[0].replace(/[._]/g, ' ') : '') ||
                                  'Liebe/r Interessent/in';
@@ -928,9 +955,13 @@ function generateWizardButtons() {
                                                     .replace(/\{\{email\}\}/g, testRecipient.email || '');
         }
 
+        console.log('Personalized Subject:', personalizedSubject);
+        console.log('Personalized Content Preview:', personalizedContent.substring(0, 200));
+        console.log('Still has placeholders:', {
             subject: personalizedSubject.includes('{{'),
             content: personalizedContent.includes('{{')
         });
+        console.log('=== END PREVIEW DEBUG ===');
 
         previewContainer.innerHTML = `
         <div class="email-preview-container">
@@ -1001,6 +1032,9 @@ function generateWizardButtons() {
                             content: wizardData.content
                         }
                     };
+                    console.log('=== TEST EMAIL DEBUG ===');
+                    console.log('Test Campaign:', testCampaign);
+                    console.log('Test Recipient:', testRecipient);
 
                     let personalizedSubject = testCampaign.template.subject;
                     let personalizedContent = testCampaign.template.content;
@@ -1018,6 +1052,7 @@ function generateWizardButtons() {
                         email: testRecipient.email
                     };
 
+                    console.log('Test Email Params:', templateParams);
 
                     const response = await emailjs.send(
                         testCampaign.config.serviceId,
@@ -1080,8 +1115,10 @@ function generateWizardButtons() {
                 const editorContent = visualEditor.innerHTML;
                 wizardData.content = generateFullHTML(editorContent);
 
+                console.log('Step 3 validation passed:', { subject: wizardData.subject, hasContent: !!wizardData.content }); // DEBUG
                 break;
             case 4:
+                console.log('Validating recipients:', wizardData.selectedRecipients); // DEBUG
                 if (!wizardData.selectedRecipients || wizardData.selectedRecipients.length === 0) {
                     Utils.showToast('Bitte wähle mindestens einen Empfänger aus', 'warning');
                     return false;
@@ -1193,6 +1230,7 @@ function generateWizardButtons() {
      * Wählt Template aus
      */
     function selectTemplate(templateKey) {
+        console.log('Selecting template:', templateKey);
         let template = null;
 
         if (templateKey.startsWith('hardcoded_')) {
@@ -1228,6 +1266,7 @@ function generateWizardButtons() {
      * Initialisiert Editor
      */
     function initializeEditor() {
+        console.log('Initializing Step 3 Editor...');
 
         const subjectInput = document.getElementById('wizardSubject');
         const visualEditor = document.getElementById('wizardVisualEditor');
@@ -1249,6 +1288,7 @@ function generateWizardButtons() {
 
         subjectInput.addEventListener('input', (e) => {
             wizardData.subject = e.target.value;
+            console.log('Subject updated:', wizardData.subject);
             debouncePreviewUpdate();
         });
 
@@ -1267,10 +1307,12 @@ function generateWizardButtons() {
         }
 
         visualEditor.addEventListener('input', () => {
+            console.log('Editor content changed');
             debouncePreviewUpdate();
         });
 
         visualEditor.addEventListener('paste', () => {
+            console.log('Content pasted into editor');
             setTimeout(() => {
                 debouncePreviewUpdate();
             }, 50);
@@ -1284,6 +1326,7 @@ function generateWizardButtons() {
             updateWizardPreview();
         }, 300);
 
+        console.log('✅ Step 3 Editor initialized with improved event listeners');
     }
 
     let previewUpdateTimeout;
@@ -1306,6 +1349,9 @@ function generateWizardButtons() {
             return;
         }
 
+        console.log('=== PREVIEW UPDATE DEBUG ===');
+        console.log('Editor HTML:', editor.innerHTML);
+        console.log('Editor text content:', editor.textContent);
 
         let rawContent = editor.innerHTML.trim();
         
@@ -1315,8 +1361,10 @@ function generateWizardButtons() {
                 <p>Hier ist dein wöchentliches Update...</p>
                 <p>Viele Grüße!</p>
             `;
+            console.log('Using default content because editor is empty');
         }
 
+        console.log('Raw content from editor:', rawContent);
 
         let cleanContent = rawContent
             .replace(/<div><br><\/div>/g, '<br>')
@@ -1328,6 +1376,7 @@ function generateWizardButtons() {
             .replace(/<br>\s*<br>/g, '</p><p>')
             .trim();
 
+        console.log('Cleaned content:', cleanContent);
 
         const testRecipient = {
             name: 'Max Mustermann',
@@ -1355,6 +1404,7 @@ function generateWizardButtons() {
             personalizedContent = personalizedContent.replace(regex, value);
         });
 
+        console.log('Personalized content:', personalizedContent);
 
         wizardData.content = generateCompleteEmailHTML(personalizedContent, wizardData.subject);
 
@@ -1468,6 +1518,7 @@ function generateWizardButtons() {
 </body>
 </html>`;
 
+        console.log('Complete HTML for iframe:', completeHTML.substring(0, 500));
 
         setTimeout(() => {
             preview.innerHTML = '';
@@ -1486,6 +1537,7 @@ function generateWizardButtons() {
             iframe.setAttribute('srcdoc', completeHTML);
             
             iframe.onload = () => {
+                console.log('✅ Preview iframe loaded successfully');
             };
             
             iframe.onerror = (error) => {
@@ -1648,13 +1700,16 @@ function generateWizardButtons() {
      * Togglet Empfänger-Auswahl
      */
     function toggleRecipient(email) {
+        console.log('Toggling recipient:', email); // DEBUG
 
         const index = wizardData.selectedRecipients.indexOf(email);
 
         if (index > -1) {
             wizardData.selectedRecipients.splice(index, 1);
+            console.log('Removed recipient, now selected:', wizardData.selectedRecipients); // DEBUG
         } else {
             wizardData.selectedRecipients.push(email);
+            console.log('Added recipient, now selected:', wizardData.selectedRecipients); // DEBUG
         }
 
         updateRecipientDisplay();
@@ -1900,6 +1955,7 @@ function generateWizardButtons() {
      * Schließt Wizard ab und speichert Kampagne (KEIN Versand!)
      */
     function finishWizard() {
+        console.log('=== SAVE CAMPAIGN (WIZARD) ===');
 
         try {
             // Validierung
@@ -1924,6 +1980,7 @@ function generateWizardButtons() {
                 }
             };
 
+            console.log('Campaign created:', campaignData);
 
             // Kampagne speichern
             saveCampaignDraft(campaignData);
@@ -1994,6 +2051,7 @@ function generateWizardButtons() {
             const drafts = JSON.parse(localStorage.getItem('campaignDrafts') || '[]');
             drafts.push(campaignData);
             localStorage.setItem('campaignDrafts', JSON.stringify(drafts));
+            console.log('Campaign draft saved to localStorage');
         } catch (error) {
             console.error('Error saving campaign draft:', error);
         }
@@ -2071,6 +2129,7 @@ function generateWizardButtons() {
      * Startet Kampagnen-Versand mit UI-Feedback
      */
     async function startCampaignSend(campaignId) {
+        console.log('=== START CAMPAIGN SEND ===', campaignId);
 
         try {
             const campaignData = loadCampaignDraft(campaignId);
@@ -2292,6 +2351,7 @@ function generateWizardButtons() {
      * Aktualisiert Vorschau manuell
      */
     function refreshPreview() {
+        console.log('🔄 Manual preview refresh triggered');
         
         setTimeout(() => {
             updateWizardPreview();
@@ -2375,9 +2435,13 @@ function debugModalLayout() {
     const content = document.querySelector('.wizard-content');
     const buttons = document.querySelector('.wizard-buttons');
 
+    console.log('=== MODAL LAYOUT DEBUG ===');
+    console.log('Viewport height:', window.innerHeight);
+    console.log('Viewport width:', window.innerWidth);
 
     if (modal) {
         const rect = modal.getBoundingClientRect();
+        console.log('Modal dimensions:', {
             width: rect.width,
             height: rect.height,
             top: rect.top,
@@ -2388,6 +2452,7 @@ function debugModalLayout() {
 
     if (content) {
         const rect = content.getBoundingClientRect();
+        console.log('Content dimensions:', {
             height: rect.height,
             maxHeight: getComputedStyle(content).maxHeight,
             overflow: getComputedStyle(content).overflow
@@ -2396,6 +2461,7 @@ function debugModalLayout() {
 
     if (buttons) {
         const rect = buttons.getBoundingClientRect();
+        console.log('Buttons dimensions:', {
             height: rect.height,
             top: rect.top,
             bottom: rect.bottom,
@@ -2405,5 +2471,6 @@ function debugModalLayout() {
         });
     }
 
+    console.log('=== END MODAL DEBUG ===');
 }
 
