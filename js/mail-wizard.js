@@ -2397,6 +2397,10 @@ function generateWizardButtons() {
 </html>`;
     }
 
+    function generateFullHTML(content) {
+        return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>${content}</body></html>`;
+    }
+
     // ===== PUBLIC API =====
     return {
         // Core functions
