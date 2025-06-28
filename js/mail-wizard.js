@@ -214,15 +214,19 @@ function resetWizardData() {
      * Generiert komplettes Wizard-HTML dynamisch
      */
 function generateWizardHTML() {
+        console.log('🔧 Starting generateWizardHTML...');
+
+        // 1. Progress updaten
         updateProgress();
+
+        // 2. Steps generieren
         generateWizardSteps();
 
-        // Kurz warten bis DOM ready
-        setTimeout(() => {
-            updateNavigationButtons();
-            // Ersten Step aktivieren
-            showStep(currentStep);
-        }, 100);
+        // 3. Buttons updaten
+        updateNavigationButtons();
+
+        // 4. WICHTIG: Synchron ersten Step aktivieren
+        activateStepDirectly(currentStep);
     }
 
     /**
@@ -264,9 +268,36 @@ function updateProgress() {
      */
     function generateWizardSteps() {
         const container = document.getElementById('wizardContentContainer');
-        if (!container) return;
+        if (!container) {
+            console.error('❌ wizardContentContainer not found!');
+            return;
+        }
 
-        container.innerHTML = `\n        ${generateStep1()}\n        ${generateStep2()}\n        ${generateStep3()}\n        ${generateStep4()}\n        ${generateStep5()}\n        ${generateStep6()}\n    `;
+        const htmlContent = `
+        ${generateStep1()}
+        ${generateStep2()}
+        ${generateStep3()}
+        ${generateStep4()}
+        ${generateStep5()}
+        ${generateStep6()}
+    `;
+
+        console.log('📝 Generated HTML length:', htmlContent.length);
+        console.log('📝 HTML preview:', htmlContent.substring(0, 200) + '...');
+
+        container.innerHTML = htmlContent;
+
+        setTimeout(() => {
+            const step1 = document.getElementById('mail-wizard-step-1');
+            console.log('🔍 Step 1 immediately after innerHTML:', !!step1);
+
+            if (step1) {
+                console.log('✅ Step 1 found in DOM');
+            } else {
+                console.error('❌ Step 1 NOT in DOM after innerHTML set');
+                console.log('Container content:', container.innerHTML.substring(0, 300));
+            }
+        }, 0);
     }
 
     /**
@@ -570,71 +601,73 @@ function generateStep6() {
         Utils.showToast(`⚡ Zu Schritt ${targetStep} gesprungen`, 'success');
     }
 
+    function activateStepDirectly(stepNumber) {
+        console.log(`🎯 Activating step ${stepNumber} directly...`);
+
+        document.querySelectorAll('.wizard-step-content').forEach(step => {
+            step.classList.remove('active');
+        });
+
+        let stepElement = document.getElementById(`mail-wizard-step-${stepNumber}`);
+
+        if (stepElement) {
+            stepElement.classList.add('active');
+            console.log(`✅ Step ${stepNumber} activated successfully`);
+            initializeStepFeatures(stepNumber);
+
+            const content = document.getElementById('wizardContentContainer');
+            if (content) {
+                content.classList.remove('loading');
+            }
+        } else {
+            console.error(`❌ Step element mail-wizard-step-${stepNumber} not found`);
+            const allElements = document.querySelectorAll('[id^="mail-wizard-step-"]');
+            console.log('Available step elements:', Array.from(allElements).map(el => el.id));
+
+            const firstStep = document.querySelector('.wizard-step-content');
+            if (firstStep) {
+                firstStep.classList.add('active');
+                console.log('⚠️ Used first available step as fallback');
+            }
+        }
+    }
+
+    function initializeStepFeatures(stepNumber) {
+        switch (stepNumber) {
+            case 2:
+                setTimeout(loadTemplateLibrary, 50);
+                break;
+            case 3:
+                setTimeout(initializeEditor, 50);
+                break;
+            case 4:
+                setTimeout(loadRecipientSelector, 50);
+                break;
+            case 5:
+                setTimeout(initializeAttachments, 50);
+                break;
+            case 6:
+                setTimeout(prepareReviewStep, 50);
+                break;
+        }
+    }
+
     /**
      * Aktualisiert Wizard-Anzeige
      */
 function showStep(stepNumber) {
+        console.log(`🔄 Navigating to step ${stepNumber}`);
+
         const content = document.getElementById('wizardContentContainer');
         if (content) {
             content.classList.add('loading');
-            content.innerHTML = '<div class="step-loading">⏳ Lade Schritt...</div>';
         }
 
-        // WICHTIG: setTimeout erhöhen + DOM-Check hinzufügen
         setTimeout(() => {
-            // Alle Steps verstecken
-            document.querySelectorAll('.wizard-step-content').forEach(step => {
-                step.classList.remove('active');
-            });
-
-            // Aktuellen Step finden mit Retry-Logic
-            let currentStepElement = document.getElementById(`mail-wizard-step-${stepNumber}`);
-            let retryCount = 0;
-
-            // Falls Element nicht existiert, kurz warten und erneut versuchen
-            const findAndActivateStep = () => {
-                currentStepElement = document.getElementById(`mail-wizard-step-${stepNumber}`);
-
-                if (currentStepElement) {
-                    currentStepElement.classList.add('active');
-
-                    // WizardHelp initialisieren falls vorhanden
-                    if (window.WizardHelp) {
-                        setTimeout(() => {
-                            WizardHelp.initStepHelp(`mail-wizard-step-${stepNumber}`);
-                        }, 100);
-                    }
-
-                    // Step-spezifische Funktionen aufrufen
-                    switch (stepNumber) {
-                        case 2: loadTemplateLibrary(); break;
-                        case 3: initializeEditor(); break;
-                        case 4: loadRecipientSelector(); break;
-                        case 5: initializeAttachments(); break;
-                        case 6: prepareReviewStep(); break;
-                    }
-
-                    console.log(`✓ Step ${stepNumber} successfully activated`);
-                } else {
-                    retryCount++;
-                    if (retryCount < 5) {
-                        console.warn(`Step element not found, retry ${retryCount}/5`);
-                        setTimeout(findAndActivateStep, 50);
-                    } else {
-                        console.error(`Failed to find step element after ${retryCount} attempts`);
-                    }
-                }
-            };
-
-            findAndActivateStep();
+            activateStepDirectly(stepNumber);
             updateProgress();
             updateNavigationButtons();
-
-            // Loading-State entfernen
-            if (content) {
-                content.classList.remove('loading');
-            }
-        }, 300); // Erhöht von 200ms auf 300ms
+        }, 100);
     }
 
     function updateWizardStep() {
