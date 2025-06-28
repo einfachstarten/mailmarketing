@@ -1114,3 +1114,103 @@
     display: flex;
     gap: 8px;
 }
+
+/* Attachment Dropdown Menu */
+.attachment-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000;
+    min-width: 300px;
+    max-width: 400px;
+    margin-top: 5px;
+}
+
+.attachment-dropdown.hidden {
+    display: none;
+}
+
+.dropdown-header {
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    font-weight: 600;
+    font-size: 14px;
+    color: #495057;
+}
+
+.attachment-menu-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.attachment-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.attachment-menu-item:hover {
+    background: #f8f9fa;
+}
+
+.attachment-menu-item:last-child {
+    border-bottom: none;
+}
+
+.attachment-icon {
+    font-size: 16px;
+    margin-right: 12px;
+}
+
+.attachment-info {
+    flex: 1;
+}
+
+.attachment-name {
+    font-weight: 500;
+    color: #2c3e50;
+    font-size: 13px;
+}
+
+.attachment-size {
+    font-size: 11px;
+    color: #6c757d;
+}
+
+.insert-icon {
+    color: #4a90e2;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.attachment-menu-empty {
+    padding: 20px;
+    text-align: center;
+    color: #6c757d;
+}
+
+.dropdown-footer {
+    padding: 8px 16px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    font-size: 11px;
+    color: #6c757d;
+}
+
+.btn-editor.attachment-btn.active {
+    background: #4a90e2;
+    color: white;
+    border-color: #4a90e2;
+}
+
+.toolbar-section {
+    position: relative;
+}

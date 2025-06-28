@@ -140,6 +140,9 @@ window.Attachments = (function() {
 
         updateDisplay();
         persistAttachments();
+
+        // Event für UI-Updates
+        document.dispatchEvent(new CustomEvent('attachmentsUpdated'));
     }
 
     /**
@@ -218,6 +221,8 @@ window.Attachments = (function() {
             
             console.log(`Attachment removed: ${attachment.name}`);
             Utils.showStatus('attachmentStatus', `"${attachment.name}" entfernt`, 'success');
+            // Event für UI-Updates
+            document.dispatchEvent(new CustomEvent('attachmentsUpdated'));
         }
     }
 
