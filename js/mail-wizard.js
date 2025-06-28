@@ -1332,223 +1332,125 @@ function generateWizardButtons() {
     }
 
     let previewUpdateTimeout;
+    let isPreviewUpdating = false;
+
     function debouncePreviewUpdate() {
         clearTimeout(previewUpdateTimeout);
+        if (isPreviewUpdating) return;
         previewUpdateTimeout = setTimeout(() => {
+            isPreviewUpdating = true;
             updateWizardPreview();
-        }, 500);
+            setTimeout(() => {
+                isPreviewUpdating = false;
+            }, 200);
+        }, 300);
     }
 
     /**
-     * Aktualisiert Editor-Vorschau
+     * Aktualisiert Editor-Vorschau (optimiert)
      */
     function updateWizardPreview() {
         const editor = document.getElementById('wizardVisualEditor');
         const preview = document.getElementById('wizardEmailPreviewStep3');
-        
-        if (!editor || !preview) {
-            console.warn('Editor or preview container missing');
-            return;
+
+        if (!editor || !preview) return;
+
+        let content = editor.innerHTML.trim();
+
+        if (!content || content === '<div><br></div>' || content === '<br>') {
+            content = getDefaultEditorContent();
         }
 
-        console.log('=== PREVIEW UPDATE DEBUG ===');
-        console.log('Editor HTML:', editor.innerHTML);
-        console.log('Editor text content:', editor.textContent);
+        const cleanContent = cleanHTMLContent(content);
+        const personalizedContent = personalizePreviewContent(cleanContent);
 
-        let rawContent = editor.innerHTML.trim();
-        
-        if (!rawContent || rawContent === '' || rawContent === '<div><br></div>' || rawContent === '<br>') {
-            rawContent = `
-                <p>Hallo {{name}}! 👋</p>
-                <p>Hier ist dein wöchentliches Update...</p>
-                <p>Viele Grüße!</p>
-            `;
-            console.log('Using default content because editor is empty');
-        }
+        wizardData.content = generateCompleteEmailHTML(personalizedContent, wizardData.subject);
 
-        console.log('Raw content from editor:', rawContent);
+        renderPreviewIframe(preview, personalizedContent);
+    }
 
-        let cleanContent = rawContent
+    /** Standard Editor-Inhalt */
+    function getDefaultEditorContent() {
+        return `
+        <p>Hallo {{name}}! 👋</p>
+        <p>Hier ist dein wöchentliches Update...</p>
+        <p>Viele Grüße!</p>
+    `;
+    }
+
+    /** Bereinigt HTML-Content vom Editor */
+    function cleanHTMLContent(content) {
+        return content
             .replace(/<div><br><\/div>/g, '<br>')
             .replace(/<div>/g, '<p>')
             .replace(/<\/div>/g, '</p>')
             .replace(/<p><\/p>/g, '')
-            .replace(/<p>\s*<\/p>/g, '')
-            .replace(/^([^<].*[^>])$/gm, '<p>$1</p>')
             .replace(/<br>\s*<br>/g, '</p><p>')
             .trim();
+    }
 
-        console.log('Cleaned content:', cleanContent);
-
+    /** Personalisiert Content für Vorschau */
+    function personalizePreviewContent(content) {
         const testRecipient = {
             name: 'Max Mustermann',
             email: 'max@example.com',
             first_name: 'Max',
-            last_name: 'Mustermann',
             company: 'Musterunternehmen GmbH'
         };
 
-        let personalizedContent = cleanContent;
-        
-        const replacements = {
+        let personalized = content;
+        Object.entries({
             '{{name}}': testRecipient.name,
             '{{email}}': testRecipient.email,
             '{{first_name}}': testRecipient.first_name,
-            '{{last_name}}': testRecipient.last_name,
-            '{{company}}': testRecipient.company,
-            '{name}': testRecipient.name,
-            '[name]': testRecipient.name,
-            '%name%': testRecipient.name
-        };
-
-        Object.entries(replacements).forEach(([placeholder, value]) => {
+            '{{company}}': testRecipient.company
+        }).forEach(([placeholder, value]) => {
             const regex = new RegExp(placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
-            personalizedContent = personalizedContent.replace(regex, value);
+            personalized = personalized.replace(regex, value);
         });
 
-        console.log('Personalized content:', personalizedContent);
+        return personalized;
+    }
 
-        wizardData.content = generateCompleteEmailHTML(personalizedContent, wizardData.subject);
-
+    /** Rendert Preview iframe */
+    function renderPreviewIframe(preview, content) {
         preview.classList.add('loading');
-        preview.innerHTML = '<div style="padding: 40px; text-align: center; color: #6c757d;">Vorschau wird geladen...</div>';
 
-        const currentSubject = document.getElementById('wizardSubject')?.value || wizardData.subject || 'E-Mail Vorschau';
-        
-        const completeHTML = `<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${currentSubject}</title>
-    <style>
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif !important;
-            line-height: 1.6 !important;
-            color: #333333 !important;
-            background-color: #f4f4f4 !important;
-            margin: 0 !important;
-            padding: 20px !important;
-            font-size: 16px !important;
-        }
-        .email-container {
-            max-width: 600px !important;
-            margin: 0 auto !important;
-            background: #ffffff !important;
-            padding: 30px !important;
-            border-radius: 10px !important;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
-            border: 1px solid #e9ecef !important;
-        }
-        h1, h2, h3, h4, h5, h6 { 
-            color: #2c3e50 !important; 
-            margin: 0 0 16px 0 !important; 
-            font-weight: 600 !important;
-            line-height: 1.3 !important;
-        }
-        h1 { font-size: 28px !important; }
-        h2 { font-size: 24px !important; }
-        h3 { font-size: 20px !important; }
-        p { 
-            margin: 0 0 16px 0 !important; 
-            line-height: 1.6 !important;
-            color: #333333 !important;
-        }
-        a { 
-            color: #4a90e2 !important; 
-            text-decoration: none !important; 
-        }
-        a:hover { 
-            text-decoration: underline !important; 
-        }
-        ul, ol { 
-            margin: 0 0 16px 0 !important; 
-            padding-left: 24px !important; 
-        }
-        li { 
-            margin-bottom: 8px !important; 
-            line-height: 1.5 !important;
-        }
-        img { 
-            max-width: 100% !important; 
-            height: auto !important;
-            border-radius: 6px !important;
-        }
-        .btn {
-            display: inline-block !important;
-            padding: 12px 24px !important;
-            background-color: #4a90e2 !important;
-            color: white !important;
-            text-decoration: none !important;
-            border-radius: 6px !important;
-            font-weight: 600 !important;
-            margin: 16px 0 !important;
-        }
-        .btn:hover {
-            background-color: #357abd !important;
-        }
-        hr {
-            border: none !important;
-            border-top: 1px solid #e9ecef !important;
-            margin: 24px 0 !important;
-        }
-        blockquote {
-            border-left: 4px solid #4a90e2 !important;
-            padding-left: 16px !important;
-            margin: 16px 0 !important;
-            font-style: italic !important;
-            color: #6c757d !important;
-        }
-        .highlight {
-            background-color: #fff3cd !important;
-            padding: 8px 12px !important;
-            border-radius: 4px !important;
-            border-left: 4px solid #ffc107 !important;
-            margin: 16px 0 !important;
-        }
-    </style>
-</head>
-<body>
-    <div class="email-container">
-        ${personalizedContent}
-    </div>
-</body>
-</html>`;
-
-        console.log('Complete HTML for iframe:', completeHTML.substring(0, 500));
+        const subject = document.getElementById('wizardSubject')?.value || 'E-Mail Vorschau';
+        const html = generatePreviewHTML(content, subject);
 
         setTimeout(() => {
             preview.innerHTML = '';
             preview.classList.remove('loading');
-            
+
             const iframe = document.createElement('iframe');
-            iframe.style.cssText = `
-                width: 100%; 
-                height: 400px; 
-                border: none; 
-                border-radius: 10px;
-                background: white;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            `;
+            iframe.style.cssText = 'width: 100%; height: 400px; border: none; border-radius: 10px;';
             iframe.setAttribute('sandbox', 'allow-same-origin');
-            iframe.setAttribute('srcdoc', completeHTML);
-            
-            iframe.onload = () => {
-                console.log('✅ Preview iframe loaded successfully');
-            };
-            
-            iframe.onerror = (error) => {
-                console.error('❌ Preview iframe error:', error);
-                preview.innerHTML = '<div style="padding: 20px; color: #dc3545;">Fehler beim Laden der Vorschau</div>';
-            };
-            
+            iframe.setAttribute('srcdoc', html);
+
+            iframe.onload = () => console.log('✅ Preview loaded');
+            iframe.onerror = () => preview.innerHTML = '<div style="padding: 20px; color: #dc3545;">Fehler beim Laden der Vorschau</div>';
+
             preview.appendChild(iframe);
         }, 100);
+    }
+
+    /** Generiert Preview-HTML mit externem CSS */
+    function generatePreviewHTML(content, subject) {
+        return `<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${subject}</title>
+    <link rel="stylesheet" href="css/email-preview.css">
+</head>
+<body>
+    <div class="email-container">
+        ${content}
+    </div>
+</body>
+</html>`;
     }
 
     function generateCompleteEmailHTML(content, subject = '') {
