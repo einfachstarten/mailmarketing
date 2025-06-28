@@ -39,9 +39,12 @@ window.Wizard = (function() {
             
             // Gespeicherte Konfiguration laden wenn vorhanden
             loadExistingConfig();
-            
+
             // UI aktualisieren
             updateWizardStep();
+
+            // Keyboard Navigation aktivieren
+            initKeyboardNavigation();
             
             // Wizard anzeigen
             const wizardOverlay = document.getElementById('setupWizard');
@@ -67,6 +70,7 @@ window.Wizard = (function() {
             const wizardOverlay = document.getElementById('setupWizard');
             if (wizardOverlay) {
                 wizardOverlay.classList.add('hidden');
+                removeKeyboardNavigation();
                 isVisible = false;
                 console.log('Setup wizard hidden');
             }
@@ -187,6 +191,9 @@ window.Wizard = (function() {
             // Buttons aktualisieren
             updateWizardButtons();
 
+            // Progress-Click-Handler initialisieren
+            initProgressClickHandlers();
+
             console.log(`Wizard step updated to: ${currentStep}`);
 
         } catch (error) {
@@ -214,6 +221,133 @@ window.Wizard = (function() {
             finishBtn.style.display = currentStep === 3 ? 'inline-block' : 'none';
             finishBtn.classList.toggle('hidden', currentStep !== 3);
         }
+    }
+
+    /**
+     * Macht Progress-Indikatoren clickable
+     */
+    function initProgressClickHandlers() {
+        for (let i = 1; i <= 3; i++) {
+            const indicator = document.getElementById(`step${i}-indicator`);
+            if (indicator) {
+                indicator.addEventListener('click', () => {
+                    jumpToStep(i);
+                });
+                indicator.setAttribute('tabindex', '0');
+                indicator.setAttribute('title', `Zu Schritt ${i} springen (Ctrl+${i})`);
+            }
+        }
+    }
+
+    /**
+     * Initialisiert Keyboard-Navigation für Wizard
+     */
+    function initKeyboardNavigation() {
+        document.addEventListener('keydown', handleWizardKeydown);
+        console.log('✅ Wizard keyboard navigation initialized');
+    }
+
+    /**
+     * Entfernt Keyboard-Event-Listener
+     */
+    function removeKeyboardNavigation() {
+        document.removeEventListener('keydown', handleWizardKeydown);
+    }
+
+    /**
+     * Behandelt Keyboard-Events im Wizard
+     */
+    function handleWizardKeydown(event) {
+        const wizardModal = document.querySelector('.wizard-overlay:not(.hidden)');
+        if (!wizardModal) return;
+
+        const activeElement = document.activeElement;
+        const isInputFocused = activeElement && (
+            activeElement.tagName === 'INPUT' ||
+            activeElement.tagName === 'TEXTAREA' ||
+            activeElement.contentEditable === 'true'
+        );
+
+        switch (event.key) {
+            case 'Escape':
+                event.preventDefault();
+                hide();
+                Utils.showToast('Setup abgebrochen', 'info');
+                break;
+
+            case 'Enter':
+                if (!isInputFocused) {
+                    event.preventDefault();
+                    if (currentStep < 3) {
+                        nextStep();
+                    } else {
+                        finishSetup();
+                    }
+                }
+                break;
+
+            case 'ArrowRight':
+            case 'Tab':
+                if (!isInputFocused && event.key === 'ArrowRight') {
+                    event.preventDefault();
+                    if (currentStep < 3) {
+                        nextStep();
+                    }
+                }
+                break;
+
+            case 'ArrowLeft':
+                if (!isInputFocused) {
+                    event.preventDefault();
+                    if (currentStep > 1) {
+                        previousStep();
+                    }
+                }
+                break;
+
+            case '1':
+            case '2':
+            case '3':
+                if (!isInputFocused && event.ctrlKey) {
+                    event.preventDefault();
+                    const targetStep = parseInt(event.key);
+                    if (targetStep >= 1 && targetStep <= 3) {
+                        jumpToStep(targetStep);
+                    }
+                }
+                break;
+
+            case 'F1':
+                event.preventDefault();
+                if (window.WizardHelp) {
+                    WizardHelp.initStepHelp(`wizard-step-${currentStep}`);
+                }
+                break;
+        }
+    }
+
+    /**
+     * Springt direkt zu einem bestimmten Step
+     */
+    function jumpToStep(targetStep) {
+        if (targetStep === currentStep) return;
+
+        if (targetStep > currentStep) {
+            for (let step = currentStep; step < targetStep; step++) {
+                const originalStep = currentStep;
+                currentStep = step;
+                if (!validateCurrentStep()) {
+                    currentStep = originalStep;
+                    Utils.showToast(`Step ${step} muss erst vervollständigt werden`, 'warning');
+                    return;
+                }
+                currentStep = originalStep;
+            }
+        }
+
+        currentStep = targetStep;
+        updateWizardStep();
+        Utils.showToast(`Zu Step ${targetStep} gesprungen`, 'success');
     }
 
     // ===== VALIDATION =====

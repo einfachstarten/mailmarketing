@@ -1798,3 +1798,78 @@
     margin-bottom: 30px;
     border: 1px solid #e9ecef;
 }
+
+/* === KEYBOARD NAVIGATION STYLES === */
+
+/* Focus States für bessere Keyboard-Navigation */
+.wizard-modal {
+    outline: none;
+}
+
+.wizard-modal:focus-within {
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3), 0 0 0 4px rgba(74, 144, 226, 0.3);
+}
+
+/* Button Focus States */
+.wizard-buttons .btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.5);
+    transform: translateY(-1px);
+}
+
+.wizard-buttons .btn:focus:not(:focus-visible) {
+    box-shadow: none;
+    transform: none;
+}
+
+/* Form Focus States im Wizard */
+.wizard-content .form-control:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+/* Progress Indicator Hover für Click-Hint */
+.wizard-progress .wizard-step-circle {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.wizard-progress .wizard-step-circle:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.wizard-progress .wizard-step-circle:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.8);
+}
+
+/* Keyboard Hints */
+.wizard-keyboard-hint {
+    position: absolute;
+    bottom: 10px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 1005;
+}
+
+.wizard-modal:focus-within .wizard-keyboard-hint {
+    opacity: 1;
+}
+
+.keyboard-hint-key {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin: 0 2px;
+    font-family: monospace;
+    font-weight: bold;
+}

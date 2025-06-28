@@ -334,6 +334,7 @@ function resetWizardData() {
             modal.classList.remove('hidden');
             generateWizardHTML();
             updateWizardStep();
+            initMailWizardKeyboard();
         }
     }
 
@@ -597,7 +598,59 @@ function generateWizardButtons() {
         if (modal) {
             modal.classList.add('hidden');
         }
+        document.removeEventListener('keydown', handleMailWizardKeydown);
         resetWizardState();
+    }
+
+    /**
+     * Keyboard Navigation für Mail Wizard
+     */
+    function initMailWizardKeyboard() {
+        document.addEventListener('keydown', handleMailWizardKeydown);
+    }
+
+    function handleMailWizardKeydown(event) {
+        const mailWizardModal = document.querySelector('#mailWizardModal:not(.hidden)');
+        if (!mailWizardModal) return;
+
+        const activeElement = document.activeElement;
+        const isInputFocused = activeElement && (
+            activeElement.tagName === 'INPUT' ||
+            activeElement.tagName === 'TEXTAREA' ||
+            activeElement.contentEditable === 'true'
+        );
+
+        switch (event.key) {
+            case 'Escape':
+                event.preventDefault();
+                hideWizardModal();
+                break;
+
+            case 'Enter':
+                if (!isInputFocused) {
+                    event.preventDefault();
+                    if (currentStep < 6) {
+                        nextStep();
+                    } else {
+                        finishWizard();
+                    }
+                }
+                break;
+
+            case 'ArrowRight':
+                if (!isInputFocused) {
+                    event.preventDefault();
+                    if (currentStep < 6) nextStep();
+                }
+                break;
+
+            case 'ArrowLeft':
+                if (!isInputFocused) {
+                    event.preventDefault();
+                    if (currentStep > 1) previousStep();
+                }
+                break;
+        }
     }
 
     // ===== STEP NAVIGATION =====
