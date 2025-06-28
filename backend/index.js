@@ -36,7 +36,7 @@ try {
     const date = new Date().toISOString().split('T')[0];
     VERSION = `${pkg.version} (${commit}${dirty}, ${date})`;
 } catch (e) {
-    logger.warn({ err: e }, 'Failed to determine git version');
+    // Ignore git info errors in production
 }
 
 function cleanupOldUploads() {
@@ -58,8 +58,6 @@ function cleanupOldUploads() {
                     fs.unlink(filePath, err => {
                         if (err) {
                             logger.error({ err, file: filePath }, 'Failed to remove old upload');
-                        } else {
-                            logger.info({ file: filePath }, 'Removed expired upload');
                         }
                     });
                 }

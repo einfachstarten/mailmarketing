@@ -23,7 +23,6 @@ window.App = (function() {
             return;
         }
 
-        console.log('🚀 Initializing E-Mail Marketing Tool...');
 
         try {
             // 1. Prüfe Browser-Kompatibilität
@@ -56,7 +55,6 @@ window.App = (function() {
                 LoadingScreen.hide();
             }
 
-            console.log('✅ App initialization complete');
 
         } catch (error) {
             console.error('❌ App initialization failed:', error);
@@ -94,28 +92,24 @@ window.App = (function() {
         if (window.HelpSystem) {
             HelpSystem.init();
             modules.helpSystem = HelpSystem;
-            console.log('✓ Help System loaded');
         }
 
         // Config-Modul initialisieren
         if (window.Config) {
             Config.init();
             modules.config = Config;
-            console.log('✓ Config module loaded');
         }
 
         // Mail Wizard Modul initialisieren
         if (window.MailWizard) {
             MailWizard.init();
             modules.mailwizard = MailWizard;
-            console.log('✓ MailWizard module loaded');
         }
 
         // Campaigns-Modul initialisieren
         if (window.Campaigns) {
             Campaigns.init();
             modules.campaigns = window.Campaigns;
-            console.log('✓ Campaigns module loaded');
         }
 
         // Weitere Module werden hier initialisiert wenn verfügbar
@@ -127,7 +121,6 @@ window.App = (function() {
                     window[moduleName].init();
                 }
                 modules[moduleName.toLowerCase()] = window[moduleName];
-                console.log(`✓ ${moduleName} module loaded`);
             }
         });
     }
@@ -155,7 +148,6 @@ window.App = (function() {
      */
     function checkSetupStatus() {
         if (!Config.isSetupComplete()) {
-            console.log('Setup not complete, showing wizard...');
             
             // Setup-Prompt anzeigen
             Utils.toggleElement('setupPrompt', true);
@@ -167,7 +159,6 @@ window.App = (function() {
                 }
             }, 1000);
         } else {
-            console.log('Setup complete, hiding setup prompt');
             Utils.toggleElement('setupPrompt', false);
         }
     }
@@ -237,7 +228,6 @@ window.App = (function() {
             // Tab-spezifische Aktionen
             handleTabSwitch(tabName);
 
-            console.log(`Switched to tab: ${tabName}`);
 
         } catch (error) {
             console.error('Error switching tab:', error);
@@ -317,7 +307,6 @@ window.App = (function() {
         // Storage Events (für Multi-Tab Synchronisation)
         window.addEventListener('storage', handleStorageChange);
 
-        console.log('✓ Event listeners set up');
     }
 
     /**
@@ -438,7 +427,6 @@ window.App = (function() {
             }
         });
 
-        console.log('✓ Keyboard shortcuts set up');
     }
 
     // ===== WINDOW EVENT HANDLERS =====
@@ -447,7 +435,6 @@ window.App = (function() {
      * Behandelt Window Load Event
      */
     function handleWindowLoad() {
-        console.log('Window loaded, performing final initialization...');
         
         // Finale UI-Updates
         Utils.safeCall(() => {
@@ -465,7 +452,6 @@ window.App = (function() {
         Utils.saveToStorage('currentTab', currentTab);
         
         // Cleanup wenn nötig
-        console.log('App cleanup on unload');
     }
 
     /**
@@ -473,7 +459,6 @@ window.App = (function() {
      */
     function handleWindowResize() {
         // UI-Anpassungen bei Größenänderung
-        console.log('Window resized, adjusting UI...');
     }
 
     /**
@@ -482,7 +467,6 @@ window.App = (function() {
     function handleStorageChange(e) {
         // Reagiere auf Änderungen in anderen Tabs
         if (e.key === 'emailConfig') {
-            console.log('Config changed in another tab, reloading...');
             if (Config && typeof Config.loadConfig === 'function') {
                 Config.loadConfig();
             }

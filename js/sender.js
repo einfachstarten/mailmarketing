@@ -34,7 +34,6 @@ window.Sender = (function() {
         loadSendConfig();
         setupEventListeners();
         
-        console.log('✓ Sender module initialized');
     }
 
     /**
@@ -56,7 +55,6 @@ window.Sender = (function() {
         if (speedSelect) {
             speedSelect.addEventListener('change', (e) => {
                 sendConfig.speed = parseInt(e.target.value) || 1000;
-                console.log(`Send speed updated: ${sendConfig.speed}ms`);
             });
         }
     }
@@ -96,8 +94,6 @@ window.Sender = (function() {
      * @param {Object} campaignData - {template, recipients}
      */
     function startCampaignWithData(campaignData) {
-        console.log('=== START CAMPAIGN WITH DATA ===');
-        console.log('Received campaign data:', campaignData);
 
         try {
             // Pre-Flight Checks
@@ -156,16 +152,12 @@ window.Sender = (function() {
      * Initialisiert neue Kampagne
      */
     function initializeCampaign() {
-        console.log('=== INITIALIZE CAMPAIGN DEBUG ===');
 
         const recipients = Recipients.getRecipients();
-        console.log('Recipients from Recipients module:', recipients);
 
         const template = getCurrentTemplate();
-        console.log('Template from getCurrentTemplate:', template);
 
         const config = Config.getConfig();
-        console.log('Config from Config module:', config);
 
         currentCampaign = {
             id: generateCampaignId(),
@@ -176,12 +168,6 @@ window.Sender = (function() {
             status: 'running'
         };
 
-        console.log('=== FINAL CAMPAIGN OBJECT ===');
-        console.log('Campaign ID:', currentCampaign.id);
-        console.log('Campaign Recipients:', currentCampaign.recipients);
-        console.log('Campaign Template:', currentCampaign.template);
-        console.log('Campaign Config:', currentCampaign.config);
-        console.log('=== INITIALIZE CAMPAIGN DEBUG END ===');
 
         sendingStats = {
             sent: 0,
@@ -197,7 +183,6 @@ window.Sender = (function() {
         // Alle Empfänger auf "pending" setzen
         Recipients.resetAllStatus('pending');
 
-        console.log(`Campaign initialized: ${currentCampaign.id} with ${sendingStats.total} recipients`);
     }
 
     /**
@@ -205,7 +190,6 @@ window.Sender = (function() {
      * @param {Object} campaignData - {template, recipients}
      */
     function initializeCampaignWithData(campaignData) {
-        console.log('=== INITIALIZE CAMPAIGN WITH DATA ===');
 
         currentCampaign = {
             id: generateCampaignId(),
@@ -216,11 +200,6 @@ window.Sender = (function() {
             status: 'running'
         };
 
-        console.log('=== CAMPAIGN WITH WIZARD DATA ===');
-        console.log('Campaign ID:', currentCampaign.id);
-        console.log('Campaign Template:', currentCampaign.template);
-        console.log('Campaign Recipients:', currentCampaign.recipients);
-        console.log('Campaign Config:', currentCampaign.config);
 
         sendingStats = {
             sent: 0,
@@ -233,7 +212,6 @@ window.Sender = (function() {
         campaignActive = true;
         campaignPaused = false;
 
-        console.log(`Campaign initialized with Wizard data: ${currentCampaign.id} with ${sendingStats.total} recipients`);
     }
 
     /**
@@ -362,14 +340,10 @@ window.Sender = (function() {
  * @param {Object} recipient - Empfänger-Objekt
  */
 async function sendSingleEmail(recipient) {
-    console.log('=== ECHTER VERSAND DEBUG START ===');
-    console.log('sendSingleEmail called with recipient:', recipient);
 
     const config = currentCampaign.config;
     const template = currentCampaign.template;
 
-    console.log('Current Campaign Config:', config);
-    console.log('Current Campaign Template:', template);
 
     // Robuste Config-Auflösung
     const emailConfig = {
@@ -378,7 +352,6 @@ async function sendSingleEmail(recipient) {
         fromName: config.fromName || localStorage.getItem('fromName')
     };
 
-    console.log('Email Config resolved:', emailConfig);
 
     if (!emailConfig.serviceId || !emailConfig.templateId) {
         throw new Error(`EmailJS Konfiguration unvollständig - Service: ${emailConfig.serviceId}, Template: ${emailConfig.templateId}`);
@@ -389,22 +362,13 @@ async function sendSingleEmail(recipient) {
         content: template?.content || '<p>Kein Template-Inhalt verfügbar</p>'
     };
 
-    console.log('=== VERSAND TEMPLATE DATA ===');
-    console.log('Template Subject:', templateData.subject);
-    console.log('Template Content Preview:', templateData.content.substring(0, 200));
-    console.log('Subject contains {{name}}:', templateData.subject.includes('{{name}}'));
-    console.log('Content contains {{name}}:', templateData.content.includes('{{name}}'));
 
     // PERSONALISIERUNG mit FULL DEBUG
     let personalizedSubject = '';
     let personalizedContent = '';
 
-    console.log('=== VERSAND PERSONALISIERUNG ===');
-    console.log('Templates module available:', !!window.Templates);
-    console.log('personalizeContent function:', typeof window.Templates?.personalizeContent);
 
     if (window.Templates && typeof Templates.personalizeContent === 'function') {
-        console.log('Using Templates.personalizeContent for REAL SEND...');
         personalizedSubject = Templates.personalizeContent(templateData.subject, recipient);
         personalizedContent = Templates.personalizeContent(templateData.content, recipient);
     } else {
@@ -413,19 +377,11 @@ async function sendSingleEmail(recipient) {
                              (recipient.email && window.Utils ? Utils.getNameFromEmail(recipient.email) : '') ||
                              'Liebe/r Interessent/in';
 
-        console.log('Fallback recipient name:', recipientName);
         personalizedSubject = templateData.subject.replace(/\{\{name\}\}/g, recipientName);
         personalizedContent = templateData.content.replace(/\{\{name\}\}/g, recipientName)
                                                   .replace(/\{\{email\}\}/g, recipient.email || '');
     }
 
-    console.log('=== VERSAND PERSONALISIERUNG RESULT ===');
-    console.log('Original Subject:', templateData.subject);
-    console.log('Personalized Subject:', personalizedSubject);
-    console.log('Original Content Preview:', templateData.content.substring(0, 100));
-    console.log('Personalized Content Preview:', personalizedContent.substring(0, 100));
-    console.log('Subject still has {{name}}:', personalizedSubject.includes('{{name}}'));
-    console.log('Content still has {{name}}:', personalizedContent.includes('{{name}}'));
 
     // FORCE-FIX falls Personalisierung fehlschlägt
     if (personalizedSubject.includes('{{name}}') || personalizedContent.includes('{{name}}')) {
@@ -437,16 +393,12 @@ async function sendSingleEmail(recipient) {
         personalizedSubject = personalizedSubject.replace(/\{\{name\}\}/g, emergencyName);
         personalizedContent = personalizedContent.replace(/\{\{name\}\}/g, emergencyName);
 
-        console.log('Emergency fix applied with name:', emergencyName);
-        console.log('Fixed Subject:', personalizedSubject);
-        console.log('Fixed Content Preview:', personalizedContent.substring(0, 100));
     }
 
     // Attachment-Links hinzufügen
     if (window.Attachments && Attachments.hasAttachments()) {
         const attachmentLinks = Attachments.generateEmailAttachmentLinks();
         personalizedContent += attachmentLinks;
-        console.log('Added attachment links');
     }
 
     // EmailJS Template-Parameter
@@ -458,13 +410,6 @@ async function sendSingleEmail(recipient) {
         email: recipient.email
     };
 
-    console.log('=== FINAL EMAILJS PARAMETERS ===');
-    console.log('Subject (to EmailJS):', templateParams.subject);
-    console.log('Message Preview (to EmailJS):', templateParams.message.substring(0, 200));
-    console.log('To Email:', templateParams.to_email);
-    console.log('From Name:', templateParams.name);
-    console.log('Reply Email:', templateParams.email);
-    console.log('=== ECHTER VERSAND DEBUG END ===');
 
     try {
         const response = await emailjs.send(
@@ -473,7 +418,6 @@ async function sendSingleEmail(recipient) {
             templateParams
         );
 
-        console.log('✅ EmailJS Response Status:', response.status);
 
         if (response.status !== 200) {
             throw { status: response.status, text: response.text };
@@ -506,7 +450,6 @@ async function sendSingleEmail(recipient) {
         
         finalizeCampaign();
         
-        console.log('Campaign stopped by user');
     }
 
     /**
@@ -521,7 +464,6 @@ async function sendSingleEmail(recipient) {
         campaignPaused = true;
         Utils.showToast('Kampagne pausiert...', 'info');
         
-        console.log('Campaign paused');
     }
 
     /**
@@ -536,7 +478,6 @@ async function sendSingleEmail(recipient) {
         campaignPaused = false;
         Utils.showToast('Kampagne fortgesetzt...', 'success');
         
-        console.log('Campaign resumed');
     }
 
     /**
@@ -632,7 +573,6 @@ async function sendSingleEmail(recipient) {
             // ProgressManager verwenden falls verfügbar
             if (window.ProgressManager && typeof ProgressManager.update === 'function') {
                 ProgressManager.update(current, total, message);
-                console.log(`✓ Progress via ProgressManager: ${current}/${total} (${percentage}%)`);
                 return;
             }
 
@@ -685,12 +625,10 @@ async function sendSingleEmail(recipient) {
                 sendingStats.total = total;
             }
 
-            console.log(`📊 Progress Update: ${current}/${total} (${percentage}%) - ${message}`);
 
         } catch (error) {
             console.error('updateProgress error:', error);
             // Minimal Fallback
-            console.log(`Progress Fallback: ${current}/${total}`);
         }
     }
 
@@ -742,7 +680,6 @@ async function sendSingleEmail(recipient) {
         Utils.showToast(message, messageType);
         
         // Detaillierte Statistiken loggen
-        console.log('Campaign Results:', {
             ...sendingStats,
             duration: durationText,
             successRate: `${((sendingStats.sent / sendingStats.total) * 100).toFixed(1)}%`
@@ -756,12 +693,10 @@ async function sendSingleEmail(recipient) {
      * @returns {Object} Template-Objekt
      */
     function getCurrentTemplate() {
-        console.log('=== getCurrentTemplate DEBUG ===');
 
         // Priorität 1: Templates-Modul verwenden
         if (window.Templates && typeof Templates.getCurrentTemplate === 'function') {
             const template = Templates.getCurrentTemplate();
-            console.log('Templates module returned:', template);
             if (template && template.subject && template.content) {
                 return template;
             }
@@ -771,7 +706,6 @@ async function sendSingleEmail(recipient) {
         const htmlContent = document.getElementById('htmlContent');
         const subject = document.getElementById('subject');
 
-        console.log('UI Elements found:', {
             htmlContent: !!htmlContent,
             subject: !!subject,
             htmlValue: htmlContent?.value?.substring(0, 100),
@@ -783,7 +717,6 @@ async function sendSingleEmail(recipient) {
                 subject: subject.value || 'Newsletter Update',
                 content: htmlContent.value || '<p>Hallo {{name}}! Hier ist dein Newsletter.</p>'
             };
-            console.log('Template from UI:', template);
             return template;
         }
 
@@ -799,8 +732,6 @@ async function sendSingleEmail(recipient) {
         `
         };
 
-        console.log('Using fallback template:', fallbackTemplate);
-        console.log('=== getCurrentTemplate DEBUG END ===');
         return fallbackTemplate;
     }
 
@@ -894,7 +825,6 @@ async function sendSingleEmail(recipient) {
      */
     function updateSendConfig(newConfig) {
         sendConfig = { ...sendConfig, ...newConfig };
-        console.log('Send config updated:', sendConfig);
     }
 
     /**

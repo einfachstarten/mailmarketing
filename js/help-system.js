@@ -263,7 +263,6 @@ Anna Schmidt,anna@example.com
     function init() {
         createTooltipContainer();
         attachEventListeners();
-        console.log('✓ Help System initialized');
     }
 
     /**
@@ -582,7 +581,6 @@ const WizardHelp = (function() {
      * Initialisiert Help System für aktuellen Step
      */
     function initStepHelp(stepId) {
-        console.log('Initializing help for step:', stepId);
 
         // Entferne vorherigen Help Button
         const existingHelp = document.querySelector('.wizard-step-help');
