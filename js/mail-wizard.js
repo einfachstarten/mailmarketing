@@ -646,6 +646,11 @@ function generateWizardButtons() {
         const currentContent = document.getElementById(`mail-wizard-step-${currentStep}`);
         if (currentContent) {
             currentContent.classList.add('active');
+
+            // Initialize contextual help for this step
+            if (window.WizardHelp) {
+                WizardHelp.initStepHelp(`mail-wizard-step-${currentStep}`);
+            }
         } else {
             console.error('Step content not found:', `mail-wizard-step-${currentStep}`);
         }

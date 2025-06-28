@@ -491,3 +491,190 @@ Anna Schmidt,anna@example.com
         hideTooltip
     };
 })();
+
+/**
+ * Vereinfachtes Help System - ein Help Button pro Step
+ */
+const WizardHelp = (function() {
+    'use strict';
+
+    const STEP_HELP_CONTENT = {
+        'mail-wizard-step-1': {
+            title: '🎯 Mail-Typ auswählen',
+            content: `
+                <p>Wähle den passenden Typ für deine E-Mail-Kampagne:</p>
+                <ul>
+                    <li><strong>Newsletter:</strong> Regelmäßige Updates an Abonnenten</li>
+                    <li><strong>Ankündigung:</strong> Wichtige Neuigkeiten oder Events</li>
+                    <li><strong>Werbung:</strong> Produktwerbung oder Verkaufsaktionen</li>
+                    <li><strong>Einladung:</strong> Events oder Veranstaltungen</li>
+                </ul>
+                <div class="help-tip">💡 Der Mail-Typ bestimmt das Standard-Template und den Schreibstil.</div>
+            `
+        },
+        'mail-wizard-step-2': {
+            title: '🎨 Template auswählen',
+            content: `
+                <p>Wähle ein Design-Template für deine E-Mail:</p>
+                <ul>
+                    <li><strong>Modern:</strong> Sauberes, zeitgemäßes Design</li>
+                    <li><strong>Business:</strong> Professionell und seriös</li>
+                    <li><strong>Creative:</strong> Bunt und auffällig</li>
+                    <li><strong>Minimal:</strong> Schlicht und fokussiert</li>
+                </ul>
+                <div class="help-tip">💡 Du kannst das Template im nächsten Schritt anpassen.</div>
+            `
+        },
+        'mail-wizard-step-3': {
+            title: '✏️ Inhalt bearbeiten',
+            content: `
+                <p>Bearbeite Betreff und E-Mail-Inhalt:</p>
+                <ul>
+                    <li><strong>Betreff:</strong> Kurz und aussagekräftig</li>
+                    <li><strong>Personalisierung:</strong> Verwende {{name}} und {{email}}</li>
+                    <li><strong>Formatierung:</strong> Nutze die Toolbar für Styling</li>
+                </ul>
+                <div class="help-example">{{name}} wird zu "Max Mustermann"</div>
+                <div class="help-tip">💡 Die Vorschau zeigt personalisierte Testdaten.</div>
+            `
+        },
+        'mail-wizard-step-4': {
+            title: '👥 Empfänger auswählen',
+            content: `
+                <p>Bestimme wer die E-Mail erhalten soll:</p>
+                <ul>
+                    <li>Empfänger einzeln auswählen oder alle markieren</li>
+                    <li>Suchfunktion nutzen für große Listen</li>
+                    <li>Statistiken beachten: Ausgewählt vs. Gesamt</li>
+                </ul>
+                <div class="help-tip">💡 Mehr Empfänger kannst du in der Empfänger-Verwaltung hinzufügen.</div>
+            `
+        },
+        'mail-wizard-step-5': {
+            title: '📎 Anhänge hinzufügen',
+            content: `
+                <p>Füge optional Dateien zu deiner E-Mail hinzu:</p>
+                <ul>
+                    <li>Drag & Drop oder Datei-Browser nutzen</li>
+                    <li>Maximale Größe: 20MB pro Datei</li>
+                    <li>Unterstützte Formate: PDF, JPG, PNG, DOCX</li>
+                </ul>
+                <div class="help-tip">💡 Anhänge werden automatisch in den E-Mail-Inhalt verlinkt.</div>
+            `
+        },
+        'mail-wizard-step-6': {
+            title: '🎯 Finale Überprüfung',
+            content: `
+                <p>Prüfe alle Details vor dem Versand:</p>
+                <ul>
+                    <li><strong>Test-E-Mail:</strong> Sende an dich selbst zum Testen</li>
+                    <li><strong>Vorschau:</strong> Kontrolliere Formatierung und Links</li>
+                    <li><strong>Empfänger:</strong> Finale Anzahl bestätigen</li>
+                </ul>
+                <div class="help-tip">💡 Test-E-Mails gehen an den ersten ausgewählten Empfänger.</div>
+            `
+        }
+    };
+
+    let currentTooltip = null;
+
+    /**
+     * Initialisiert Help System für aktuellen Step
+     */
+    function initStepHelp(stepId) {
+        console.log('Initializing help for step:', stepId);
+
+        // Entferne vorherigen Help Button
+        const existingHelp = document.querySelector('.wizard-step-help');
+        if (existingHelp) {
+            existingHelp.remove();
+        }
+
+        const stepContainer = document.getElementById(stepId);
+        if (!stepContainer) {
+            console.warn('Step container not found:', stepId);
+            return;
+        }
+
+        const helpButton = document.createElement('button');
+        helpButton.className = 'wizard-step-help';
+        helpButton.innerHTML = '?';
+        helpButton.title = 'Hilfe anzeigen';
+        helpButton.type = 'button';
+
+        helpButton.addEventListener('click', () => {
+            showStepHelp(stepId, helpButton);
+        });
+
+        stepContainer.style.position = 'relative';
+        stepContainer.appendChild(helpButton);
+    }
+
+    /**
+     * Zeigt Step-spezifische Hilfe
+     */
+    function showStepHelp(stepId, buttonElement) {
+        hideTooltip();
+
+        const helpContent = STEP_HELP_CONTENT[stepId];
+        if (!helpContent) {
+            console.warn('No help content for step:', stepId);
+            return;
+        }
+
+        const tooltip = document.createElement('div');
+        tooltip.className = 'wizard-help-tooltip';
+        tooltip.innerHTML = `
+            <div class="wizard-help-title">${helpContent.title}</div>
+            <div class="wizard-help-content">${helpContent.content}</div>
+        `;
+
+        buttonElement.parentElement.appendChild(tooltip);
+
+        setTimeout(() => {
+            tooltip.classList.add('show');
+        }, 10);
+
+        currentTooltip = tooltip;
+
+        setTimeout(() => {
+            hideTooltip();
+        }, 8000);
+
+        document.addEventListener('click', handleOutsideClick);
+    }
+
+    /**
+     * Versteckt aktuellen Tooltip
+     */
+    function hideTooltip() {
+        if (currentTooltip) {
+            currentTooltip.classList.remove('show');
+            setTimeout(() => {
+                if (currentTooltip && currentTooltip.parentElement) {
+                    currentTooltip.parentElement.removeChild(currentTooltip);
+                }
+                currentTooltip = null;
+            }, 300);
+        }
+        document.removeEventListener('click', handleOutsideClick);
+    }
+
+    /**
+     * Behandelt Clicks außerhalb des Tooltips
+     */
+    function handleOutsideClick(event) {
+        if (currentTooltip && !currentTooltip.contains(event.target) &&
+            !event.target.classList.contains('wizard-step-help')) {
+            hideTooltip();
+        }
+    }
+
+    return {
+        initStepHelp: initStepHelp,
+        hideTooltip: hideTooltip
+    };
+})();
+
+// Global verfügbar machen
+window.WizardHelp = WizardHelp;
