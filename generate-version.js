@@ -56,7 +56,6 @@ function insertVersionedCSS() {
 function initVersion() {
     displayVersion();
     insertVersionedCSS();
-    console.log('App Version:', window.APP_VERSION.version);
 }
 
 if (document.readyState === 'loading') {
@@ -67,7 +66,6 @@ if (document.readyState === 'loading') {
 `;
         
         fs.writeFileSync('js/version.js', versionJs);
-        console.log('✓ Version generated:', version);
         
     } catch (error) {
         console.error('Error generating version:', error);

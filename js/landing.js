@@ -13,7 +13,6 @@ function startSetup() {
     try {
         // Prüfe ob Wizard-Modul verfügbar ist
         if (window.Wizard && typeof window.Wizard.show === 'function') {
-            console.log('Starting setup wizard...');
             window.Wizard.show();
         } else {
             console.error('Wizard module not found');
@@ -34,11 +33,9 @@ function showTemplateEditor() {
     try {
         // Prüfe ob App-Modul verfügbar ist
         if (window.App && typeof window.App.showTab === 'function') {
-            console.log('Switching to template editor...');
             window.App.showTab('templates');
         } else {
             // Fallback: Direkte Navigation
-            console.log('App module not found, using fallback navigation');
             window.location.href = '/app.html#templates';
         }
     } catch (error) {
@@ -70,7 +67,6 @@ function showMailWizard() {
 
         // Mail Wizard starten
         if (window.MailWizard && typeof window.MailWizard.startWizard === 'function') {
-            console.log('Starting mail wizard...');
             window.MailWizard.startWizard();
         } else {
             Utils.showToast('Mail Wizard wird geladen...', 'info');
@@ -89,11 +85,9 @@ function showRecipients() {
     try {
         // Prüfe ob App-Modul verfügbar ist
         if (window.App && typeof window.App.showTab === 'function') {
-            console.log('Switching to recipients management...');
             window.App.showTab('recipients');
         } else {
             // Fallback: Navigation
-            console.log('App module not found, using fallback navigation');
         }
     } catch (error) {
         console.error('Error opening recipients:', error);
@@ -110,11 +104,9 @@ function showHistory() {
     try {
         // Prüfe ob App-Modul verfügbar ist
         if (window.App && typeof window.App.showTab === 'function') {
-            console.log('Switching to mail history...');
             window.App.showTab('history');
         } else {
             // Fallback: Navigation
-            console.log('App module not found, using fallback navigation');
         }
     } catch (error) {
         console.error('Error opening history:', error);
@@ -444,7 +436,6 @@ function closeActiveModals() {
  * Initialisiert das Landing-Page-System
  */
 function initializeLandingPage() {
-    console.log('Initializing landing page...');
     
     try {
         // Setup-Status prüfen
@@ -456,7 +447,6 @@ function initializeLandingPage() {
         // Periodische Updates (alle 30 Sekunden)
         setInterval(updateDashboardStats, 30000);
         
-        console.log('✓ Landing page initialized');
         
     } catch (error) {
         console.error('Error initializing landing page:', error);
