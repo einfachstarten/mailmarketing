@@ -1113,7 +1113,7 @@ function generateWizardButtons() {
                 // Daten in wizardData speichern
                 wizardData.subject = subjectInput.value;
                 const editorContent = visualEditor.innerHTML;
-                wizardData.content = generateFullHTML(editorContent);
+                wizardData.content = generateCompleteEmailHTML(editorContent, wizardData.subject);
 
                 console.log('Step 3 validation passed:', { subject: wizardData.subject, hasContent: !!wizardData.content }); // DEBUG
                 break;
