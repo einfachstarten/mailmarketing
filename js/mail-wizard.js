@@ -44,218 +44,90 @@ window.MailWizard = (function() {
                 description: 'Klares Design mit Sections',
                 icon: '📰',
                 subject: '{{name}}, dein Weekly Update! 📰',
-                html: `<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Newsletter</title>
-</head>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; background-color: #f4f4f4;">
-    <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
-        <!-- Header -->
-        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center;">
-            <h1 style="margin: 0; font-size: 28px;">Newsletter</h1>
-            <p style="margin: 10px 0 0 0; opacity: 0.9;">Hallo {{name}}! 👋</p>
-        </div>
-        
-        <!-- Content -->
-        <div style="padding: 30px;">
-            <h2 style="color: #2c3e50; border-bottom: 2px solid #667eea; padding-bottom: 10px;">📢 Was gibt's Neues?</h2>
-            <p>Hier sind die wichtigsten Updates dieser Woche für dich zusammengefasst.</p>
-            
-            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #667eea;">
-                <h3 style="color: #667eea; margin-top: 0;">💡 Highlight der Woche</h3>
-                <p style="margin-bottom: 0;">Spannende Neuigkeiten und Entwicklungen, die dich interessieren könnten.</p>
+                html: `<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; margin-bottom: 20px; border-radius: 10px;">
+                <h1 style="margin: 0; font-size: 28px;">Newsletter</h1>
+                <p style="margin: 10px 0 0 0; opacity: 0.9;">Hallo {{name}}! 👋</p>
             </div>
-            
-            <h3 style="color: #2c3e50;">📚 Neue Inhalte</h3>
-            <ul style="color: #555;">
-                <li>Artikel 1: Wichtiges Update</li>
-                <li>Artikel 2: Neue Features</li>
-                <li>Artikel 3: Community Highlights</li>
-            </ul>
-            
-            <div style="text-align: center; margin: 30px 0;">
-                <a href="#" style="background: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">🚀 Mehr erfahren</a>
-            </div>
-        </div>
-        
-        <!-- Footer -->
-        <div style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #e9ecef;">
-            <p style="margin: 0; font-size: 12px; color: #888;">
-                Du erhältst diese E-Mail, weil du dich für unseren Newsletter angemeldet hast.<br>
-                <a href="#" style="color: #667eea;">Abmelden</a>
-            </p>
-        </div>
-    </div>
-</body>
-</html>`
+            <h2>📈 Diese Woche</h2>
+            <p>Hier sind die wichtigsten Updates und Neuigkeiten für dich.</p>
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+            <p>Bei Fragen bin ich gerne für dich da!</p>`
             },
-            minimal: {
-                name: 'Minimal Newsletter',
-                description: 'Einfach und elegant',
+            
+            simple: {
+                name: 'Simple Newsletter',
+                description: 'Minimalistisch und clean',
                 icon: '📄',
-                subject: 'Update: {{name}} 📄',
-                html: `<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Newsletter</title>
-</head>
-<body style="font-family: 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; background-color: #ffffff;">
-    <div style="max-width: 600px; margin: 0 auto;">
-        <h1 style="color: #333; font-weight: 300; font-size: 32px; margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px;">
-            Hallo {{name}} 👋
-        </h1>
-        
-        <p style="font-size: 16px; color: #555; margin-bottom: 25px;">
-            Hier ist dein wöchentliches Update mit den wichtigsten Neuigkeiten.
-        </p>
-        
-        <h2 style="color: #333; font-weight: 400; font-size: 24px; margin-top: 30px;">Updates</h2>
-        
-        <div style="background: #f9f9f9; padding: 20px; border-radius: 4px; margin: 20px 0;">
-            <p style="margin: 0; color: #666;">
-                Platz für deine Inhalte...
-            </p>
-        </div>
-        
-        <p style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; font-size: 14px; color: #888;">
-            Beste Grüße<br>
-            <strong>Dein Team</strong>
-        </p>
-    </div>
-</body>
-</html>`
-            }
-        },
-        
-        update: {
-            personal: {
-                name: 'Persönliches Update',
-                description: 'Warmherziger Ton für Coaching',
-                icon: '💬',
-                subject: 'Hallo {{name}}, dein persönliches Update! 💪',
-                html: `<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Persönliches Update</title>
-</head>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; background-color: #f4f4f4;">
-    <div style="max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px;">
-        <h1 style="color: #333; border-bottom: 3px solid #4a90e2; padding-bottom: 10px;">
-            Hallo {{name}}! 👋
-        </h1>
-        
-        <h2 style="color: #4a90e2; margin-top: 25px;">
-            Deine persönlichen Lernziele
-        </h2>
-        
-        <p style="font-size: 16px; color: #555;">
-            Ich hoffe, es geht dir gut und du kommst mit deinem Lernprojekt gut voran!
-        </p>
-        
-        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="color: #4a90e2; margin-top: 0;">📚 Dein persönlicher Lerntipp:</h3>
-            <p style="margin-bottom: 0;">
-                Denk daran: Kleine, regelmäßige Lerneinheiten sind oft effektiver als lange Marathonsitzungen. 
-                Plane dir heute 15 Minuten für dein Lernziel ein!
-            </p>
-        </div>
-        
-        <p style="color: #555;">
-            Falls du Fragen hast oder Unterstützung brauchst, melde dich gerne bei mir.
-        </p>
-        
-        <p style="color: #555;">
-            Liebe Grüße,<br>
-            <strong>Anna</strong>
-        </p>
-        
-        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-        
-        <p style="font-size: 12px; color: #888; text-align: center;">
-            Du erhältst diese E-Mail, weil du dich für mein Lerncoaching interessiert hast.<br>
-            <a href="#" style="color: #4a90e2;">Abmelden</a>
-        </p>
-    </div>
-</body>
-</html>`
+                subject: 'Newsletter {{name}} - {{month}}',
+                html: `<h1>Newsletter</h1>
+            <p>Hallo {{name}},</p>
+            <p>hier ist dein monatlicher Newsletter mit allen wichtigen Updates.</p>
+            <h2>Neuigkeiten</h2>
+            <ul>
+                <li>Update 1</li>
+                <li>Update 2</li>
+                <li>Update 3</li>
+            </ul>
+            <p>Viele Grüße!</p>`
+            },
+            
+            professional: {
+                name: 'Professional Newsletter',
+                description: 'Business-orientiert',
+                icon: '💼',
+                subject: 'Business Update für {{name}}',
+                html: `<div style="border-left: 4px solid #4a90e2; padding-left: 20px; margin-bottom: 20px;">
+                <h1 style="color: #2c3e50;">Business Newsletter</h1>
+                <p style="color: #6c757d;">{{name}} • $(date)</p>
+            </div>
+            <h2>Executive Summary</h2>
+            <p>Liebe/r {{name}},</p>
+            <p>hier ist unser aktueller Business Update mit den wichtigsten Kennzahlen und Entwicklungen.</p>
+            <p>Mit freundlichen Grüßen</p>`
             }
         },
         
         announcement: {
-            event: {
-                name: 'Event Ankündigung',
-                description: 'Auffällig für wichtige Mitteilungen',
-                icon: '🎉',
-                subject: '🎉 Wichtige Ankündigung für {{name}}!',
-                html: `<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Ankündigung</title>
-</head>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; background-color: #f4f4f4;">
-    <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
-        <div style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); color: white; padding: 40px; text-align: center;">
-            <h1 style="margin: 0; font-size: 32px;">🎉</h1>
-            <h2 style="margin: 10px 0 0 0; font-size: 24px;">Wichtige Ankündigung!</h2>
-        </div>
-        
-        <div style="padding: 30px;">
-            <h2 style="color: #2c3e50; margin-top: 0;">Hallo {{name}}!</h2>
-            
-            <p style="font-size: 18px; color: #555; margin-bottom: 25px;">
-                Ich habe aufregende Neuigkeiten für dich:
-            </p>
-            
-            <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; margin: 25px 0;">
-                <p style="margin: 0; font-size: 16px; color: #856404;">
-                    <strong>Platz für deine wichtige Mitteilung...</strong>
-                </p>
+            urgent: {
+                name: 'Wichtige Ankündigung',
+                description: 'Aufmerksamkeitsstark',
+                icon: '🚨',
+                subject: '🚨 Wichtige Ankündigung für {{name}}',
+                html: `<div style="background: #dc3545; color: white; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 20px;">
+                <h1 style="margin: 0; font-size: 24px;">🚨 Wichtige Ankündigung</h1>
             </div>
+            <p>Hallo {{name}},</p>
+            <p>wir haben wichtige Neuigkeiten für dich:</p>
+            <p><strong>Platz für deine wichtige Ankündigung...</strong></p>
+            <p>Bei Fragen bin ich gerne für dich da!</p>`
+            },
             
-            <div style="text-align: center; margin: 30px 0;">
-                <a href="#" style="background: #ff6b6b; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">🚀 Jetzt erfahren</a>
+            news: {
+                name: 'Neuigkeit',
+                description: 'Positive Nachrichten',
+                icon: '📢',
+                subject: 'Neuigkeiten für {{name}} 🎉',
+                html: `<div style="background: #28a745; color: white; padding: 25px; border-radius: 10px; text-align: center; margin-bottom: 25px;">
+                <h1 style="margin: 0;">🎉 Großartige Neuigkeiten!</h1>
             </div>
-            
-            <p style="color: #555;">
-                Bei Fragen bin ich gerne für dich da!
-            </p>
-        </div>
-    </div>
-</body>
-</html>`
+            <p>Hallo {{name}},</p>
+            <p>ich habe aufregende Neuigkeiten für dich:</p>
+            <div style="background: #d4edda; padding: 15px; border-radius: 5px; border-left: 4px solid #28a745;">
+                <p><strong>Platz für deine wichtige Nachricht...</strong></p>
+            </div>
+            <p>🚀 Jetzt erfahren</p>`
             }
         },
         
         custom: {
             blank: {
                 name: 'Blank Template',
-                description: 'Komplett leer - gestalte frei',
-                icon: '📝',
-                subject: 'Nachricht für {{name}}',
-                html: `<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>E-Mail</title>
-</head>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; background-color: #f4f4f4;">
-    <div style="max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px;">
-        <h1>Hallo {{name}}!</h1>
-        
-        <p>Hier kannst du deinen Inhalt frei gestalten...</p>
-        
-        <p>
-            Liebe Grüße<br>
-            <strong>Dein Name</strong>
-        </p>
-    </div>
-</body>
-</html>`
+                description: 'Komplett leer zum selbst gestalten',
+                icon: '🎨',
+                subject: 'E-Mail von {{name}}',
+                html: `<p>Hallo {{name}}!</p>
+            <p>Hier ist Platz für deinen Inhalt...</p>
+            <p>Viele Grüße!</p>`
             }
         }
     };
@@ -1171,61 +1043,82 @@ function generateWizardButtons() {
      * Lädt Template-Bibliothek
      */
     function loadTemplateLibrary() {
-        const container = document.getElementById('wizardTemplateLibrary');
-        const typeLabel = document.getElementById('selected-mail-type');
+        const library = document.getElementById('wizardTemplateLibrary');
+        if (!library) return;
 
-        if (!container) return;
+        const selectedMailType = wizardData.mailType || 'newsletter';
+        const templates = TEMPLATE_LIBRARY[selectedMailType] || {};
 
-        if (typeLabel) {
-            typeLabel.textContent = getMailTypeLabel(wizardData.mailType);
+        // Update Anzeige
+        const mailTypeSpan = document.getElementById('selected-mail-type');
+        if (mailTypeSpan) {
+            mailTypeSpan.textContent = getMailTypeLabel(selectedMailType);
         }
 
-        // Hardcodierte Templates
-        const hardcodedTemplates = TEMPLATE_LIBRARY[wizardData.mailType] || {};
+        let html = '';
 
-        // Gespeicherte Templates laden
-        const savedTemplates = loadSavedTemplates();
+        // Vordefinierte Templates
+        if (Object.keys(templates).length > 0) {
+            html += '<div class="template-section">';
+            html += '<h4>📋 Vordefinierte Templates</h4>';
+            html += '<div class="wizard-template-grid">';
 
-        let templatesHTML = '';
-
-        // Section 1: Hardcodierte Templates
-        if (Object.keys(hardcodedTemplates).length > 0) {
-            templatesHTML += '<div class="template-section"><h4>\ud83d\udccb Vordefinierte Templates</h4><div class="wizard-template-grid">';
-            templatesHTML += Object.entries(hardcodedTemplates).map(([key, template]) => `
-                <div class="wizard-template-card" onclick="MailWizard.selectTemplate('hardcoded_${key}')" data-type="hardcoded" data-key="${key}">
+            Object.entries(templates).forEach(([key, template]) => {
+                const templateId = `hardcoded_${key}`;
+                html += `
+                <div class="wizard-template-card" onclick="MailWizard.selectTemplate('${templateId}', event)">
                     <div class="wizard-template-preview">${template.icon}</div>
                     <div class="wizard-template-info">
                         <div class="wizard-template-name">${template.name}</div>
                         <div class="wizard-template-description">${template.description}</div>
-                        <div class="template-source">Vordefiniert</div>
+                        <div class="template-subject-preview">📧 ${template.subject}</div>
                     </div>
                 </div>
-            `).join('');
-            templatesHTML += '</div></div>';
+            `;
+            });
+
+            html += '</div></div>';
         }
 
-        // Section 2: Gespeicherte Templates
+        // Gespeicherte Templates
+        const savedTemplates = loadSavedTemplates();
         if (savedTemplates.length > 0) {
-            templatesHTML += '<div class="template-section"><h4>\ud83d\udcbe Gespeicherte Templates</h4><div class="wizard-template-grid">';
-            templatesHTML += savedTemplates.map(template => `
-                <div class="wizard-template-card" onclick="MailWizard.selectTemplate('saved_${template.key}')" data-type="saved" data-key="${template.key}">
-                    <div class="wizard-template-preview">\ud83d\udcc4</div>
+            html += '<div class="template-section">';
+            html += '<h4>💾 Gespeicherte Templates</h4>';
+            html += '<div class="wizard-template-grid">';
+
+            savedTemplates.forEach(template => {
+                const templateId = `saved_${template.key}`;
+                html += `
+                <div class="wizard-template-card" onclick="MailWizard.selectTemplate('${templateId}', event)" data-type="saved">
+                    <div class="wizard-template-preview">💾</div>
                     <div class="wizard-template-info">
                         <div class="wizard-template-name">${template.name}</div>
-                        <div class="wizard-template-description">${template.subject || 'Kein Betreff'}</div>
-                        <div class="template-source">Erstellt: ${template.created || 'Unbekannt'}</div>
+                        <div class="wizard-template-description">Erstellt: ${formatDate(template.created)}</div>
+                        <div class="template-source">Gespeichert</div>
                     </div>
                 </div>
-            `).join('');
-            templatesHTML += '</div></div>';
+            `;
+            });
+
+            html += '</div></div>';
         }
 
-        // Empty State
-        if (Object.keys(hardcodedTemplates).length === 0 && savedTemplates.length === 0) {
-            templatesHTML = '<div class="empty-templates"><p>\ud83c\udfa8 Keine Templates verf\u00fcgbar</p></div>';
+        // Fallback wenn keine Templates
+        if (Object.keys(templates).length === 0 && savedTemplates.length === 0) {
+            html = '<div class="empty-templates"><p>Keine Templates für diesen Mail-Typ verfügbar.</p></div>';
         }
 
-        container.innerHTML = templatesHTML;
+        library.innerHTML = html;
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return 'Unbekannt';
+        try {
+            return new Date(dateStr).toLocaleDateString('de-DE');
+        } catch {
+            return 'Unbekannt';
+        }
     }
 
     /**
