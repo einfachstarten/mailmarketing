@@ -390,9 +390,55 @@ function updateProgress() {
      * Generiert Schritt 4: Empfänger
      */
     function generateStep4() {
-        return `\n        <div id="mail-wizard-step-4" class="wizard-step-content">\n            <div class="step-intro">\n                <h3 class="step-title">👥 Empfänger auswählen</h3>\n                <p class="step-subtitle">Wer soll diese E-Mail erhalten?</p>\n            </div>\n            \n            <div class="wizard-recipient-controls">\n                <input type="text" id="wizardRecipientSearch" placeholder="Empfänger suchen..." class="form-control">\n                <div class="recipient-actions">\n                    <button type="button" onclick="MailWizard.selectAllRecipients()">Alle auswählen</button>\n                    <button type="button" onclick="MailWizard.deselectAllRecipients()">Alle abwählen</button>\n                </div>\n            </div>\n            \n            <div id="wizardRecipientList" class="wizard-recipient-list">\n                <p>Keine Empfänger verfügbar. <a href="#" onclick="alert('Empfänger-Verwaltung öffnen')">Empfänger hinzufügen</a></p>\n            </div>\n            \n            <div class="wizard-recipient-stats">\n                <div class="recipient-stat-card">\n                    <div class="stat-number" id="wizardSelectedRecipients">0</div>\n                    <div class="stat-label">Ausgewählt</div>\n                </div>\n                <div class="recipient-stat-card">\n                    <div class="stat-number" id="wizardTotalRecipients">0</div>\n                    <div class="stat-label">Gesamt</div>\n                </div>\n            </div>\n        </div>\n    `;
-    }
+        return `
+        <div id="mail-wizard-step-4" class="wizard-step-content">
+            <div class="step-intro">
+                <h3 class="step-title">👥 Empfänger auswählen</h3>
+                <p class="step-subtitle">Wer soll diese E-Mail erhalten?</p>
+            </div>
 
+            <div class="wizard-recipient-controls">
+                <input type="text" id="wizardRecipientSearch"
+                       placeholder="Empfänger suchen..."
+                       class="form-control"
+                       oninput="MailWizard.filterRecipients()">
+                <div class="recipient-actions">
+                    <button type="button" class="btn btn-secondary" onclick="MailWizard.selectAllRecipients()">
+                        ✓ Alle auswählen
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="MailWizard.deselectAllRecipients()">
+                        ✗ Alle abwählen
+                    </button>
+                </div>
+            </div>
+
+            <div id="wizardRecipientList" class="wizard-recipient-list">
+                <p class="placeholder">Lade Empfänger...</p>
+            </div>
+
+            <div id="wizardRecipientPagination" class="wizard-pagination" style="display: none;">
+                <button type="button" class="btn btn-secondary" onclick="MailWizard.previousRecipientPage()">
+                    ← Vorherige
+                </button>
+                <span id="wizardRecipientPageInfo" class="page-info">Seite 1 von 1</span>
+                <button type="button" class="btn btn-secondary" onclick="MailWizard.nextRecipientPage()">
+                    Nächste →
+                </button>
+            </div>
+
+            <div class="wizard-recipient-stats">
+                <div class="recipient-stat-card">
+                    <div class="stat-number" id="wizardSelectedRecipients">0</div>
+                    <div class="stat-label">Ausgewählt</div>
+                </div>
+                <div class="recipient-stat-card">
+                    <div class="stat-number" id="wizardTotalRecipients">0</div>
+                    <div class="stat-label">Gesamt</div>
+                </div>
+            </div>
+        </div>
+    `;
+    }
     /**
      * Generiert Schritt 5: Anhänge
      */
