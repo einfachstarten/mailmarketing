@@ -275,51 +275,53 @@ function resetWizardData() {
             <h3 class="step-title">✏️ Inhalt bearbeiten</h3>
             <p class="step-subtitle">Betreff und E-Mail-Inhalt anpassen</p>
         </div>
-
+        
         <div class="wizard-editor-container">
             <div class="editor-panel">
                 <div class="form-group">
-                    <label for="wizardSubject">
-                        Betreff *
-                        <span class="help-indicator" data-help="wizard-subject-help">?</span>
-                    </label>
-                    <input type="text" id="wizardSubject" class="form-control"
+                    <label for="wizardSubject">📧 Betreff *</label>
+                    <input type="text" id="wizardSubject" class="form-control" 
                            placeholder="E-Mail Betreff eingeben...">
                 </div>
-
+                
                 <div class="form-group">
-                    <label for="wizardVisualEditor">
-                        E-Mail Inhalt
-                        <span class="help-indicator" data-help="wizard-content-help">?</span>
-                    </label>
-                    <div id="wizardVisualEditor" class="wizard-visual-editor"
-                         contenteditable="true"
-                         placeholder="Hier deinen E-Mail-Inhalt eingeben...">
-                    </div>
-
+                    <label for="wizardVisualEditor">📝 E-Mail Inhalt</label>
+                    
                     <div class="editor-toolbar">
-                        <button type="button" class="btn-editor" onclick="MailWizard.formatText('bold')" title="Fett">
-                            <strong>B</strong>
-                        </button>
-                        <button type="button" class="btn-editor" onclick="MailWizard.formatText('italic')" title="Kursiv">
-                            <em>I</em>
-                        </button>
-                        <button type="button" class="btn-editor" onclick="MailWizard.insertPersonalization('name')" title="Name einfügen">
-                            {{name}}
-                        </button>
-                        <button type="button" class="btn-editor" onclick="MailWizard.insertPersonalization('email')" title="E-Mail einfügen">
-                            {{email}}
-                        </button>
+                        <div class="toolbar-section">
+                            <span class="toolbar-label">Format:</span>
+                            <button type="button" class="btn-editor" onclick="MailWizard.formatText('bold')" title="Fett"><strong>B</strong></button>
+                            <button type="button" class="btn-editor" onclick="MailWizard.formatText('italic')" title="Kursiv"><em>I</em></button>
+                            <button type="button" class="btn-editor" onclick="MailWizard.formatText('underline')" title="Unterstrichen"><u>U</u></button>
+                        </div>
+                        <div class="toolbar-section">
+                            <span class="toolbar-label">Einfügen:</span>
+                            <button type="button" class="btn-editor variable-btn" onclick="MailWizard.insertPersonalization('name')" title="Name einfügen">{{name}}</button>
+                            <button type="button" class="btn-editor variable-btn" onclick="MailWizard.insertPersonalization('email')" title="E-Mail einfügen">{{email}}</button>
+                            <button type="button" class="btn-editor variable-btn" onclick="MailWizard.insertPersonalization('company')" title="Firma einfügen">{{company}}</button>
+                        </div>
+                        <div class="toolbar-section">
+                            <span class="toolbar-label">Aktionen:</span>
+                            <button type="button" class="btn-editor action-btn" onclick="MailWizard.clearEditor()" title="Alles löschen">🗑️ Löschen</button>
+                            <button type="button" class="btn-editor action-btn" onclick="MailWizard.insertTemplate()" title="Template einfügen">📋 Template</button>
+                        </div>
+                    </div>
+                    
+                    <div id="wizardVisualEditor" class="wizard-visual-editor" 
+                         contenteditable="true" 
+                         placeholder="Hier deinen E-Mail-Inhalt eingeben..."></div>
+                    
+                    <div class="editor-status">
+                        <span id="editorCharCount" class="char-count">0 Zeichen</span>
+                        <span id="editorWordCount" class="word-count">0 Wörter</span>
                     </div>
                 </div>
             </div>
-
+            
             <div class="preview-panel">
                 <h4>📱 Live-Vorschau</h4>
                 <div class="preview-controls">
-                    <button type="button" class="btn btn-sm" onclick="MailWizard.refreshPreview()">
-                        🔄 Aktualisieren
-                    </button>
+                    <button type="button" class="btn btn-sm" onclick="MailWizard.refreshPreview()">🔄 Aktualisieren</button>
                     <select id="previewDevice" class="form-control-sm" onchange="MailWizard.switchPreviewDevice()">
                         <option value="desktop">💻 Desktop</option>
                         <option value="mobile">📱 Mobile</option>
@@ -1161,67 +1163,62 @@ function generateWizardButtons() {
      * Initialisiert Editor
      */
     function initializeEditor() {
-        console.log('Initializing Step 3 Editor...');
-
         const subjectInput = document.getElementById('wizardSubject');
         const visualEditor = document.getElementById('wizardVisualEditor');
-        const previewContainer = document.getElementById('wizardEmailPreviewStep3');
-
-        if (!subjectInput || !visualEditor || !previewContainer) {
-            console.error('Editor elements missing:', {
-                subject: !!subjectInput,
-                editor: !!visualEditor,
-                preview: !!previewContainer
-            });
-            return;
+        
+        if (!subjectInput || !visualEditor) return;
+        
+        if (wizardData.subject) {
+            subjectInput.value = wizardData.subject;
         }
-
-        const subjectVal = wizardData.subject;
-        if (subjectVal) {
-            subjectInput.value = subjectVal;
-        }
-
-        subjectInput.addEventListener('input', (e) => {
-            wizardData.subject = e.target.value;
-            console.log('Subject updated:', wizardData.subject);
-            debouncePreviewUpdate();
-        });
-
+        
         if (wizardData.content) {
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = wizardData.content;
-            const bodyDiv = tempDiv.querySelector('body .container, body > div');
-            const editorContent = bodyDiv ? bodyDiv.innerHTML : wizardData.content;
-            visualEditor.innerHTML = editorContent;
+            const bodyDiv = tempDiv.querySelector('body .email-container, body > div');
+            visualEditor.innerHTML = bodyDiv ? bodyDiv.innerHTML : getDefaultEditorContent();
         } else {
-            visualEditor.innerHTML = `
-                <p>Hallo {{name}}! 👋</p>
-                <p>Hier ist dein wöchentliches Update...</p>
-                <p>Viele Grüße!</p>
-            `;
+            visualEditor.innerHTML = getDefaultEditorContent();
         }
-
-        visualEditor.addEventListener('input', () => {
-            console.log('Editor content changed');
+        
+        subjectInput.addEventListener('input', (e) => {
+            wizardData.subject = e.target.value;
             debouncePreviewUpdate();
         });
-
-        visualEditor.addEventListener('paste', () => {
-            console.log('Content pasted into editor');
+        
+        visualEditor.addEventListener('input', () => {
+            updateEditorStats();
+            debouncePreviewUpdate();
+        });
+        
+        visualEditor.addEventListener('paste', (e) => {
             setTimeout(() => {
+                updateEditorStats();
                 debouncePreviewUpdate();
             }, 50);
         });
-
-        visualEditor.addEventListener('keyup', () => {
-            debouncePreviewUpdate();
+        
+        visualEditor.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                switch (e.key) {
+                    case 'b':
+                        e.preventDefault();
+                        formatText('bold');
+                        break;
+                    case 'i':
+                        e.preventDefault();
+                        formatText('italic');
+                        break;
+                    case 'u':
+                        e.preventDefault();
+                        formatText('underline');
+                        break;
+                }
+            }
         });
-
-        setTimeout(() => {
-            updateWizardPreview();
-        }, 300);
-
-        console.log('✅ Step 3 Editor initialized with improved event listeners');
+        
+        updateEditorStats();
+        setTimeout(() => updateWizardPreview(), 300);
     }
 
     let previewUpdateTimeout;
@@ -2145,6 +2142,71 @@ function generateWizardButtons() {
     }
 
     /**
+     * Löscht kompletten Editor-Inhalt
+     */
+    function clearEditor() {
+        const editor = document.getElementById('wizardVisualEditor');
+        if (editor && confirm('Möchtest du den gesamten Inhalt löschen?')) {
+            editor.innerHTML = '';
+            updateWizardPreview();
+            updateEditorStats();
+            Utils.showToast('Editor geleert', 'info');
+        }
+    }
+
+    /**
+     * Fügt Template-Baustein ein
+     */
+    function insertTemplate() {
+        const editor = document.getElementById('wizardVisualEditor');
+        if (!editor) return;
+
+        const templates = [
+            'Hallo {{name}},\n\nHier ist dein Update...',
+            'Liebe/r {{name}},\n\nwir freuen uns, dir mitzuteilen...',
+            'Hi {{name}}! 👋\n\nHier sind die Neuigkeiten...',
+            '🎉 Großartige Neuigkeiten für {{name}}!\n\nWir haben...'
+        ];
+
+        const selected = prompt('Wähle Template:\n' + templates.map((t, i) => `${i+1}. ${t.split('\n')[0]}`).join('\n'));
+        const index = parseInt(selected) - 1;
+
+        if (index >= 0 && index < templates.length) {
+            const template = templates[index].replace(/\n/g, '</p><p>');
+            const selection = window.getSelection();
+            const range = selection.getRangeAt(0);
+            range.deleteContents();
+            range.insertNode(document.createElement('p')).innerHTML = template;
+            updateWizardPreview();
+        }
+    }
+
+    /**
+     * Aktualisiert Editor-Statistiken
+     */
+    function updateEditorStats() {
+        const editor = document.getElementById('wizardVisualEditor');
+        const charCount = document.getElementById('editorCharCount');
+        const wordCount = document.getElementById('editorWordCount');
+
+        if (!editor || !charCount || !wordCount) return;
+
+        const text = editor.textContent || '';
+        const chars = text.length;
+        const words = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+
+        charCount.textContent = `${chars} Zeichen`;
+        wordCount.textContent = `${words} Wörter`;
+
+        if (chars > 1000) {
+            charCount.style.color = '#dc3545';
+        } else if (chars > 500) {
+            charCount.style.color = '#ffc107';
+        } else {
+            charCount.style.color = '#28a745';
+        }
+    }
+    /**
      * Aktualisiert Vorschau manuell
      */
     function refreshPreview() {
@@ -2226,6 +2288,9 @@ function generateWizardButtons() {
         formatText,
         insertVariable,
         insertPersonalization,
+        clearEditor,
+        insertTemplate,
+        updateEditorStats,
         refreshPreview,
         switchPreviewDevice,
         updateWizardPreview,
