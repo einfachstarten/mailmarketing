@@ -685,33 +685,35 @@ function generateWizardButtons() {
     /**
      * Aktualisiert Wizard-Anzeige
      */
+    function showStep(stepNumber) {
+        console.log(`Showing step ${stepNumber}`);
+
+        document.querySelectorAll('.wizard-step-content').forEach(step => {
+            step.classList.remove('active');
+        });
+
+        const currentStepElement = document.getElementById(`mail-wizard-step-${stepNumber}`);
+        if (currentStepElement) {
+            currentStepElement.classList.add('active');
+
+            if (window.WizardHelp) {
+                setTimeout(() => {
+                    WizardHelp.initStepHelp(`mail-wizard-step-${stepNumber}`);
+                }, 100);
+            }
+        } else {
+            console.error('Step content not found:', `mail-wizard-step-${stepNumber}`);
+        }
+    }
+
     function updateWizardStep() {
         console.log('Updating wizard step to:', currentStep);
 
-        // Progress Update
         generateProgressIndicators();
+        showStep(currentStep);
 
-        // Content Update
-        document.querySelectorAll('.wizard-step-content').forEach(content => {
-            content.classList.remove('active');
-        });
-
-        const currentContent = document.getElementById(`mail-wizard-step-${currentStep}`);
-        if (currentContent) {
-            currentContent.classList.add('active');
-
-            // Initialize contextual help for this step
-            if (window.WizardHelp) {
-                WizardHelp.initStepHelp(`mail-wizard-step-${currentStep}`);
-            }
-        } else {
-            console.error('Step content not found:', `mail-wizard-step-${currentStep}`);
-        }
-
-        // Button Update
         generateWizardButtons();
 
-        // Step-spezifische Aktionen
         handleStepEnter(currentStep);
     }
 

@@ -1,5 +1,5 @@
 // Auto-generated version file
-window.APP_VERSION = {"version":"2.0.697398","fullVersion":"2.0.697398 (2025-06-23 16:49:58)","buildDate":"2025-06-23 16:49:58","buildNumber":"697398","timestamp":1750697398};
+window.APP_VERSION = {"version":"2.0.125012","fullVersion":"2.0.125012 (2025-06-28 15:36:52)","buildDate":"2025-06-28 15:36:52","buildNumber":"125012","timestamp":1751125012};
 
 function displayVersion() {
     const versionElements = document.querySelectorAll('.app-version');
@@ -16,7 +16,7 @@ function displayVersion() {
 }
 
 function insertVersionedCSS() {
-    const href = 'css/index.css?v=' + window.APP_VERSION.buildNumber;
+    const href = 'styles.css?v=' + window.APP_VERSION.buildNumber;
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = href;
@@ -24,7 +24,7 @@ function insertVersionedCSS() {
     link.onerror = () => {
         const fallback = document.createElement('link');
         fallback.rel = 'stylesheet';
-        fallback.href = 'css/index.css';
+        fallback.href = 'styles.css';
         fallback.onload = () => document.body.classList.add('css-loaded');
         document.head.appendChild(fallback);
     };
