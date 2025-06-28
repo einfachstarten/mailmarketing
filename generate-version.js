@@ -38,7 +38,7 @@ function displayVersion() {
 }
 
 function insertVersionedCSS() {
-    const href = 'styles.css?v=' + window.APP_VERSION.buildNumber;
+    const href = 'css/index.css?v=' + window.APP_VERSION.buildNumber;
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = href;
@@ -46,7 +46,7 @@ function insertVersionedCSS() {
     link.onerror = () => {
         const fallback = document.createElement('link');
         fallback.rel = 'stylesheet';
-        fallback.href = 'styles.css';
+        fallback.href = 'css/index.css';
         fallback.onload = () => document.body.classList.add('css-loaded');
         document.head.appendChild(fallback);
     };
