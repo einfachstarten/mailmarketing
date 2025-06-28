@@ -53,7 +53,7 @@ window.MailWizard = (function() {
             <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
             <p>Bei Fragen bin ich gerne für dich da!</p>`
             },
-            
+
             simple: {
                 name: 'Simple Newsletter',
                 description: 'Minimalistisch und clean',
@@ -70,7 +70,7 @@ window.MailWizard = (function() {
             </ul>
             <p>Viele Grüße!</p>`
             },
-            
+
             professional: {
                 name: 'Professional Newsletter',
                 description: 'Business-orientiert',
@@ -86,7 +86,7 @@ window.MailWizard = (function() {
             <p>Mit freundlichen Grüßen</p>`
             }
         },
-        
+
         announcement: {
             urgent: {
                 name: 'Wichtige Ankündigung',
@@ -101,7 +101,7 @@ window.MailWizard = (function() {
             <p><strong>Platz für deine wichtige Ankündigung...</strong></p>
             <p>Bei Fragen bin ich gerne für dich da!</p>`
             },
-            
+
             news: {
                 name: 'Neuigkeit',
                 description: 'Positive Nachrichten',
@@ -118,7 +118,7 @@ window.MailWizard = (function() {
             <p>🚀 Jetzt erfahren</p>`
             }
         },
-        
+
         custom: {
             blank: {
                 name: 'Blank Template',
@@ -214,31 +214,43 @@ function resetWizardData() {
      * Generiert komplettes Wizard-HTML dynamisch
      */
     function generateWizardHTML() {
-        generateProgressIndicators();
+        updateProgress();
         generateWizardSteps();
-        generateWizardButtons();
+        updateNavigationButtons();
     }
 
     /**
      * Generiert Progress-Indikatoren
      */
-    function generateProgressIndicators() {
+function updateProgress() {
         const container = document.getElementById('wizardProgressContainer');
         if (!container) return;
 
-        const progressHTML = Array.from({length: 6}, (_, i) => {
-            const stepNum = i + 1;
-            const isActive = stepNum === currentStep;
-            const isCompleted = stepNum < currentStep;
+        let html = '<div class="wizard-progress">';
 
-            let classes = 'wizard-step-circle';
-            if (isActive) classes += ' active';
-            if (isCompleted) classes += ' completed';
+        for (let i = 1; i <= 6; i++) {
+            const isActive = i === currentStep;
+            const isCompleted = i < currentStep;
+            const isClickable = i <= currentStep || isCompleted;
 
-            return `\n            <div class="${classes}">${stepNum}</div>\n            ${stepNum < 6 ? '<div class="step-line"></div>' : ''}\n        `;
-        }).join('');
+            let stepClass = 'wizard-step-circle';
+            if (isActive) stepClass += ' active';
+            if (isCompleted) stepClass += ' completed';
+            if (isClickable) stepClass += ' clickable';
 
-        container.innerHTML = progressHTML;
+            const clickHandler = isClickable ? `onclick="MailWizard.jumpToStep(${i})"` : '';
+            const title = `Schritt ${i}: ${STEP_NAMES[i-1]}${isClickable ? ' (klicken zum springen)' : ''}`;
+
+            html += `<div class="${stepClass}" ${clickHandler} title="${title}">${i}</div>`;
+
+            if (i < 6) {
+                const lineClass = isCompleted ? 'step-line completed' : 'step-line';
+                html += `<div class="${lineClass}"></div>`;
+            }
+        }
+
+        html += '</div>';
+        container.innerHTML = html;
     }
 
     /**
@@ -275,18 +287,18 @@ function resetWizardData() {
             <h3 class="step-title">✏️ Inhalt bearbeiten</h3>
             <p class="step-subtitle">Betreff und E-Mail-Inhalt anpassen</p>
         </div>
-        
+
         <div class="wizard-editor-container">
             <div class="editor-panel">
                 <div class="form-group">
                     <label for="wizardSubject">📧 Betreff *</label>
-                    <input type="text" id="wizardSubject" class="form-control" 
+                    <input type="text" id="wizardSubject" class="form-control"
                            placeholder="E-Mail Betreff eingeben...">
                 </div>
-                
+
                 <div class="form-group">
                     <label for="wizardVisualEditor">📝 E-Mail Inhalt</label>
-                    
+
                     <div class="editor-toolbar">
                         <div class="toolbar-section">
                             <span class="toolbar-label">Format:</span>
@@ -306,18 +318,18 @@ function resetWizardData() {
                             <button type="button" class="btn-editor action-btn" onclick="MailWizard.insertTemplate()" title="Template einfügen">📋 Template</button>
                         </div>
                     </div>
-                    
-                    <div id="wizardVisualEditor" class="wizard-visual-editor" 
-                         contenteditable="true" 
+
+                    <div id="wizardVisualEditor" class="wizard-visual-editor"
+                         contenteditable="true"
                          placeholder="Hier deinen E-Mail-Inhalt eingeben..."></div>
-                    
+
                     <div class="editor-status">
                         <span id="editorCharCount" class="char-count">0 Zeichen</span>
                         <span id="editorWordCount" class="word-count">0 Wörter</span>
                     </div>
                 </div>
             </div>
-            
+
             <div class="preview-panel">
                 <h4>📱 Live-Vorschau</h4>
                 <div class="preview-controls">
@@ -361,12 +373,12 @@ function generateStep6() {
                 <h3 class="step-title">🎯 Finale Überprüfung</h3>
                 <p class="step-subtitle">Prüfe alle Details vor dem Versand</p>
             </div>
-            
+
             <!-- Bestehende Summary -->
             <div class="wizard-summary">
                 <!-- ... bestehender Summary-Code ... -->
             </div>
-            
+
             <!-- Neue Test-Funktionen -->
             <div class="wizard-test-section">
                 <h4>🧪 Vor dem Versand testen</h4>
@@ -380,13 +392,47 @@ function generateStep6() {
                 </div>
                 <small>Test-E-Mail wird an den ersten ausgewählten Empfänger gesendet</small>
             </div>
-            
+
             <div id="wizardEmailPreview" class="wizard-email-preview">
                 <!-- Vorschau wird hier generiert -->
             </div>
         </div>
     `;
 }
+
+    /**
+     * Aktualisiert Navigation Buttons mit besserem Feedback
+     */
+    function updateNavigationButtons() {
+        const container = document.getElementById('wizardButtonsContainer');
+        if (!container) return;
+
+        const isFirstStep = currentStep === 1;
+        const isLastStep = currentStep === 6;
+
+        const prevDisabled = isFirstStep ? 'disabled' : '';
+        const nextText = isLastStep ? '🚀 Kampagne starten' : 'Weiter →';
+        const nextClass = isLastStep ? 'btn btn-success' : 'btn btn-primary';
+
+        const html = `
+            <button type="button" class="btn btn-secondary"
+                    onclick="MailWizard.previousStep()" ${prevDisabled}>
+                ← Zurück
+            </button>
+
+            <div class="wizard-nav-info">
+                <span class="nav-step-info">Schritt ${currentStep} von 6</span>
+                <span class="nav-step-name">${STEP_NAMES[currentStep-1]}</span>
+            </div>
+
+            <button type="button" class="${nextClass}"
+                    onclick="MailWizard.nextStep()">
+                ${nextText}
+            </button>
+        `;
+
+        container.innerHTML = html;
+    }
 
     /**
      * Setzt gesamten Wizard-Zustand zurück
@@ -406,63 +452,6 @@ function generateStep6() {
      * Generiert Wizard-Buttons
 */
 
-function generateWizardButtons() {
-    const container = document.getElementById('wizardButtonsContainer');
-
-    // EXTENDED DEBUGGING
-    console.log('=== BUTTON DEBUG ===');
-    console.log('Container found:', !!container);
-    console.log('Container visible:', container ? getComputedStyle(container).display : 'N/A');
-    console.log('Container HTML before:', container ? container.innerHTML : 'N/A');
-
-    if (!container) {
-        console.error('\u274c wizardButtonsContainer not found! Searching for alternatives...');
-
-        const modalButtons = document.querySelector('.wizard-modal .wizard-buttons');
-        const anyButtons = document.querySelector('.wizard-buttons');
-
-        console.log('Alternative modal buttons:', !!modalButtons);
-        console.log('Any wizard-buttons:', !!anyButtons);
-
-        if (modalButtons) {
-            console.log('Using alternative container');
-            modalButtons.id = 'wizardButtonsContainer';
-            generateWizardButtons(); // Retry
-            return;
-        }
-
-        return;
-    }
-
-    const isFirstStep = currentStep === 1;
-    const isLastStep = currentStep === 6;
-
-    const buttonsHTML = `
-        <button type="button" id="wizardPrevBtn" class="btn btn-secondary" 
-                onclick="MailWizard.previousStep()" ${isFirstStep ? 'disabled' : ''}
-                style="display: inline-block !important; visibility: visible !important;">
-            \u2190 Zur\u00fcck
-        </button>
-        
-        <button type="button" id="wizardNextBtn" class="btn btn-primary" 
-                onclick="MailWizard.nextStep()" ${isLastStep ? 'style="display:none"' : 'style="display: inline-block !important; visibility: visible !important;"'}>
-            Weiter \u2192
-        </button>
-        
-        <button type="button" id="wizardFinishBtn" class="btn btn-success" 
-                onclick="MailWizard.finishWizard()" ${!isLastStep ? 'style="display:none"' : 'style="display: inline-block !important; visibility: visible !important;"'}>
-            \ud83d\ude80 Kampagne starten
-        </button>
-    `;
-
-    container.innerHTML = buttonsHTML;
-
-    // POST-GENERATION DEBUGGING
-    console.log('Container HTML after:', container.innerHTML);
-    console.log('Next button found:', !!document.getElementById('wizardNextBtn'));
-    console.log('Next button visible:', document.getElementById('wizardNextBtn') ? getComputedStyle(document.getElementById('wizardNextBtn')).display : 'N/A');
-    console.log('=== END BUTTON DEBUG ===');
-}
 
     /**
      * Versteckt Wizard-Modal
@@ -537,9 +526,6 @@ function generateWizardButtons() {
             if (currentStep < 6) { // Erweitert auf 6 Steps
                 currentStep++;
                 updateWizardStep();
-                
-                // Step-spezifische Aktionen
-                handleStepEnter(currentStep);
             } else {
                 finishWizard();
             }
@@ -557,73 +543,76 @@ function generateWizardButtons() {
     }
 
     /**
+     * Springt zu bestimmtem Step (mit Validation)
+     */
+    function jumpToStep(targetStep) {
+        if (targetStep === currentStep) return;
+
+        if (targetStep > currentStep + 1) {
+            Utils.showToast('Bitte schließe den aktuellen Schritt zuerst ab', 'warning');
+            return;
+        }
+
+        if (targetStep < currentStep - 1) {
+            if (!confirm(`Möchtest du wirklich zu Schritt ${targetStep} zurückspringen? Änderungen bleiben erhalten.`)) {
+                return;
+            }
+        }
+
+        currentStep = targetStep;
+        showStep(targetStep);
+        Utils.showToast(`⚡ Zu Schritt ${targetStep} gesprungen`, 'success');
+    }
+
+    /**
      * Aktualisiert Wizard-Anzeige
      */
     function showStep(stepNumber) {
-        console.log(`Showing step ${stepNumber}`);
-
-        document.querySelectorAll('.wizard-step-content').forEach(step => {
-            step.classList.remove('active');
-        });
-
-        const currentStepElement = document.getElementById(`mail-wizard-step-${stepNumber}`);
-        if (currentStepElement) {
-            currentStepElement.classList.add('active');
-
-            if (window.WizardHelp) {
-                setTimeout(() => {
-                    WizardHelp.initStepHelp(`mail-wizard-step-${stepNumber}`);
-                }, 100);
-            }
-        } else {
-            console.error('Step content not found:', `mail-wizard-step-${stepNumber}`);
+        const content = document.getElementById('wizardContentContainer');
+        if (content) {
+            content.classList.add('loading');
+            content.innerHTML = '<div class="step-loading">⏳ Lade Schritt...</div>';
         }
+
+        setTimeout(() => {
+            document.querySelectorAll('.wizard-step-content').forEach(step => {
+                step.classList.remove('active');
+            });
+
+            const currentStepElement = document.getElementById(`mail-wizard-step-${stepNumber}`);
+            if (currentStepElement) {
+                currentStepElement.classList.add('active');
+
+                if (window.WizardHelp) {
+                    setTimeout(() => {
+                        WizardHelp.initStepHelp(`mail-wizard-step-${stepNumber}`);
+                    }, 100);
+                }
+            }
+
+            updateProgress();
+            updateNavigationButtons();
+
+            switch (stepNumber) {
+                case 2: loadTemplateLibrary(); break;
+                case 3: initializeEditor(); break;
+                case 4: loadRecipientSelector(); break;
+                case 5: initializeAttachments(); break;
+                case 6: prepareReviewStep?.(); break;
+            }
+
+            if (content) {
+                content.classList.remove('loading');
+            }
+        }, 200);
     }
 
     function updateWizardStep() {
         console.log('Updating wizard step to:', currentStep);
 
-        generateProgressIndicators();
         showStep(currentStep);
-
-        generateWizardButtons();
-
-        handleStepEnter(currentStep);
     }
 
-    /**
-     * Behandelt Step-Enter-Events
-     */
-    function handleStepEnter(step) {
-        switch(step) {
-            case 1:
-                // Mail-Typ Schritt - nichts spezielles
-                break;
-            case 2:
-                // Template Schritt - Template-Bibliothek laden
-                loadTemplateLibrary();
-                break;
-            case 3:
-                // CRITICAL FIX: Editor-Schritt - Editor initialisieren
-                setTimeout(() => {
-                    initializeEditor();
-                    generateWizardButtons(); // Explizit Buttons neu generieren
-                }, 100);
-                break;
-            case 4:
-                // Empfänger Schritt - Empfänger laden
-                loadRecipientSelector();
-                break;
-            case 5:
-                // Anhänge Schritt - Drop-Zone initialisieren
-                initializeAttachments();
-                break;
-            case 6:
-                // Review Schritt - Zusammenfassung aktualisieren
-                updateReviewSummary();
-                break;
-        }
-    }
 
     /**
      * Lädt Empfänger-Liste
@@ -859,7 +848,7 @@ function generateWizardButtons() {
         if (personalizedSubject.includes('{{') || personalizedContent.includes('{{')) {
             previewContainer.innerHTML += `
             <div class="alert alert-warning" style="margin-top: 15px; padding: 10px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px;">
-                ⚠️ <strong>Warnung:</strong> Template enthält noch nicht aufgelöste Platzhalter. 
+                ⚠️ <strong>Warnung:</strong> Template enthält noch nicht aufgelöste Platzhalter.
                 Prüfe die Browser-Console für Debug-Informationen.
             </div>
             `;
@@ -953,19 +942,43 @@ function generateWizardButtons() {
     // ===== STEP VALIDATION =====
 
     /**
+     * Freundlichere Validation Messages
+     */
+    function showValidationMessage(step, issue) {
+        const messages = {
+            1: {
+                'no-type': '😊 Wähle zunächst einen Mail-Typ aus, damit wir dir passende Templates zeigen können!'
+            },
+            2: {
+                'no-template': '🎨 Wähle ein Template aus oder erstelle dein eigenes Design!'
+            },
+            3: {
+                'no-subject': '📧 Ein aussagekräftiger Betreff hilft deinen Empfängern zu verstehen, worum es geht!',
+                'no-content': '✍️ Füge deinen E-Mail-Inhalt hinzu - das ist das Herzstück deiner Nachricht!'
+            },
+            4: {
+                'no-recipients': '👥 Wähle mindestens einen Empfänger aus, damit deine E-Mail auch ankommt!'
+            }
+        };
+
+        const message = messages[step]?.[issue] || 'Bitte vervollständige diesen Schritt.';
+        Utils.showToast(message, 'info');
+    }
+
+    /**
      * Validiert aktuellen Schritt
      */
     function validateCurrentStep() {
         switch (currentStep) {
             case 1:
                 if (!wizardData.mailType) {
-                    Utils.showToast('Bitte wähle einen Mail-Typ aus', 'warning');
+                    showValidationMessage(1, 'no-type');
                     return false;
                 }
                 break;
             case 2:
                 if (!wizardData.template) {
-                    Utils.showToast('Bitte wähle ein Template aus', 'warning');
+                    showValidationMessage(2, 'no-template');
                     return false;
                 }
                 break;
@@ -975,13 +988,13 @@ function generateWizardButtons() {
                 const visualEditor = document.getElementById('wizardVisualEditor');
 
                 if (!subjectInput?.value?.trim()) {
-                    Utils.showToast('Bitte gib einen Betreff ein', 'warning');
+                    showValidationMessage(3, 'no-subject');
                     if (subjectInput) subjectInput.focus();
                     return false;
                 }
 
                 if (!visualEditor?.innerHTML?.trim() || visualEditor.innerHTML === '') {
-                    Utils.showToast('Bitte füge E-Mail-Inhalt hinzu', 'warning');
+                    showValidationMessage(3, 'no-content');
                     if (visualEditor) visualEditor.focus();
                     return false;
                 }
@@ -996,7 +1009,7 @@ function generateWizardButtons() {
             case 4:
                 console.log('Validating recipients:', wizardData.selectedRecipients); // DEBUG
                 if (!wizardData.selectedRecipients || wizardData.selectedRecipients.length === 0) {
-                    Utils.showToast('Bitte wähle mindestens einen Empfänger aus', 'warning');
+                    showValidationMessage(4, 'no-recipients');
                     return false;
                 }
                 break;
@@ -1011,7 +1024,7 @@ function generateWizardButtons() {
      */
     function selectMailType(type) {
         wizardData.mailType = type;
-        
+
         // Visual Update
         document.querySelectorAll('.wizard-mail-type-card').forEach(card => {
             card.classList.remove('selected');
@@ -1165,13 +1178,13 @@ function generateWizardButtons() {
     function initializeEditor() {
         const subjectInput = document.getElementById('wizardSubject');
         const visualEditor = document.getElementById('wizardVisualEditor');
-        
+
         if (!subjectInput || !visualEditor) return;
-        
+
         if (wizardData.subject) {
             subjectInput.value = wizardData.subject;
         }
-        
+
         if (wizardData.content) {
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = wizardData.content;
@@ -1180,24 +1193,24 @@ function generateWizardButtons() {
         } else {
             visualEditor.innerHTML = getDefaultEditorContent();
         }
-        
+
         subjectInput.addEventListener('input', (e) => {
             wizardData.subject = e.target.value;
             debouncePreviewUpdate();
         });
-        
+
         visualEditor.addEventListener('input', () => {
             updateEditorStats();
             debouncePreviewUpdate();
         });
-        
+
         visualEditor.addEventListener('paste', (e) => {
             setTimeout(() => {
                 updateEditorStats();
                 debouncePreviewUpdate();
             }, 50);
         });
-        
+
         visualEditor.addEventListener('keydown', (e) => {
             if (e.ctrlKey || e.metaKey) {
                 switch (e.key) {
@@ -1216,7 +1229,7 @@ function generateWizardButtons() {
                 }
             }
         });
-        
+
         updateEditorStats();
         setTimeout(() => updateWizardPreview(), 300);
     }
@@ -1351,36 +1364,36 @@ function generateWizardButtons() {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${subject || 'E-Mail'}</title>
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            line-height: 1.6; 
-            margin: 0; 
-            padding: 20px; 
-            background-color: #f4f4f4; 
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
         }
-        .email-container { 
-            max-width: 600px; 
-            margin: 0 auto; 
-            background: white; 
-            padding: 30px; 
-            border-radius: 10px; 
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
-        h1, h2, h3, h4, h5, h6 { 
-            color: #2c3e50; 
-            margin: 0 0 16px 0; 
-            font-weight: 600; 
+        h1, h2, h3, h4, h5, h6 {
+            color: #2c3e50;
+            margin: 0 0 16px 0;
+            font-weight: 600;
         }
-        p { 
-            margin: 0 0 16px 0; 
-            color: #333; 
+        p {
+            margin: 0 0 16px 0;
+            color: #333;
         }
-        a { 
-            color: #4a90e2; 
-            text-decoration: none; 
+        a {
+            color: #4a90e2;
+            text-decoration: none;
         }
-        a:hover { 
-            text-decoration: underline; 
+        a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -1398,11 +1411,11 @@ function generateWizardButtons() {
      */
     function loadRecipientSelector() {
         if (!window.Recipients) {
-            document.getElementById('wizardRecipientList').innerHTML = 
+            document.getElementById('wizardRecipientList').innerHTML =
                 '<p class="placeholder">Empfänger-Modul nicht verfügbar</p>';
             return;
         }
-        
+
         // Alle verfügbaren Empfänger laden
         allRecipients = Recipients.getAll() || [];
         filteredRecipients = [...allRecipients];
@@ -1410,7 +1423,7 @@ function generateWizardButtons() {
 
         // Standardmäßig KEINE Empfänger auswählen
         wizardData.selectedRecipients = [];
-        
+
         updateRecipientDisplay();
         updateRecipientStats();
     }
@@ -1426,7 +1439,7 @@ function generateWizardButtons() {
         if (recipientCount === 0) {
             container.innerHTML = `
         <div class="wizard-empty-recipients" style="
-            text-align: center; 
+            text-align: center;
             padding: 40px 20px;
             color: #6c757d;
             background: #f8f9fa;
@@ -1437,11 +1450,11 @@ function generateWizardButtons() {
             <h4 style="margin-bottom: 8px; color: #495057;">Keine Empfänger verfügbar</h4>
             <p style="margin-bottom: 16px;">Fügen Sie zuerst Empfänger hinzu um eine Kampagne zu starten.</p>
             <button onclick="App.showTab('recipients')" style="
-                background: #4a90e2; 
-                color: white; 
-                border: none; 
-                padding: 10px 20px; 
-                border-radius: 6px; 
+                background: #4a90e2;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 6px;
                 cursor: pointer;
                 font-weight: 500;
             ">📧 Empfänger hinzufügen</button>
@@ -1454,19 +1467,19 @@ function generateWizardButtons() {
             container.innerHTML = '<p class="placeholder">Keine Empfänger gefunden</p>';
             return;
         }
-        
+
         // Pagination
         const startIndex = (recipientPage - 1) * recipientsPerPage;
         const endIndex = startIndex + recipientsPerPage;
         const pageRecipients = filteredRecipients.slice(startIndex, endIndex);
-        
+
         container.innerHTML = pageRecipients.map(recipient => {
             const isSelected = wizardData.selectedRecipients.includes(recipient.email);
             return `
-                <div class="wizard-recipient-item ${isSelected ? 'selected' : ''}" 
+                <div class="wizard-recipient-item ${isSelected ? 'selected' : ''}"
                      onclick="MailWizard.toggleRecipient('${recipient.email}')">
-                    <input type="checkbox" class="wizard-recipient-checkbox" 
-                           ${isSelected ? 'checked' : ''} 
+                    <input type="checkbox" class="wizard-recipient-checkbox"
+                           ${isSelected ? 'checked' : ''}
                            onclick="event.stopPropagation(); MailWizard.toggleRecipient('${recipient.email}')">
                     <div class="wizard-recipient-info">
                         <div class="wizard-recipient-name">${Utils.escapeHtml(recipient.name)}</div>
@@ -1475,7 +1488,7 @@ function generateWizardButtons() {
                 </div>
             `;
         }).join('');
-        
+
         updateRecipientPagination();
     }
 
@@ -1485,7 +1498,7 @@ function generateWizardButtons() {
     function updateRecipientStats() {
         const totalElement = document.getElementById('wizardTotalRecipients');
         const selectedElement = document.getElementById('wizardSelectedRecipients');
-        
+
         if (totalElement) totalElement.textContent = allRecipients.length;
         if (selectedElement) selectedElement.textContent = wizardData.selectedRecipients.length;
     }
@@ -1534,16 +1547,16 @@ function generateWizardButtons() {
     function filterRecipients() {
         const searchInput = document.getElementById('wizardRecipientSearch');
         const searchTerm = searchInput.value.toLowerCase();
-        
+
         if (searchTerm.trim() === '') {
             filteredRecipients = [...allRecipients];
         } else {
-            filteredRecipients = allRecipients.filter(recipient => 
+            filteredRecipients = allRecipients.filter(recipient =>
                 recipient.name.toLowerCase().includes(searchTerm) ||
                 recipient.email.toLowerCase().includes(searchTerm)
             );
         }
-        
+
         recipientPage = 1;
         updateRecipientDisplay();
     }
@@ -1613,7 +1626,7 @@ function generateWizardButtons() {
         if (window.Attachments) {
             const currentAttachments = Attachments.getAttachments();
             wizardData.attachments = currentAttachments;
-            
+
             updateWizardAttachmentDisplay();
         }
     }
@@ -1624,12 +1637,12 @@ function generateWizardButtons() {
     function updateWizardAttachmentDisplay() {
         const container = document.getElementById('wizardAttachmentList');
         if (!container) return;
-        
+
         if (wizardData.attachments.length === 0) {
             container.innerHTML = '<p class="placeholder">Keine Attachments vorhanden</p>';
             return;
         }
-        
+
         container.innerHTML = wizardData.attachments.map(att => `
             <div class="wizard-attachment-item">
                 <span><a href="${att.url}" target="_new">${att.name}</a> (${Utils.formatFileSize(att.size)})</span>
@@ -1646,10 +1659,10 @@ function generateWizardButtons() {
     function insertAttachmentLink(attachmentId) {
         const attachment = wizardData.attachments.find(a => a.id === attachmentId);
         if (!attachment) return;
-        
+
         const editor = document.getElementById('wizardVisualEditor');
         const linkHtml = `<p><a href="${attachment.url}" target="_new" style="color: #667eea;">📎 ${attachment.name}</a> (${Utils.formatFileSize(attachment.size)})</p>`;
-        
+
         if (editor) {
             editor.innerHTML += linkHtml;
             updateWizardPreview();
@@ -1682,20 +1695,20 @@ function generateWizardButtons() {
                 </div>
             `;
         }
-        
+
         // Mobile Preview
         const mobilePreview = document.getElementById('wizardMobilePreview');
         if (mobilePreview) {
             let content = wizardData.content;
             content = content.replace(/\{\{name\}\}/g, 'Max M.');
-            
+
             const parser = new DOMParser();
             const doc = parser.parseFromString(content, 'text/html');
             const bodyDiv = doc.querySelector('body > div');
-            
+
             mobilePreview.innerHTML = bodyDiv ? bodyDiv.innerHTML : content;
         }
-        
+
         // Ausgewählte Empfänger anzeigen
         updateSelectedRecipientsList();
     }
@@ -1706,16 +1719,16 @@ function generateWizardButtons() {
     function updateSelectedRecipientsList() {
         const container = document.getElementById('wizardSelectedList');
         if (!container) return;
-        
+
         if (wizardData.selectedRecipients.length === 0) {
             container.innerHTML = '<p class="placeholder">Keine Empfänger ausgewählt</p>';
             return;
         }
-        
-        const selectedDetails = allRecipients.filter(r => 
+
+        const selectedDetails = allRecipients.filter(r =>
             wizardData.selectedRecipients.includes(r.email)
         );
-        
+
         if (selectedDetails.length <= 5) {
             // Zeige alle wenn wenige
             container.innerHTML = selectedDetails.map(r => `
@@ -1728,7 +1741,7 @@ function generateWizardButtons() {
             // Zeige erste 3 + "... und X weitere"
             const first3 = selectedDetails.slice(0, 3);
             const remaining = selectedDetails.length - 3;
-            
+
             container.innerHTML = `
                 ${first3.map(r => `
                     <div class="wizard-selected-item">
@@ -2076,7 +2089,7 @@ function generateWizardButtons() {
         const labels = {
             newsletter: 'Newsletter',
             update: 'Persönliches Update',
-            announcement: 'Ankündigung', 
+            announcement: 'Ankündigung',
             custom: 'Individuell'
         };
         return labels[type] || type;
@@ -2117,7 +2130,7 @@ function generateWizardButtons() {
     function insertVariable(variable) {
         const editor = document.getElementById('wizardVisualEditor');
         const selection = window.getSelection();
-        
+
         if (selection.rangeCount > 0 && editor && editor.contains(selection.anchorNode)) {
             const range = selection.getRangeAt(0);
             range.deleteContents();
@@ -2211,7 +2224,7 @@ function generateWizardButtons() {
      */
     function refreshPreview() {
         console.log('🔄 Manual preview refresh triggered');
-        
+
         setTimeout(() => {
             updateWizardPreview();
             Utils.showToast('✅ Vorschau aktualisiert', 'success');
@@ -2266,16 +2279,16 @@ function generateWizardButtons() {
         init,
         startWizard,
         hideWizardModal,
-        
+
         // Navigation
         nextStep,
         previousStep,
-        
+
         // Step functions
         selectMailType,
         selectTemplate,
         insertAttachmentLink,
-        
+
         // Empfänger-Funktionen
         toggleRecipient,
         selectAllRecipients,
@@ -2283,7 +2296,7 @@ function generateWizardButtons() {
         filterRecipients,
         previousRecipientPage,
         nextRecipientPage,
-        
+
         // Editor functions
         formatText,
         insertVariable,

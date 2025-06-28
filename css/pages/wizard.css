@@ -650,15 +650,15 @@
     .wizard-container {
         width: 95%;
     }
-    
+
     .wizard-content {
         padding: 25px 40px;
     }
-    
+
     .wizard-header {
         padding: 20px 40px;
     }
-    
+
     .wizard-buttons {
         padding: 20px 40px;
     }
@@ -671,54 +671,54 @@
         width: 95%;
         max-height: 95vh;
     }
-    
+
     .wizard-overlay {
         padding: 2.5vh 2.5vw;
     }
-    
+
     .wizard-content {
         padding: 20px 25px;
         min-height: 400px;
     }
-    
+
     .wizard-header {
         padding: 20px 25px;
     }
-    
+
     .wizard-buttons {
         padding: 20px 25px;
         flex-direction: column;
         gap: 12px;
     }
-    
+
     .wizard-buttons .btn {
         width: 100%;
         min-width: auto;
     }
-    
+
     .wizard-editor-container {
         grid-template-columns: 1fr;
         gap: 25px;
     }
-    
+
     .preview-panel {
         order: -1;
     }
-    
+
     .wizard-visual-editor {
         min-height: 250px;
     }
-    
+
     .wizard-email-preview-container iframe {
         height: 300px;
     }
-    
+
     .wizard-step-circle {
         width: 40px;
         height: 40px;
         font-size: 16px;
     }
-    
+
     .step-line {
         width: 50px;
         height: 3px;
@@ -733,21 +733,21 @@
         width: 96%;
         max-height: 88vh;
     }
-    
+
     .wizard-content {
         padding: 40px 80px; /* NOCH MEHR PADDING */
         min-height: 600px;
     }
-    
+
     .wizard-header {
         padding: 30px 80px;
     }
-    
+
     .wizard-header h1,
     .wizard-header h2 {
         font-size: 36px;
     }
-    
+
     .wizard-buttons {
         padding: 30px 80px;
     }
@@ -1010,9 +1010,65 @@
         gap: 10px;
         align-items: stretch;
     }
-    
+
     .toolbar-section {
         justify-content: center;
         flex-wrap: wrap;
     }
+}
+
+/* === NAVIGATION POLISH === */
+.wizard-step-circle.clickable {
+    cursor: pointer;
+}
+
+.wizard-step-circle.clickable:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+}
+
+.wizard-nav-info {
+    text-align: center;
+    color: #6c757d;
+}
+
+.nav-step-info {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 2px;
+}
+
+.nav-step-name {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.step-loading {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6c757d;
+    font-size: 16px;
+}
+
+.wizard-content.loading {
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Bessere Button Hover Effects */
+.wizard-buttons .btn:not(:disabled):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.wizard-buttons .btn:not(:disabled):active {
+    transform: translateY(0);
 }
