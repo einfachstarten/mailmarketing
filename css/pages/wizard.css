@@ -559,15 +559,47 @@
     transform: translateY(-1px);
 }
 
+/* === VERBESSERTE PREVIEW STYLES === */
+
 .wizard-email-preview-container {
     border: 1px solid #e9ecef;
     border-radius: 10px;
     background: white;
-    min-height: 400px; /* MEHR HÖHE */
+    min-height: 400px;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
+.wizard-email-preview-container.loading {
+    background: #f8f9fa;
+}
+
+.wizard-email-preview-container.loading::before {
+    content: "Vorschau wird generiert...";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #6c757d;
+    font-size: 14px;
+    z-index: 10;
+}
+
+.wizard-email-preview-container.loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) translateY(25px);
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e9ecef;
+    border-top-color: #4a90e2;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    z-index: 10;
+}
 .wizard-email-preview-container iframe {
     width: 100%;
     height: 400px; /* MEHR HÖHE */
@@ -575,6 +607,7 @@
     background: white;
     border-radius: 10px;
 }
+
 
 .preview-controls {
     display: flex;
@@ -586,11 +619,21 @@
 }
 
 .preview-controls .btn {
-    padding: 6px 16px;
+    padding: 8px 16px;
     font-size: 13px;
     font-weight: 500;
+    background: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
+.preview-controls .btn:hover {
+    background: #357abd;
+    transform: translateY(-1px);
+}
 .form-control-sm {
     padding: 6px 12px;
     font-size: 13px;
@@ -769,4 +812,8 @@
     margin: 0 2px;
     font-family: monospace;
     font-weight: bold;
+}
+
+@keyframes spin {
+    to { transform: translate(-50%, -50%) translateY(25px) rotate(360deg); }
 }

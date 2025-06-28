@@ -1267,12 +1267,11 @@ function generateWizardButtons() {
      */
     function initializeEditor() {
         console.log('Initializing Step 3 Editor...');
-    
+
         const subjectInput = document.getElementById('wizardSubject');
         const visualEditor = document.getElementById('wizardVisualEditor');
         const previewContainer = document.getElementById('wizardEmailPreviewStep3');
-    
-        // Prüfe ob Elemente vorhanden sind
+
         if (!subjectInput || !visualEditor || !previewContainer) {
             console.error('Editor elements missing:', {
                 subject: !!subjectInput,
@@ -1281,24 +1280,23 @@ function generateWizardButtons() {
             });
             return;
         }
-    
-        // Initialisiere Betreff
-        if (wizardData.subject) {
-            subjectInput.value = wizardData.subject;
+
+        const subjectVal = wizardData.subject;
+        if (subjectVal) {
+            subjectInput.value = subjectVal;
         }
-    
+
         subjectInput.addEventListener('input', (e) => {
             wizardData.subject = e.target.value;
             console.log('Subject updated:', wizardData.subject);
+            debouncePreviewUpdate();
         });
-    
-        // Initialisiere Editor-Inhalt
+
         if (wizardData.content) {
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = wizardData.content;
             const bodyDiv = tempDiv.querySelector('body .container, body > div');
             const editorContent = bodyDiv ? bodyDiv.innerHTML : wizardData.content;
-    
             visualEditor.innerHTML = editorContent;
         } else {
             visualEditor.innerHTML = `
@@ -1307,26 +1305,36 @@ function generateWizardButtons() {
                 <p>Viele Grüße!</p>
             `;
         }
-    
-        // Event-Listener für Editor
+
         visualEditor.addEventListener('input', () => {
             console.log('Editor content changed');
-            updateWizardPreview();
+            debouncePreviewUpdate();
         });
-    
-        visualEditor.addEventListener('paste', (e) => {
-            e.preventDefault();
-            const text = e.clipboardData.getData('text/plain');
-            document.execCommand('insertText', false, text);
-            updateWizardPreview();
+
+        visualEditor.addEventListener('paste', () => {
+            console.log('Content pasted into editor');
+            setTimeout(() => {
+                debouncePreviewUpdate();
+            }, 50);
         });
-    
-        // Initiale Vorschau generieren
+
+        visualEditor.addEventListener('keyup', () => {
+            debouncePreviewUpdate();
+        });
+
         setTimeout(() => {
             updateWizardPreview();
-        }, 200);
-    
-        console.log('✅ Step 3 Editor initialized successfully');
+        }, 300);
+
+        console.log('✅ Step 3 Editor initialized with improved event listeners');
+    }
+
+    let previewUpdateTimeout;
+    function debouncePreviewUpdate() {
+        clearTimeout(previewUpdateTimeout);
+        previewUpdateTimeout = setTimeout(() => {
+            updateWizardPreview();
+        }, 500);
     }
 
     /**
@@ -1335,112 +1343,251 @@ function generateWizardButtons() {
     function updateWizardPreview() {
         const editor = document.getElementById('wizardVisualEditor');
         const preview = document.getElementById('wizardEmailPreviewStep3');
-
+        
         if (!editor || !preview) {
             console.warn('Editor or preview container missing');
             return;
         }
 
-        let content = editor.innerHTML;
+        console.log('=== PREVIEW UPDATE DEBUG ===');
+        console.log('Editor HTML:', editor.innerHTML);
+        console.log('Editor text content:', editor.textContent);
 
-        // Personalisierung für Vorschau
-        content = content.replace(/\{\{name\}\}/g, 'Max Mustermann');
-        content = content.replace(/\{\{email\}\}/g, 'max@example.com');
-        content = content.replace(/\{\{company\}\}/g, 'Musterunternehmen GmbH');
+        let rawContent = editor.innerHTML.trim();
+        
+        if (!rawContent || rawContent === '' || rawContent === '<div><br></div>' || rawContent === '<br>') {
+            rawContent = `
+                <p>Hallo {{name}}! 👋</p>
+                <p>Hier ist dein wöchentliches Update...</p>
+                <p>Viele Grüße!</p>
+            `;
+            console.log('Using default content because editor is empty');
+        }
 
-        // Wizard-Daten aktualisieren
-        wizardData.content = generateFullHTML(content);
+        console.log('Raw content from editor:', rawContent);
 
-        // Loading-State anzeigen
+        let cleanContent = rawContent
+            .replace(/<div><br><\/div>/g, '<br>')
+            .replace(/<div>/g, '<p>')
+            .replace(/<\/div>/g, '</p>')
+            .replace(/<p><\/p>/g, '')
+            .replace(/<p>\s*<\/p>/g, '')
+            .replace(/^([^<].*[^>])$/gm, '<p>$1</p>')
+            .replace(/<br>\s*<br>/g, '</p><p>')
+            .trim();
+
+        console.log('Cleaned content:', cleanContent);
+
+        const testRecipient = {
+            name: 'Max Mustermann',
+            email: 'max@example.com',
+            first_name: 'Max',
+            last_name: 'Mustermann',
+            company: 'Musterunternehmen GmbH'
+        };
+
+        let personalizedContent = cleanContent;
+        
+        const replacements = {
+            '{{name}}': testRecipient.name,
+            '{{email}}': testRecipient.email,
+            '{{first_name}}': testRecipient.first_name,
+            '{{last_name}}': testRecipient.last_name,
+            '{{company}}': testRecipient.company,
+            '{name}': testRecipient.name,
+            '[name]': testRecipient.name,
+            '%name%': testRecipient.name
+        };
+
+        Object.entries(replacements).forEach(([placeholder, value]) => {
+            const regex = new RegExp(placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+            personalizedContent = personalizedContent.replace(regex, value);
+        });
+
+        console.log('Personalized content:', personalizedContent);
+
+        wizardData.content = generateCompleteEmailHTML(personalizedContent, wizardData.subject);
+
         preview.classList.add('loading');
+        preview.innerHTML = '<div style="padding: 40px; text-align: center; color: #6c757d;">Vorschau wird geladen...</div>';
 
-        const fullHTML = `
-        <!DOCTYPE html>
-        <html lang="de">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>E-Mail Vorschau</title>
-            <style>
-                * { box-sizing: border-box; }
-                body {
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif !important;
-                    line-height: 1.6 !important;
-                    margin: 0 !important;
-                    padding: 20px !important;
-                    background: #ffffff !important;
-                    color: #333333 !important;
-                    font-size: 14px !important;
-                }
-                h1, h2, h3, h4, h5, h6 {
-                    color: #2c3e50 !important;
-                    margin: 0 0 16px 0 !important;
-                    font-weight: 600 !important;
-                }
-                p {
-                    margin: 0 0 16px 0 !important;
-                    line-height: 1.6 !important;
-                }
-                a {
-                    color: #667eea !important;
-                    text-decoration: none !important;
-                }
-                a:hover {
-                    text-decoration: underline !important;
-                }
-                ul, ol {
-                    margin: 0 0 16px 0 !important;
-                    padding-left: 20px !important;
-                }
-                li {
-                    margin-bottom: 8px !important;
-                }
-                img {
-                    max-width: 100% !important;
-                    height: auto !important;
-                }
-                .container {
-                    max-width: 600px !important;
-                    margin: 0 auto !important;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                ${content}
-            </div>
-        </body>
-        </html>
-        `;
+        const currentSubject = document.getElementById('wizardSubject')?.value || wizardData.subject || 'E-Mail Vorschau';
+        
+        const completeHTML = `<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${currentSubject}</title>
+    <style>
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif !important;
+            line-height: 1.6 !important;
+            color: #333333 !important;
+            background-color: #f4f4f4 !important;
+            margin: 0 !important;
+            padding: 20px !important;
+            font-size: 16px !important;
+        }
+        .email-container {
+            max-width: 600px !important;
+            margin: 0 auto !important;
+            background: #ffffff !important;
+            padding: 30px !important;
+            border-radius: 10px !important;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
+            border: 1px solid #e9ecef !important;
+        }
+        h1, h2, h3, h4, h5, h6 { 
+            color: #2c3e50 !important; 
+            margin: 0 0 16px 0 !important; 
+            font-weight: 600 !important;
+            line-height: 1.3 !important;
+        }
+        h1 { font-size: 28px !important; }
+        h2 { font-size: 24px !important; }
+        h3 { font-size: 20px !important; }
+        p { 
+            margin: 0 0 16px 0 !important; 
+            line-height: 1.6 !important;
+            color: #333333 !important;
+        }
+        a { 
+            color: #4a90e2 !important; 
+            text-decoration: none !important; 
+        }
+        a:hover { 
+            text-decoration: underline !important; 
+        }
+        ul, ol { 
+            margin: 0 0 16px 0 !important; 
+            padding-left: 24px !important; 
+        }
+        li { 
+            margin-bottom: 8px !important; 
+            line-height: 1.5 !important;
+        }
+        img { 
+            max-width: 100% !important; 
+            height: auto !important;
+            border-radius: 6px !important;
+        }
+        .btn {
+            display: inline-block !important;
+            padding: 12px 24px !important;
+            background-color: #4a90e2 !important;
+            color: white !important;
+            text-decoration: none !important;
+            border-radius: 6px !important;
+            font-weight: 600 !important;
+            margin: 16px 0 !important;
+        }
+        .btn:hover {
+            background-color: #357abd !important;
+        }
+        hr {
+            border: none !important;
+            border-top: 1px solid #e9ecef !important;
+            margin: 24px 0 !important;
+        }
+        blockquote {
+            border-left: 4px solid #4a90e2 !important;
+            padding-left: 16px !important;
+            margin: 16px 0 !important;
+            font-style: italic !important;
+            color: #6c757d !important;
+        }
+        .highlight {
+            background-color: #fff3cd !important;
+            padding: 8px 12px !important;
+            border-radius: 4px !important;
+            border-left: 4px solid #ffc107 !important;
+            margin: 16px 0 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        ${personalizedContent}
+    </div>
+</body>
+</html>`;
+
+        console.log('Complete HTML for iframe:', completeHTML.substring(0, 500));
 
         setTimeout(() => {
             preview.innerHTML = '';
+            preview.classList.remove('loading');
+            
             const iframe = document.createElement('iframe');
-            iframe.style.cssText = 'width: 100%; height: 300px; border: none; border-radius: 8px;';
+            iframe.style.cssText = `
+                width: 100%; 
+                height: 400px; 
+                border: none; 
+                border-radius: 10px;
+                background: white;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            `;
             iframe.setAttribute('sandbox', 'allow-same-origin');
-            iframe.setAttribute('srcdoc', fullHTML);
-
+            iframe.setAttribute('srcdoc', completeHTML);
+            
             iframe.onload = () => {
-                preview.classList.remove('loading');
+                console.log('✅ Preview iframe loaded successfully');
             };
-
+            
+            iframe.onerror = (error) => {
+                console.error('❌ Preview iframe error:', error);
+                preview.innerHTML = '<div style="padding: 20px; color: #dc3545;">Fehler beim Laden der Vorschau</div>';
+            };
+            
             preview.appendChild(iframe);
         }, 100);
     }
 
-    /**
-     * Generiert vollständiges HTML
-     */
-    function generateFullHTML(content) {
-        // Einfaches HTML-Template für E-Mail
+    function generateCompleteEmailHTML(content, subject = '') {
         return `<!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>${wizardData.subject || 'E-Mail'}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${subject || 'E-Mail'}</title>
     <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; background-color: #f4f4f4; }
-        .email-container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; }
+        body { 
+            font-family: Arial, sans-serif; 
+            line-height: 1.6; 
+            margin: 0; 
+            padding: 20px; 
+            background-color: #f4f4f4; 
+        }
+        .email-container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3, h4, h5, h6 { 
+            color: #2c3e50; 
+            margin: 0 0 16px 0; 
+            font-weight: 600; 
+        }
+        p { 
+            margin: 0 0 16px 0; 
+            color: #333; 
+        }
+        a { 
+            color: #4a90e2; 
+            text-decoration: none; 
+        }
+        a:hover { 
+            text-decoration: underline; 
+        }
     </style>
 </head>
 <body>
@@ -1452,7 +1599,6 @@ function generateWizardButtons() {
     }
 
     // ===== STEP 4: EMPFÄNGER AUSWÄHLEN =====
-
     /**
      * Lädt Empfänger-Auswahl
      */
@@ -2205,8 +2351,12 @@ function generateWizardButtons() {
      * Aktualisiert Vorschau manuell
      */
     function refreshPreview() {
-        updateWizardPreview();
-        Utils.showToast('Vorschau aktualisiert', 'success');
+        console.log('🔄 Manual preview refresh triggered');
+        
+        setTimeout(() => {
+            updateWizardPreview();
+            Utils.showToast('✅ Vorschau aktualisiert', 'success');
+        }, 100);
     }
 
     /**
@@ -2256,6 +2406,8 @@ function generateWizardButtons() {
         refreshPreview,
         switchPreviewDevice,
         updateWizardPreview,
+        generateCompleteEmailHTML,
+        debouncePreviewUpdate,
 
         // Preview & Testing
         generateRealEmailPreview,
