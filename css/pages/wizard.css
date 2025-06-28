@@ -1,4 +1,4 @@
-/* === WIZARD MODAL SYSTEM === */
+/* === WIZARD MODAL SYSTEM (ORIGINAL SCHÖN) === */
 .wizard-overlay {
     position: fixed;
     top: 0;
@@ -12,6 +12,7 @@
     align-items: center;
     z-index: 1000;
     animation: fadeIn 0.3s ease;
+    padding: 1vh 1vw; /* FÜR 98% BREITE */
 }
 
 @keyframes fadeIn {
@@ -19,26 +20,26 @@
     to { opacity: 1; }
 }
 
-/* SETUP WIZARD CONTAINER */
+/* SETUP WIZARD CONTAINER - 98% BREIT ABER SCHÖN */
 .wizard-container {
     background: white;
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    width: 98%;
-    max-width: none;
+    width: 98%; /* 98% BREITE */
+    max-width: none; /* KEINE BEGRENZUNG */
     max-height: 90vh;
     overflow: hidden;
     display: flex;
     flex-direction: column;
 }
 
-/* GENERIC MODAL CONTAINER */
+/* GENERIC MODAL CONTAINER - 98% BREIT ABER SCHÖN */
 .wizard-modal {
     background: white;
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    width: 98%;
-    max-width: none;
+    width: 98%; /* 98% BREITE */
+    max-width: none; /* KEINE BEGRENZUNG */
     max-height: 90vh;
     overflow: hidden;
     position: relative;
@@ -48,18 +49,18 @@
 }
 
 .wizard-modal.large {
-    width: 98%;
-    max-width: none;
+    width: 98%; /* 98% BREITE */
+    max-width: none; /* KEINE BEGRENZUNG */
     max-height: 92vh;
 }
 
-/* MAIL WIZARD CONTAINER */
+/* MAIL WIZARD CONTAINER - 98% BREIT ABER SCHÖN */
 .mail-wizard-container {
     background: white;
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    width: 98%;
-    max-width: none;
+    width: 98%; /* 98% BREITE */
+    max-width: none; /* KEINE BEGRENZUNG */
     max-height: 90vh;
     overflow: hidden;
     display: flex;
@@ -78,7 +79,7 @@
     }
 }
 
-/* === WIZARD HEADER === */
+/* === WIZARD HEADER (SCHÖN WIE ORIGINAL) === */
 .wizard-header {
     background: linear-gradient(135deg, #4a90e2, #357abd);
     color: white;
@@ -95,7 +96,7 @@
     font-weight: 600;
 }
 
-/* CLOSE BUTTON */
+/* CLOSE BUTTON (ORIGINAL POSITION) */
 .wizard-close {
     position: absolute;
     top: 15px;
@@ -120,7 +121,7 @@
     transform: scale(1.1);
 }
 
-/* === PROGRESS INDICATOR === */
+/* === PROGRESS INDICATOR (ORIGINAL SCHÖN) === */
 .wizard-progress {
     display: flex;
     justify-content: center;
@@ -174,8 +175,9 @@
 .wizard-content {
     flex: 1;
     overflow-y: auto;
-    padding: 20px;
+    padding: 30px 50px; /* MEHR PADDING FÜR 98% BREITE */
     max-height: calc(90vh - 200px);
+    min-height: 500px; /* MEHR HÖHE */
 }
 
 .wizard-step-content {
@@ -187,42 +189,44 @@
 }
 
 .step-intro {
-    margin-bottom: 20px;
-    padding-bottom: 15px;
+    margin-bottom: 30px; /* MEHR ABSTAND */
+    padding-bottom: 20px;
     border-bottom: 1px solid #e9ecef;
 }
 
 .step-title {
-    font-size: 20px;
-    margin-bottom: 6px;
+    font-size: 24px; /* GRÖßER */
+    margin-bottom: 8px;
     color: #2c3e50;
     font-weight: 600;
 }
 
 .step-subtitle {
-    color: #7f8c8d;
+    color: #6c757d;
     margin-bottom: 0;
-    font-size: 14px;
+    font-size: 16px; /* GRÖßER */
+    line-height: 1.5;
 }
 
-/* === WIZARD BUTTONS === */
+/* === WIZARD BUTTONS (ORIGINAL SCHÖN) === */
 .wizard-buttons {
     flex-shrink: 0;
     background: #f8f9fa;
     border-top: 1px solid #e9ecef;
-    padding: 20px 30px;
+    padding: 25px 50px; /* MEHR PADDING */
     display: flex;
     justify-content: space-between;
     align-items: center;
     z-index: 1002;
+    min-height: 80px;
 }
 
 .wizard-buttons .btn {
-    padding: 10px 20px;
-    font-size: 14px;
+    padding: 12px 30px; /* GRÖßERE BUTTONS */
+    font-size: 16px;
     font-weight: 600;
-    border-radius: 6px;
-    min-width: 100px;
+    border-radius: 8px;
+    min-width: 140px;
     border: none;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -235,6 +239,8 @@
 
 .btn-primary:hover {
     background: #357abd;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
 }
 
 .btn-secondary {
@@ -244,12 +250,14 @@
 
 .btn-secondary:hover {
     background: #5a6268;
+    transform: translateY(-1px);
 }
 
 .btn-secondary:disabled {
     background: #e9ecef;
     color: #6c757d;
     cursor: not-allowed;
+    transform: none;
 }
 
 .btn-success {
@@ -259,70 +267,251 @@
 
 .btn-success:hover {
     background: #218838;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
 }
 
-/* === FORM ELEMENTS === */
+/* === FORM ELEMENTS (SCHÖN) === */
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 25px; /* MEHR ABSTAND */
 }
 
 .form-group label {
-    font-size: 14px;
+    font-size: 15px; /* GRÖßER */
     font-weight: 600;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     display: block;
     color: #2c3e50;
 }
 
 .form-control {
     width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-    transition: border-color 0.3s ease;
+    padding: 14px 18px; /* MEHR PADDING */
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 15px; /* GRÖßER */
+    transition: all 0.3s ease;
+    background: white;
 }
 
 .form-control:focus {
     outline: none;
-    border-color: #4a90e2;
-    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
 }
 
-/* === STEP 3: EDITOR === */
+/* === STEP 1: MAIL TYPES (ORIGINAL SCHÖN) === */
+.wizard-mail-types {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* GRÖßERE CARDS */
+    gap: 25px; /* MEHR ABSTAND */
+    margin-top: 20px;
+}
+
+.wizard-mail-type-card {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 25px; /* MEHR PADDING */
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+    min-height: 200px; /* HÖHER */
+    background: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.wizard-mail-type-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.wizard-mail-type-card:hover {
+    border-color: #667eea;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+}
+
+.wizard-mail-type-card:hover::before {
+    transform: scaleX(1);
+}
+
+.wizard-mail-type-card.selected {
+    border-color: #667eea;
+    background: linear-gradient(135deg, #f8f9ff, #fff);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+    transform: translateY(-2px);
+}
+
+.wizard-mail-type-card.selected::before {
+    transform: scaleX(1);
+}
+
+.mail-type-icon {
+    font-size: 42px; /* GRÖßER */
+    margin-bottom: 16px;
+    display: block;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.wizard-mail-type-card h3 {
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+    font-size: 18px; /* GRÖßER */
+    font-weight: 600;
+}
+
+.wizard-mail-type-card p {
+    color: #6c757d;
+    margin-bottom: 15px; /* MEHR ABSTAND */
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.wizard-mail-type-card ul {
+    text-align: left;
+    font-size: 13px;
+    color: #6c757d;
+    margin: 0;
+    padding-left: 20px;
+    line-height: 1.4;
+}
+
+.wizard-mail-type-card li {
+    margin-bottom: 4px;
+    position: relative;
+}
+
+.wizard-mail-type-card li::marker {
+    color: #667eea;
+}
+
+/* === STEP 2: TEMPLATES (ORIGINAL SCHÖN) === */
+.wizard-template-library {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* GRÖßERE CARDS */
+    gap: 25px; /* MEHR ABSTAND */
+    margin-top: 20px;
+}
+
+.wizard-template-card {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-height: 180px; /* HÖHER */
+    background: white;
+    position: relative;
+}
+
+.wizard-template-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.wizard-template-card:hover {
+    border-color: #667eea;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+}
+
+.wizard-template-card:hover::before {
+    transform: scaleX(1);
+}
+
+.wizard-template-card.selected {
+    border-color: #667eea;
+    background: linear-gradient(135deg, #f8f9ff, #fff);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+    transform: translateY(-2px);
+}
+
+.wizard-template-card.selected::before {
+    transform: scaleX(1);
+}
+
+.wizard-template-preview {
+    height: 100px; /* HÖHER */
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 38px; /* GRÖßER */
+    color: #667eea;
+    border-bottom: 1px solid #e9ecef;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+}
+
+.wizard-template-info {
+    padding: 15px; /* MEHR PADDING */
+}
+
+.wizard-template-name {
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #2c3e50;
+    font-size: 15px; /* GRÖßER */
+}
+
+.wizard-template-description {
+    font-size: 13px;
+    color: #6c757d;
+    line-height: 1.4;
+}
+
+/* === STEP 3: EDITOR (VOLLBREITE + SCHÖN) === */
 .wizard-editor-container {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    min-height: 400px;
+    grid-template-columns: 1fr 1fr; /* 50/50 SPLIT */
+    gap: 40px; /* VIEL ABSTAND */
+    min-height: 600px; /* VIEL HÖHE */
+    margin-top: 20px;
 }
 
 .editor-panel,
 .preview-panel {
     background: white;
-    border-radius: 8px;
-    padding: 20px;
+    border-radius: 12px;
+    padding: 25px; /* MEHR PADDING */
     border: 1px solid #e9ecef;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    min-height: 550px;
 }
 
 .preview-panel h4 {
-    margin: 0 0 16px 0;
+    margin: 0 0 20px 0;
     color: #2c3e50;
-    font-size: 16px;
+    font-size: 18px; /* GRÖßER */
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    font-weight: 600;
 }
 
 .wizard-visual-editor {
-    min-height: 200px;
+    min-height: 350px; /* VIEL HÖHER */
     border: 2px solid #e9ecef;
-    border-radius: 6px;
-    padding: 15px;
+    border-radius: 10px;
+    padding: 20px; /* MEHR PADDING */
     background: white;
     font-family: Arial, sans-serif;
     line-height: 1.6;
+    font-size: 15px; /* GRÖßER */
     transition: border-color 0.3s ease;
     overflow-y: auto;
     resize: vertical;
@@ -331,7 +520,7 @@
 .wizard-visual-editor:focus {
     outline: none;
     border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
 }
 
 .wizard-visual-editor:empty::before {
@@ -340,127 +529,95 @@
     font-style: italic;
 }
 
-.wizard-email-preview {
+.editor-toolbar {
+    display: flex;
+    gap: 12px; /* MEHR ABSTAND */
+    margin-top: 15px;
+    padding: 12px 16px; /* MEHR PADDING */
+    background: #f8f9fa;
+    border-radius: 8px;
     border: 1px solid #e9ecef;
-    border-radius: 6px;
+    flex-wrap: wrap;
+}
+
+.btn-editor {
+    padding: 8px 16px; /* GRÖßERE BUTTONS */
+    border: 1px solid #d1d5db;
     background: white;
-    min-height: 200px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    color: #374151;
+    font-weight: 500;
+}
+
+.btn-editor:hover {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+    transform: translateY(-1px);
+}
+
+.wizard-email-preview-container {
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    background: white;
+    min-height: 400px; /* MEHR HÖHE */
     position: relative;
     overflow: hidden;
 }
 
-.wizard-email-preview iframe {
+.wizard-email-preview-container iframe {
     width: 100%;
-    height: 200px;
+    height: 400px; /* MEHR HÖHE */
     border: none;
     background: white;
-}
-
-/* === STEP CARDS === */
-.wizard-mail-types {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-}
-
-.wizard-mail-type-card {
-    border: 2px solid #e9ecef;
     border-radius: 10px;
-    padding: 16px;
-    cursor: pointer;
-    transition: all 0.3s;
-    text-align: center;
-    min-height: 160px;
 }
 
-.wizard-mail-type-card:hover {
-    border-color: #667eea;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-}
-
-.wizard-mail-type-card.selected {
-    border-color: #667eea;
-    background: #f8f9ff;
-    box-shadow: 0 0 0 1px rgba(102, 126, 234, 0.2);
-}
-
-.mail-type-icon {
-    font-size: 32px;
-    margin-bottom: 12px;
-    display: block;
-}
-
-.wizard-mail-type-card h3 {
-    margin: 0 0 6px 0;
-    color: #2c3e50;
-    font-size: 16px;
-    font-weight: 600;
-}
-
-.wizard-mail-type-card p {
-    color: #6c757d;
-    margin-bottom: 10px;
-    font-size: 13px;
-    line-height: 1.4;
-}
-
-/* === TEMPLATE LIBRARY === */
-.wizard-template-library {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 15px;
-}
-
-.wizard-template-card {
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: all 0.3s;
-    min-height: 140px;
-}
-
-.wizard-template-card:hover {
-    border-color: #667eea;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-}
-
-.wizard-template-card.selected {
-    border-color: #667eea;
-    background: #f8f9ff;
-    box-shadow: 0 0 0 1px rgba(102, 126, 234, 0.2);
-}
-
-.wizard-template-preview {
-    height: 80px;
-    background: #f8f9fa;
+.preview-controls {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    font-size: 32px;
-    color: #667eea;
+    margin-bottom: 20px;
+    padding: 12px 0;
     border-bottom: 1px solid #e9ecef;
 }
 
-.wizard-template-info {
-    padding: 12px;
+.preview-controls .btn {
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 500;
 }
 
-.wizard-template-name {
-    font-weight: 600;
-    margin-bottom: 4px;
-    color: #2c3e50;
-    font-size: 14px;
+.form-control-sm {
+    padding: 6px 12px;
+    font-size: 13px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: white;
+    min-width: 120px;
 }
 
-/* === RESPONSIVE === */
+/* === RESPONSIVE (98% BREITE BEIBEHALTEN) === */
 @media (max-width: 1200px) {
     .wizard-modal,
     .mail-wizard-container,
     .wizard-container {
         width: 95%;
+    }
+    
+    .wizard-content {
+        padding: 25px 40px;
+    }
+    
+    .wizard-header {
+        padding: 20px 40px;
+    }
+    
+    .wizard-buttons {
+        padding: 20px 40px;
     }
 }
 
@@ -472,38 +629,84 @@
         max-height: 95vh;
     }
     
+    .wizard-overlay {
+        padding: 2.5vh 2.5vw;
+    }
+    
     .wizard-content {
-        padding: 15px;
+        padding: 20px 25px;
+        min-height: 400px;
     }
     
     .wizard-header {
-        padding: 15px;
+        padding: 20px 25px;
     }
     
     .wizard-buttons {
-        padding: 15px;
+        padding: 20px 25px;
         flex-direction: column;
-        gap: 10px;
+        gap: 12px;
     }
     
     .wizard-buttons .btn {
         width: 100%;
+        min-width: auto;
     }
     
     .wizard-editor-container {
         grid-template-columns: 1fr;
-        gap: 15px;
+        gap: 25px;
+    }
+    
+    .preview-panel {
+        order: -1;
+    }
+    
+    .wizard-visual-editor {
+        min-height: 250px;
+    }
+    
+    .wizard-email-preview-container iframe {
+        height: 300px;
     }
     
     .wizard-step-circle {
-        width: 35px;
-        height: 35px;
-        font-size: 14px;
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
     }
     
     .step-line {
-        width: 40px;
-        height: 2px;
+        width: 50px;
+        height: 3px;
+    }
+}
+
+/* ULTRA-WIDE DISPLAYS (>1920px) */
+@media (min-width: 1920px) {
+    .wizard-modal,
+    .mail-wizard-container,
+    .wizard-container {
+        width: 96%;
+        max-height: 88vh;
+    }
+    
+    .wizard-content {
+        padding: 40px 80px; /* NOCH MEHR PADDING */
+        min-height: 600px;
+    }
+    
+    .wizard-header {
+        padding: 30px 80px;
+    }
+    
+    .wizard-header h1,
+    .wizard-header h2 {
+        font-size: 36px;
+    }
+    
+    .wizard-buttons {
+        padding: 30px 80px;
     }
 }
 
@@ -518,10 +721,10 @@
     right: 10px;
     background: #6c757d;
     color: white;
-    width: 24px;
-    height: 24px;
+    width: 28px; /* URSPRÜNGLICHE GRÖßE */
+    height: 28px;
     border-radius: 50%;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
     display: flex;
     align-items: center;
@@ -530,9 +733,40 @@
     border: none;
     transition: all 0.3s ease;
     z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
 .wizard-step-help:hover {
     background: #4a90e2;
     transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+}
+
+/* KEYBOARD HINTS (ORIGINAL) */
+.wizard-keyboard-hint {
+    position: absolute;
+    bottom: 10px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 1005;
+}
+
+.wizard-modal:focus-within .wizard-keyboard-hint {
+    opacity: 1;
+}
+
+.keyboard-hint-key {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin: 0 2px;
+    font-family: monospace;
+    font-weight: bold;
 }
