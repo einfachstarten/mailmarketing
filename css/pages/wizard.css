@@ -1072,3 +1072,45 @@
 .wizard-buttons .btn:not(:disabled):active {
     transform: translateY(0);
 }
+
+/* === STEP 4: RECIPIENT PAGINATION === */
+.wizard-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin: 20px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.wizard-pagination .page-info {
+    font-weight: 500;
+    color: #495057;
+    min-width: 120px;
+    text-align: center;
+}
+
+.wizard-pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.wizard-recipient-controls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.wizard-recipient-controls input {
+    flex: 1;
+    min-width: 200px;
+}
+
+.recipient-actions {
+    display: flex;
+    gap: 8px;
+}
