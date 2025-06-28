@@ -413,7 +413,7 @@ window.App = (function() {
             // ESC = Setup-Wizard oder Mail-Wizard schließen
             if (e.key === 'Escape') {
                 // Setup Wizard schließen
-                const setupWizard = document.getElementById('setupWizard');
+                const setupWizard = document.getElementById('setupWizardOverlay');
                 if (setupWizard && !setupWizard.classList.contains('hidden')) {
                     if (modules.wizard && typeof modules.wizard.hide === 'function') {
                         modules.wizard.hide();

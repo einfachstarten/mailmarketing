@@ -440,10 +440,11 @@
     </footer>
 
     <!-- Setup Wizard Modal (vor </body>) -->
-    <div id="setupWizard" class="wizard-overlay hidden">
-        <div class="wizard-modal">
+    <div id="setupWizardOverlay" class="wizard-overlay hidden">
+        <div class="wizard-container">
             <div class="wizard-header">
-                <h2>E-Mail Marketing Setup</h2>
+                <h2>Setup-Assistent</h2>
+                <button class="wizard-close" onclick="window.Wizard?.hide()">×</button>
                 <div class="wizard-progress">
                     <div id="step1-indicator" class="wizard-step-circle active">1</div>
                     <div class="step-line"></div>
@@ -451,7 +452,6 @@
                     <div class="step-line"></div>
                     <div id="step3-indicator" class="wizard-step-circle">3</div>
                 </div>
-                <span class="wizard-close" onclick="window.Wizard?.hide()">&times;</span>
             </div>
             <div class="wizard-content">
                 <!-- Schritt 1: EmailJS Konfiguration -->
@@ -545,13 +545,13 @@
     <!-- Mail Wizard Modal -->
     <!-- Mail Wizard Modal (vereinfacht) -->
     <div id="mailWizardModal" class="wizard-overlay hidden">
-        <div class="wizard-modal large">
+        <div class="mail-wizard-container">
             <div class="wizard-header">
                 <h2>Neue E-Mail-Kampagne</h2>
+                <button class="wizard-close" onclick="window.MailWizard?.hideWizardModal()">×</button>
                 <div id="wizardProgressContainer" class="wizard-progress">
                     <!-- Progress wird dynamisch generiert -->
                 </div>
-                <span class="wizard-close" onclick="window.MailWizard?.hideWizardModal()">&times;</span>
             </div>
 
             <div id="wizardContentContainer" class="wizard-content">

@@ -47,7 +47,7 @@ window.Wizard = (function() {
             initKeyboardNavigation();
             
             // Wizard anzeigen
-            const wizardOverlay = document.getElementById('setupWizard');
+            const wizardOverlay = document.getElementById('setupWizardOverlay');
             if (wizardOverlay) {
                 wizardOverlay.classList.remove('hidden');
                 isVisible = true;
@@ -67,7 +67,7 @@ window.Wizard = (function() {
      */
     function hide() {
         try {
-            const wizardOverlay = document.getElementById('setupWizard');
+            const wizardOverlay = document.getElementById('setupWizardOverlay');
             if (wizardOverlay) {
                 wizardOverlay.classList.add('hidden');
                 removeKeyboardNavigation();
