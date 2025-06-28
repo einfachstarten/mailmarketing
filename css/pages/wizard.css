@@ -756,6 +756,8 @@
 /* === HELP SYSTEM INTEGRATION === */
 .wizard-step-content {
     position: relative;
+    min-height: 400px;
+    padding: 20px 0;
 }
 
 .wizard-step-help {

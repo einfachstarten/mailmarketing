@@ -498,18 +498,17 @@ Anna Schmidt,anna@example.com
 const WizardHelp = (function() {
     'use strict';
 
-    const STEP_HELP_CONTENT = {
+    const MAIL_WIZARD_HELP_CONTENT = {
         'mail-wizard-step-1': {
-            title: '🎯 Mail-Typ auswählen',
+            title: '📧 Mail-Typ auswählen',
             content: `
                 <p>Wähle den passenden Typ für deine E-Mail-Kampagne:</p>
                 <ul>
-                    <li><strong>Newsletter:</strong> Regelmäßige Updates an Abonnenten</li>
-                    <li><strong>Ankündigung:</strong> Wichtige Neuigkeiten oder Events</li>
-                    <li><strong>Werbung:</strong> Produktwerbung oder Verkaufsaktionen</li>
-                    <li><strong>Einladung:</strong> Events oder Veranstaltungen</li>
+                    <li><strong>Newsletter:</strong> Regelmäßige Updates</li>
+                    <li><strong>Ankündigung:</strong> Wichtige Neuigkeiten</li>
+                    <li><strong>Individuell:</strong> Komplett frei gestaltbar</li>
                 </ul>
-                <div class="help-tip">💡 Der Mail-Typ bestimmt das Standard-Template und den Schreibstil.</div>
+                <div class="help-tip">💡 Der Mail-Typ bestimmt das Standard-Template.</div>
             `
         },
         'mail-wizard-step-2': {
@@ -517,10 +516,8 @@ const WizardHelp = (function() {
             content: `
                 <p>Wähle ein Design-Template für deine E-Mail:</p>
                 <ul>
-                    <li><strong>Modern:</strong> Sauberes, zeitgemäßes Design</li>
-                    <li><strong>Business:</strong> Professionell und seriös</li>
-                    <li><strong>Creative:</strong> Bunt und auffällig</li>
-                    <li><strong>Minimal:</strong> Schlicht und fokussiert</li>
+                    <li><strong>Vordefinierte:</strong> Fertige Designs</li>
+                    <li><strong>Gespeicherte:</strong> Deine eigenen Templates</li>
                 </ul>
                 <div class="help-tip">💡 Du kannst das Template im nächsten Schritt anpassen.</div>
             `
@@ -530,14 +527,17 @@ const WizardHelp = (function() {
             content: `
                 <p>Bearbeite Betreff und E-Mail-Inhalt:</p>
                 <ul>
-                    <li><strong>Betreff:</strong> Kurz und aussagekräftig</li>
-                    <li><strong>Personalisierung:</strong> Verwende {{name}} und {{email}}</li>
-                    <li><strong>Formatierung:</strong> Nutze die Toolbar für Styling</li>
+                    <li><strong>{{name}}:</strong> Wird zu Empfänger-Name</li>
+                    <li><strong>{{email}}:</strong> Wird zu E-Mail-Adresse</li>
+                    <li><strong>Live-Vorschau:</strong> Zeigt das Endergebnis</li>
                 </ul>
-                <div class="help-example">{{name}} wird zu "Max Mustermann"</div>
-                <div class="help-tip">💡 Die Vorschau zeigt personalisierte Testdaten.</div>
+                <div class="help-example">{{name}} → "Max Mustermann"</div>
             `
-        },
+        }
+    };
+
+    const STEP_HELP_CONTENT = {
+        ...MAIL_WIZARD_HELP_CONTENT,
         'mail-wizard-step-4': {
             title: '👥 Empfänger auswählen',
             content: `
