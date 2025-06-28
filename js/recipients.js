@@ -28,6 +28,7 @@ window.Recipients = (function() {
         fetchRecipientsFromServer();
         updateDisplay();
         
+        console.log('✓ Recipients module initialized');
     }
 
     /**
@@ -74,6 +75,7 @@ window.Recipients = (function() {
                 email: recipient.email,
                 status: recipient.status || 'pending'
             }));
+            console.log(`Loaded ${recipients.length} persisted recipients`);
         }
     }
 
@@ -177,6 +179,7 @@ window.Recipients = (function() {
     function processCSVFile(file) {
         if (!file) return;
 
+        console.log(`Loading CSV file: ${file.name} (${Utils.formatFileSize(file.size)})`);
 
         if (typeof Papa === 'undefined') {
             Utils.showToast('CSV-Parser nicht verfügbar', 'error');
@@ -191,6 +194,7 @@ window.Recipients = (function() {
      * @param {Object} results - Papa Parse Ergebnisse
      */
     function handleCSVParseComplete(results) {
+        console.log('CSV Parse Results:', results);
         
         if (!results.data || results.data.length === 0) {
             Utils.showToast('CSV-Datei ist leer', 'error');
@@ -234,6 +238,7 @@ window.Recipients = (function() {
      * @param {Object} results - Papa Parse Ergebnisse
      */
     function processCSVResults(results) {
+        console.log('CSV Parse Results:', results);
 
         if (!results.data || results.data.length === 0) {
             showImportError('CSV-Datei ist leer');
@@ -478,6 +483,7 @@ window.Recipients = (function() {
         updateDisplay();
         persistRecipients();
         
+        console.log(`Recipient removed: ${recipient.email}`);
     }
 
     /**
@@ -522,6 +528,7 @@ window.Recipients = (function() {
         persistRecipients();
         
         Utils.showToast(`${count} Empfänger gelöscht`, 'success');
+        console.log('All recipients cleared');
     }
 
     /**

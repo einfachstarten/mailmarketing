@@ -48,6 +48,7 @@ window.Config = (function() {
         initializeEmailJS();
         isInitialized = true;
         
+        console.log('Config module initialized');
     }
 
     /**
@@ -71,6 +72,7 @@ window.Config = (function() {
 
             // Migrierte Config in strukturiertem Format speichern
             Utils.saveToStorage(STORAGE_KEYS.EMAIL_CONFIG, currentConfig);
+            console.log('Migrated config from localStorage to structured format');
         }
 
         // UI-Felder aktualisieren wenn vorhanden
@@ -92,6 +94,7 @@ window.Config = (function() {
         if (currentConfig.userId && window.emailjs) {
             try {
                 emailjs.init(currentConfig.userId);
+                console.log('EmailJS initialized successfully');
             } catch (error) {
                 console.error('EmailJS initialization failed:', error);
             }

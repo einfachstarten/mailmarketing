@@ -71,6 +71,7 @@ window.Utils = (function() {
                 });
 
             const result = processedParts.join(' ');
+            console.log(`Generated name from email: ${email} → ${result}`);
             return result;
 
         } catch (error) {
@@ -124,6 +125,7 @@ window.Utils = (function() {
      * @param {number} timeout - Auto-Hide nach Millisekunden (0 = kein Auto-Hide)
      */
     function showStatus(elementId, message, type = 'info') {
+        console.log(`Status [${type}] for ${elementId}:`, message);
 
         // Legacy API-Unterstützung: ElementId wird ignoriert
         showToast(message, type);
@@ -634,6 +636,7 @@ window.CSSLoader = (function() {
 
             cssLoaded = hasBackground || hasBorderRadius || hasPadding || hasBoxShadow;
 
+            console.log('CSS Load Check:', {
                 hasBackground, hasBorderRadius, hasPadding, hasBoxShadow,
                 result: cssLoaded
             });
@@ -761,6 +764,7 @@ window.CSSLoader = (function() {
             if (!checkCSSLoaded()) {
                 loadMinimalCSS();
             } else {
+                console.log('✓ CSS korrekt geladen');
             }
         }, 500);
     }
@@ -792,4 +796,5 @@ window.debugStartup = function() {
     };
 };
 
+console.log('🚀 Version 2.1 Startup Fix geladen - Debugging mit window.debugStartup()');
 

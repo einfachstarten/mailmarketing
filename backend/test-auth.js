@@ -8,6 +8,7 @@ async function register() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
     });
+    console.log('register status', resp.status);
     return resp.ok;
 }
 
@@ -17,8 +18,10 @@ async function login() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
     });
+    console.log('login status', resp.status);
     if (!resp.ok) return false;
     const data = await resp.json();
+    console.log('token', data.token ? 'received' : 'none');
     return !!data.token;
 }
 

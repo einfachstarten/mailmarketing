@@ -23,6 +23,7 @@ window.Wizard = (function() {
      * Initialisiert das Wizard-Modul
      */
     function init() {
+        console.log('✓ Wizard module initialized');
     }
 
     // ===== WIZARD DISPLAY MANAGEMENT =====
@@ -54,6 +55,7 @@ window.Wizard = (function() {
                 // Fokus auf erstes Eingabefeld
                 Utils.focusElement('wizard-serviceId', 200);
                 
+                console.log('Setup wizard shown');
             }
         } catch (error) {
             console.error('Error showing wizard:', error);
@@ -70,6 +72,7 @@ window.Wizard = (function() {
                 wizardOverlay.classList.add('hidden');
                 removeKeyboardNavigation();
                 isVisible = false;
+                console.log('Setup wizard hidden');
             }
         } catch (error) {
             console.error('Error hiding wizard:', error);
@@ -191,6 +194,7 @@ window.Wizard = (function() {
             // Progress-Click-Handler initialisieren
             initProgressClickHandlers();
 
+            console.log(`Wizard step updated to: ${currentStep}`);
 
         } catch (error) {
             console.error('Error updating wizard step:', error);
@@ -240,6 +244,7 @@ window.Wizard = (function() {
      */
     function initKeyboardNavigation() {
         document.addEventListener('keydown', handleWizardKeydown);
+        console.log('✅ Wizard keyboard navigation initialized');
     }
 
     /**
@@ -467,6 +472,7 @@ window.Wizard = (function() {
                 message: createTestEmailContent(fromName)
             };
 
+            console.log('Sending test email...', { to: testEmail, from: fromName });
 
             // E-Mail senden
             const response = await window.emailjs.send(serviceId, templateId, templateParams);
@@ -614,6 +620,7 @@ window.Wizard = (function() {
 
             // Hauptkonfiguration UI auch aktualisieren
             updateMainConfigUI(config);
+            console.log('Wizard config saved successfully');
         }
     }
 
@@ -657,6 +664,7 @@ window.Wizard = (function() {
                 }, 100);
             }
             
+            console.log('Setup completed successfully');
             
         } catch (error) {
             console.error('Error finishing setup:', error);

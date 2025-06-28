@@ -36,6 +36,7 @@ window.Attachments = (function() {
     function init() {
         setupEventListeners();
         updateDisplay();
+        console.log('✓ Attachments module initialized with upload');
     }
 
     /**
@@ -126,6 +127,7 @@ window.Attachments = (function() {
                 };
 
                 attachments.push(attachment);
+                console.log(`Attachment uploaded: ${file.name} -> ${uploadResult.url}`);
                 
                 Utils.showStatus('attachmentStatus', 
                     `✅ "${file.name}" erfolgreich hochgeladen`, 'success');
@@ -214,6 +216,7 @@ window.Attachments = (function() {
             updateDisplay();
             persistAttachments();
             
+            console.log(`Attachment removed: ${attachment.name}`);
             Utils.showStatus('attachmentStatus', `"${attachment.name}" entfernt`, 'success');
         }
     }
@@ -447,6 +450,7 @@ window.Attachments = (function() {
 
     function updateUploadConfig(config) {
         Object.assign(UPLOAD_CONFIG, config);
+        console.log('Upload config updated:', UPLOAD_CONFIG);
     }
 
     // ===== PUBLIC API =====

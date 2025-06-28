@@ -16,6 +16,7 @@ window.Campaigns = (function() {
         loadCampaigns();
         updateCampaignsList();
         
+        console.log('✓ Campaigns module initialized');
     }
 
     // ===== CAMPAIGN MANAGEMENT =====
@@ -26,6 +27,7 @@ window.Campaigns = (function() {
     function loadCampaigns() {
         try {
             campaigns = JSON.parse(localStorage.getItem('campaignDrafts') || '[]');
+            console.log(`Loaded ${campaigns.length} campaigns`);
         } catch (error) {
             console.error('Error loading campaigns:', error);
             campaigns = [];
@@ -134,6 +136,7 @@ window.Campaigns = (function() {
         // UI für aktive Kampagne anzeigen
         showActiveCampaignUI(campaign);
         
+        console.log('Starting campaign:', campaignId);
     }
 
     /**
@@ -352,6 +355,8 @@ window.Campaigns = (function() {
         updateCampaignsList,
         startCampaign,
         executeCampaign,
+        previewCampaign: (id) => console.log('Preview campaign:', id),
+        editCampaign: (id) => console.log('Edit campaign:', id),
         deleteCampaign: (id) => {
             Utils.showConfirm('Kampagne wirklich löschen?', () => {
                 campaigns = campaigns.filter(c => c.id !== id);
