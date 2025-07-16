@@ -188,3 +188,56 @@
     font-weight: 600;
     color: #374151;
 }
+
+/* Font Awesome Icon Styling */
+.service-icon,
+.target-icon,
+.usage-icon {
+    display: inline-block;
+    color: var(--primary-green);
+    margin-bottom: 1rem;
+}
+
+.service-icon {
+    font-size: 3rem;
+}
+
+.target-icon {
+    font-size: 3rem;
+    color: var(--primary-yellow);
+}
+
+.usage-icon {
+    font-size: 2.5rem;
+    color: var(--primary-green);
+}
+
+/* Hover effects for icons */
+.service-card:hover .service-icon,
+.target-card:hover .target-icon,
+.usage-card:hover .usage-icon {
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
+}
+
+/* Special colors for specific icons */
+.fa-truck,
+.fa-truck-loading {
+    color: var(--primary-green);
+}
+
+.fa-credit-card {
+    color: var(--primary-yellow);
+}
+
+.fa-road {
+    color: var(--medium-gray);
+}
+
+.fa-bolt {
+    color: var(--light-green);
+}
+
+.fa-exclamation-triangle {
+    color: #ff6b35;
+}

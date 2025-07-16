@@ -9,6 +9,8 @@
         .css-loaded { visibility: visible; }
     </style>
     <script src="js/version.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="js/translations.js" defer></script>
 
     <!-- Favicon SVG -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%234a90e2'/%3E%3Ctext x='50' y='65' font-size='50' text-anchor='middle' fill='white'%3E🐦%3C/text%3E%3C/svg%3E">
@@ -77,7 +79,7 @@
                     <div class="card-content">
                 <!-- Setup Status (wird durch JS aktualisiert) -->
                 <div id="setupStatus" class="setup-status needs-setup">
-                    <div class="status-icon">⚙️</div>
+                    <i class="status-icon fas fa-cog"></i>
                     <div class="status-text">
                         <div class="status-title">Setup erforderlich</div>
                         <div class="status-desc">Tool noch nicht konfiguriert - Setup Wizard starten</div>
@@ -91,31 +93,31 @@
                 <!-- Quick Actions -->
                 <div class="action-grid">
                     <a href="#" class="action-card" onclick="showTemplateEditor()">
-                        <span class="action-icon">📝</span>
+                        <i class="action-icon fas fa-pen"></i>
                         <h3 class="action-title">Template Editor</h3>
                         <p class="action-desc">HTML-Templates erstellen und bearbeiten mit Live-Preview</p>
                     </a>
 
                     <a href="#" class="action-card" onclick="showMailWizard()">
-                        <span class="action-icon">🚀</span>
+                        <i class="action-icon fas fa-rocket"></i>
                         <h3 class="action-title">Mail Wizard</h3>
                         <p class="action-desc">Schritt-für-Schritt E-Mail-Kampagnen erstellen</p>
                     </a>
 
                     <a href="#" class="action-card" onclick="showRecipients()">
-                        <span class="action-icon">👥</span>
+                        <i class="action-icon fas fa-users"></i>
                         <h3 class="action-title">Empfänger</h3>
                         <p class="action-desc">CSV-Listen importieren und verwalten</p>
                     </a>
 
                     <a href="#" class="action-card" onclick="showHistory()">
-                        <span class="action-icon">📊</span>
+                        <i class="action-icon fas fa-chart-bar"></i>
                         <h3 class="action-title">Verlauf</h3>
                         <p class="action-desc">Gesendete Kampagnen und Status einsehen</p>
                     </a>
 
                     <a href="#" class="action-card" onclick="showSettingsModal()">
-                        <span class="action-icon">⚙️</span>
+                        <i class="action-icon fas fa-cog"></i>
                         <h3 class="action-title">Einstellungen</h3>
                         <p class="action-desc">EmailJS-Konfiguration und App-Einstellungen verwalten</p>
                     </a>
@@ -174,27 +176,27 @@
             <!-- Recipients Tab -->
             <div id="recipients" class="tab-content">
                 <main class="main-card">
-                    <h2>📧 Empfänger-Verwaltung</h2>
+                    <h2><i class="fas fa-envelope"></i> Empfänger-Verwaltung</h2>
 
                     <!-- CSV Import Bereich -->
                     <div class="section">
-                        <h3>📁 CSV-Datei importieren</h3>
+                        <h3><i class="fas fa-file-csv"></i> CSV-Datei importieren</h3>
                         <div class="csv-import-container">
                             <input type="file" id="csvFileInput" accept=".csv" style="display: none;">
                             <div class="csv-drop-zone" onclick="document.getElementById('csvFileInput').click();">
                                 <div class="drop-zone-content">
-                                    <span class="drop-zone-icon">📁</span>
+                                    <i class="drop-zone-icon fas fa-file-import"></i>
                                     <p>CSV-Datei auswählen oder hierher ziehen</p>
                                     <small>Format: name,email oder nur email pro Zeile</small>
                                 </div>
                             </div>
-                            <button class="btn btn-secondary" onclick="Recipients.loadTestData()">📋 Test-Daten laden</button>
+                            <button class="btn btn-secondary" onclick="Recipients.loadTestData()"><i class="fas fa-clipboard-list"></i> Test-Daten laden</button>
                         </div>
                     </div>
 
                     <!-- Manueller Empfänger-Input -->
                     <div class="section">
-                        <h3>✍️ Empfänger manuell hinzufügen</h3>
+                        <h3><i class="fas fa-pen"></i> Empfänger manuell hinzufügen</h3>
                         <div class="manual-input-container">
                             <div class="manual-input-form">
                                 <div class="form-group">
@@ -205,7 +207,7 @@
                                     <label for="manualRecipientEmail">E-Mail *</label>
                                     <input type="email" id="manualRecipientEmail" placeholder="max@example.com" class="form-control" required>
                                 </div>
-                                <button class="btn btn-primary" onclick="Recipients.addManualRecipient()">➕ Hinzufügen</button>
+                                <button class="btn btn-primary" onclick="Recipients.addManualRecipient()"><i class="fas fa-plus"></i> Hinzufügen</button>
                             </div>
                         </div>
                     </div>
@@ -220,8 +222,8 @@
                         <div class="recipient-controls">
                             <h3>Empfänger-Liste</h3>
                             <div class="recipient-actions">
-                                <button class="btn btn-primary" onclick="Recipients.clear()">🗑️ Alle löschen</button>
-                                <button class="btn btn-secondary" onclick="Recipients.exportCSV()">💾 Als CSV exportieren</button>
+                                <button class="btn btn-primary" onclick="Recipients.clear()"><i class="fas fa-trash"></i> Alle löschen</button>
+                                <button class="btn btn-secondary" onclick="Recipients.exportCSV()"><i class="fas fa-file-export"></i> Als CSV exportieren</button>
                             </div>
                         </div>
                         <div id="recipientsList" class="recipient-list"></div>
@@ -235,27 +237,27 @@
             <!-- Mail Wizard Tab -->
             <div id="mailwizard" class="tab-content">
                 <main class="main-card">
-                    <h2>🚀 E-Mail Kampagne</h2>
+                    <h2><i class="fas fa-rocket"></i> E-Mail Kampagne</h2>
 
                     <!-- Kampagnen-Daten Anzeige -->
                     <div id="campaignDataContainer" class="section" style="display: none;">
-                        <h3>📋 Kampagnen-Übersicht</h3>
+                        <h3><i class="fas fa-list"></i> Kampagnen-Übersicht</h3>
                         <div class="campaign-summary">
                             <div class="campaign-info-grid">
                                 <div class="campaign-info-item">
-                                    <label>📧 Betreff:</label>
+                                    <label><i class="fas fa-envelope"></i> Betreff:</label>
                                     <span id="campaignSubject">-</span>
                                 </div>
                                 <div class="campaign-info-item">
-                                    <label>📄 Template:</label>
+                                    <label><i class="fas fa-file-alt"></i> Template:</label>
                                     <span id="campaignTemplate">-</span>
                                 </div>
                                 <div class="campaign-info-item">
-                                    <label>👥 Empfänger:</label>
+                                    <label><i class="fas fa-users"></i> Empfänger:</label>
                                     <span id="campaignRecipientCount">0</span>
                                 </div>
                                 <div class="campaign-info-item">
-                                    <label>📎 Anhänge:</label>
+                                    <label><i class="fas fa-paperclip"></i> Anhänge:</label>
                                     <span id="campaignAttachmentCount">0</span>
                                 </div>
                             </div>
